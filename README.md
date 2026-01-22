@@ -1,94 +1,167 @@
-# 10x Astro Starter
+# Pet Care Companion
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+> A centralized pet care journal for tracking veterinary visits, medications, grooming appointments, and health events in one place.
 
-## Tech Stack
+![Status](https://img.shields.io/badge/status-MVP%20Development-blue)
+![Version](https://img.shields.io/badge/version-1.0.0--MVP-green)
+![Node](https://img.shields.io/badge/node-22.14.0-brightgreen)
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+## 📋 Table of Contents
 
-## Prerequisites
+- [Project Description](#-project-description)
+- [Tech Stack](#-tech-stack)
+- [Getting Started Locally](#-getting-started-locally)
+- [Available Scripts](#-available-scripts)
+- [Project Scope](#-project-scope)
+- [Project Status](#-project-status)
+- [License](#-license)
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## 📖 Project Description
 
-## Getting Started
+**Pet Care Companion** is a web application designed to solve the common problem of scattered pet care information. Pet owners, especially those with pets requiring regular medical care, medications, and frequent specialist visits, often struggle with:
 
-1. Clone the repository:
+- **Information fragmentation** - notes stored in different places (phone notes, paper, memory, photos)
+- **Lack of accessibility** - difficulty recalling exact dates of vaccinations, medications, or food changes during vet visits
+- **Forgotten events** - important health incidents that fade from memory over time
+- **Time-consuming systems** - complex management tools that take too long to use
+
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- **[Astro 5](https://astro.build/)** - Fast, content-focused web framework with minimal JavaScript
+- **[React 19](https://react.dev/)** - Interactive UI components where needed
+- **[TypeScript 5](https://www.typescriptlang.org/)** - Type-safe code with enhanced IDE support
+- **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework for rapid styling
+- **[Shadcn/ui](https://ui.shadcn.com/)** - Accessible React component library
+
+### Backend
+
+- **[Supabase](https://supabase.com/)** - Backend-as-a-Service providing:
+  - PostgreSQL database
+  - Built-in authentication
+  - Real-time subscriptions
+  - RESTful API and SDK
+  - Open-source with self-hosting options
+
+### DevOps & Deployment
+
+- **[GitHub Actions](https://github.com/features/actions)** - CI/CD pipelines
+- **[DigitalOcean](https://www.digitalocean.com/)** - Application hosting via Docker containers
+
+## 🚀 Getting Started Locally
+
+### Prerequisites
+
+- Node.js `22.14.0` (specified in `.nvmrc`)
+- npm or yarn package manager
+- Supabase account (free tier available)
+
+### Installation
+
+1. **Clone the repository**
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/yourusername/pet-care-app.git
+cd pet-care-app
 ```
 
-2. Install dependencies:
+2. **Install Node.js version** (using nvm)
+
+```bash
+nvm install
+nvm use
+```
+
+3. **Install dependencies**
 
 ```bash
 npm install
 ```
 
-3. Run the development server:
+4. **Start development server**
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+The application will be available at `http://localhost:4321`
+
+## 📜 Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server with hot-reload |
+| `npm run build` | Build production-ready application |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint to check code quality |
+| `npm run lint:fix` | Fix auto-fixable ESLint errors |
+| `npm run format` | Format code with Prettier |
+| `npm run astro` | Run Astro CLI commands directly |
+
+### Development Workflow
 
 ```bash
+# Start development
+npm run dev
+
+# Before committing
+npm run lint        # Check for errors
+npm run format      # Format code
+
+# Build for production
 npm run build
+npm run preview     # Test production build
 ```
 
-## Available Scripts
+## 📦 Project Scope
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+### ✅ MVP Features (In Scope)
 
-## Project Structure
+**Authentication & Account Management**
+- User registration (email + password)
+- Login/logout functionality
+- Session management via Supabase Auth
+- No email verification in MVP (instant account activation)
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+**Pet Management**
+- Add pet (name + species: Dog, Cat, Other)
+- View pets list on dashboard (sorted alphabetically)
+- Pet profile with care history
+- Delete pet (with cascade deletion of all entries)
 
-## AI Development Support
+**Care Entry Management**
+- Add care entry with 6 categories:
+  - 🏥 Veterinary visit
+  - 💊 Medications & supplements
+  - ✂️ Groomer/barber
+  - 🍖 Food
+  - 🩹 Health incident
+  - 📝 Note
+- Required fields: category + date
+- Optional: notes (max 1000 characters)
+- View chronological history (newest first)
+- Delete care entries
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+## 📊 Project Status
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+**Current Phase:** MVP Development (v1.0 Lean)
 
-### Cursor IDE
+## 📄 License
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+This project does not currently have a license specified.
 
-### GitHub Copilot
+---
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
+## 🤝 Contributing
 
-### Windsurf
+This is an MVP project for educational purposes. Contributions, issues, and feature requests are welcome once the MVP is completed.
 
-The `.windsurfrules` file contains AI configuration for Windsurf.
+## 📧 Contact
 
-## Contributing
+For questions or feedback about this project, please open an issue in the GitHub repository.
 
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+---
 
-## License
-
-MIT
+**Built with ❤️ for pet owners who want to provide the best care for their companions.**
