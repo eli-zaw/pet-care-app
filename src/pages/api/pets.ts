@@ -1,10 +1,245 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { CreatePetCommand, CreatePetResponseDto } from "../../types";
+import type {
+  CreatePetCommand,
+  CreatePetResponseDto,
+  PetsListQuery,
+  PetsListResponseDto,
+  PetSummaryDto,
+} from "../../types";
 import { DEFAULT_USER_ID } from "../../db/supabase.client";
 
 // Disable prerendering for API routes
 export const prerender = false;
+
+/**
+ * GET /api/pets
+ * Returns a paginated list of pets owned by the current user (uses DEFAULT_USER_ID for now).
+ * Uses v_pets_summary view for enriched data (species_display, species_emoji, entries_count).
+ *
+ * Query params:
+ * - page (number, default 1): Page number
+ * - limit (number, default 20, max 100): Items per page
+ * - include (string, "summary", optional): Use view with additional data
+ *
+ * Returns:
+ * - 200: Paginated list of pets with PetsListResponseDto
+ * - 400: Invalid query params
+ * - 401: No session (future; MVP skips this)
+ * - 500: Server error
+ *
+ * TODO: Add authentication once auth is implemented
+ */
+export const GET: APIRoute = async ({ request, locals }) => {
+  try {
+    // Step 1: Get supabase client from context.locals
+    const { supabase } = locals;
+
+    // TODO: Replace with authenticated user ID once auth is implemented
+    const userId = DEFAULT_USER_ID;
+
+    // Step 2: Parse and validate query params using Zod schema
+    const url = new URL(request.url);
+    const queryParams = {
+      page: url.searchParams.get("page") || undefined,
+      limit: url.searchParams.get("limit") || undefined,
+      include: url.searchParams.get("include") || undefined,
+    };
+
+    const validationResult = PetsListQuerySchema.safeParse(queryParams);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map((err) => ({
+        field: err.path.join("."),
+        message: err.message,
+      }));
+
+      return new Response(
+        JSON.stringify({
+          error: "Validation Failed",
+          message: "Walidacja parametrów zapytania nie powiodła się",
+          details: errors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const validatedQuery: PetsListQuery = validationResult.data;
+    const page = validatedQuery.page || 1;
+    const limit = validatedQuery.limit || 20;
+
+    // Step 3: Calculate pagination offset
+    const offset = (page - 1) * limit;
+
+    // Step 4: First, get pet IDs owned by the user from pet_owners table
+    const { data: ownedPets, error: ownershipError } = await supabase
+      .from("pet_owners")
+      .select("pet_id")
+      .eq("user_id", userId);
+
+    if (ownershipError) {
+      console.error("Database error in GET /api/pets (ownership check):", {
+        error: ownershipError,
+        userId,
+      });
+
+      return new Response(
+        JSON.stringify({
+          error: "Database Error",
+          message: "Nie udało się pobrać listy zwierząt",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Extract pet IDs owned by the user
+    const petIds = ownedPets?.map((po) => po.pet_id) || [];
+
+    // If user has no pets, return empty list early
+    if (petIds.length === 0) {
+      const emptyResponse: PetsListResponseDto = {
+        items: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+        },
+      };
+
+      return new Response(JSON.stringify(emptyResponse), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Step 5: Query v_pets_summary view filtering by owned pet IDs
+    // Apply pagination and ordering
+    // Note: v_pets_summary already filters is_deleted = false
+    const { data: petsData, error: queryError } = await supabase
+      .from("v_pets_summary")
+      .select(
+        `
+        id,
+        animal_code,
+        name,
+        species,
+        species_display,
+        species_emoji,
+        entries_count,
+        created_at,
+        updated_at
+      `
+      )
+      .in("id", petIds)
+      .order("name", { ascending: true })
+      .range(offset, offset + limit - 1);
+
+    if (queryError) {
+      console.error("Database error in GET /api/pets (query):", {
+        error: queryError,
+        userId,
+        page,
+        limit,
+      });
+
+      return new Response(
+        JSON.stringify({
+          error: "Database Error",
+          message: "Nie udało się pobrać listy zwierząt",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Step 6: Execute separate count query for total
+    // Use the same filters as main query
+    const { count: totalCount, error: countError } = await supabase
+      .from("v_pets_summary")
+      .select("id", { count: "exact", head: true })
+      .in("id", petIds);
+
+    if (countError) {
+      console.error("Database error in GET /api/pets (count):", {
+        error: countError,
+        userId,
+      });
+
+      return new Response(
+        JSON.stringify({
+          error: "Database Error",
+          message: "Nie udało się pobrać liczby zwierząt",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Step 7: Map results to PetsListResponseDto
+    // Filter out any invalid records (shouldn't happen but TypeScript safety)
+    const items: PetSummaryDto[] = (petsData || [])
+      .filter(
+        (pet) =>
+          pet.id !== null &&
+          pet.animal_code !== null &&
+          pet.name !== null &&
+          pet.species !== null &&
+          pet.species_display !== null &&
+          pet.species_emoji !== null &&
+          pet.created_at !== null &&
+          pet.updated_at !== null
+      )
+      .map((pet) => ({
+        id: pet.id as string,
+        animal_code: pet.animal_code as string,
+        name: pet.name as string,
+        species: pet.species as NonNullable<typeof pet.species>,
+        species_display: pet.species_display as string,
+        species_emoji: pet.species_emoji as string,
+        entries_count: pet.entries_count || 0,
+        created_at: pet.created_at as string,
+        updated_at: pet.updated_at as string,
+      }));
+
+    const response: PetsListResponseDto = {
+      items,
+      pagination: {
+        page,
+        limit,
+        total: totalCount || 0,
+      },
+    };
+
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Log unexpected errors for debugging
+    console.error("Unexpected error in GET /api/pets:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: "Internal Server Error",
+        message: "Wystąpił nieoczekiwany błąd serwera",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
 
 /**
  * Zod schema for CreatePetCommand validation
@@ -20,6 +255,23 @@ const CreatePetSchema = z.object({
   species: z.enum(["dog", "cat", "other"], {
     errorMap: () => ({ message: "Gatunek musi być jednym z: dog, cat, other" }),
   }),
+});
+
+/**
+ * Zod schema for PetsListQuery validation
+ * - page: optional number >= 1, default 1
+ * - limit: optional number 1-100, default 20
+ * - include: optional string "summary"
+ */
+const PetsListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1, "Numer strony musi być większy lub równy 1").default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit musi być większy lub równy 1")
+    .max(100, "Limit nie może być większy niż 100")
+    .default(20),
+  include: z.enum(["summary"]).optional(),
 });
 
 /**
@@ -50,7 +302,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let body: unknown;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch {
       return new Response(
         JSON.stringify({
           error: "Bad Request",
