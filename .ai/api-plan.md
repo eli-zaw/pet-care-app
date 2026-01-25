@@ -2,9 +2,9 @@
 
 ## 1. Zasoby
 - `profiles` -> `public.profiles` (read-only for self; update limited)
-- `pets` -> `public.pets` (create, list, soft delete)
+- `pets` -> `public.pets` (create, read, update, list, soft delete)
 - `pet_owners` -> `public.pet_owners` (read-only for ownership)
-- `care_entries` -> `public.care_entries` (create, list, soft delete)
+- `care_entries` -> `public.care_entries` (create, read, update, list, soft delete)
 - `pets_summary` -> `public.v_pets_summary` (read-only list for dashboard)
 - `care_history` -> `public.v_care_history` (read-only list for pet profile)
 - `auth` -> Supabase Auth (register, login, logout, session)
@@ -72,9 +72,21 @@ Create a pet (auto-assign owner).
 Get pet basic data (non-deleted).
 - Response 200:
 ```json
-{ "id": "uuid", "animal_code": "AB12CD34", "name": "Luna", "species": "cat", "created_at": "iso", "updated_at": "iso" }
+{ "id": "uuid", "animal_code": "AB12CD34", "name": "Luna", "species": "cat", "species_display": "Kot", "species_emoji": "🐱", "created_at": "iso", "updated_at": "iso" }
 ```
 - Errors: 401 not authenticated, 404 not found.
+
+**PATCH** `/api/pets/:petId`  
+Update pet data (name only; species is immutable after creation).
+- Body (all fields optional):
+```json
+{ "name": "Luna Updated" }
+```
+- Response 200:
+```json
+{ "id": "uuid", "animal_code": "AB12CD34", "name": "Luna Updated", "species": "cat", "species_display": "Kot", "species_emoji": "🐱", "created_at": "iso", "updated_at": "iso" }
+```
+- Errors: 400 validation failed, 401 not authenticated, 403 forbidden, 404 not found, 409 name already used (active).
 
 **DELETE** `/api/pets/:petId`  
 Soft delete pet (cascade soft delete care entries).
@@ -129,6 +141,18 @@ Create care entry for pet.
 ```
 - Errors: 400 validation failed, 401 not authenticated, 403 forbidden, 404 pet not found.
 
+**PATCH** `/api/pets/:petId/care-entries/:entryId`  
+Update care entry (all fields editable).
+- Body (all fields optional):
+```json
+{ "category": "vet_visit", "entry_date": "2026-01-25", "note": "Updated note" }
+```
+- Response 200:
+```json
+{ "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "entry_date": "2026-01-25", "note": "Updated note", "created_at": "iso", "updated_at": "iso" }
+```
+- Errors: 400 validation failed, 401 not authenticated, 403 forbidden, 404 not found (pet or entry).
+
 **DELETE** `/api/pets/:petId/care-entries/:entryId`  
 Soft delete care entry.
 - Response 204 (no body)
@@ -179,10 +203,24 @@ List pet ownerships for user (debug/admin only).
   - auto-generate `animal_code`
   - auto-assign owner in `pet_owners`
   - trim name and set timestamps
+- **Update pet**:
+  - allows editing `name` only (trimmed, validated)
+  - `species` is immutable after creation (business decision)
+  - `animal_code` is immutable (unique identifier)
+  - auto-updates `updated_at` timestamp
+  - validates name uniqueness among user's active pets
 - **Delete pet** performs soft delete and cascades soft delete to related care entries.
 - **Create care entry** auto-sets timestamps; order of history is by `entry_date` then `created_at`.
+- **Update care entry**:
+  - allows editing `category`, `entry_date`, and `note`
+  - `pet_id` is immutable (cannot move entry to different pet)
+  - auto-updates `updated_at` timestamp
+  - validates all fields according to validation rules.
 
 ### Assumptions
 - Deletions are **soft deletes** to align with the schema and triggers, even though PRD mentions hard delete.
 - Future profile fields (e.g., `first_name`) are optional and not part of MVP, but endpoint is reserved.
+- **Pet species** is immutable after creation to maintain data integrity and avoid confusion with historical care entries.
+- **Pet animal_code** is immutable as it serves as a unique, stable identifier.
+- **Care entry pet_id** is immutable to prevent accidental data corruption (moving entries between pets).
 
