@@ -64,7 +64,10 @@ export type CreatePetCommand = Pick<TablesInsert<"pets">, "name" | "species">;
 
 export type CreatePetResponseDto = Pick<PetDto, "id" | "animal_code" | "name" | "species" | "created_at">;
 
-export type GetPetResponseDto = PetDto;
+export type GetPetResponseDto = PetDto & {
+  species_display: string;
+  species_emoji: string;
+};
 
 export type PetsListQuery = PaginationQuery & {
   include?: "summary";
@@ -93,7 +96,10 @@ export type CreateCareEntryCommand = Pick<TablesInsert<"care_entries">, "categor
 export type CreateCareEntryResponseDto = Pick<
   CareEntryDto,
   "id" | "pet_id" | "category" | "entry_date" | "note" | "created_at"
->;
+> & {
+  category_display: string;
+  category_emoji: string;
+};
 
 export type CareEntriesListQuery = PaginationQuery & {
   category?: CareCategoryType;
@@ -112,3 +118,11 @@ export type PetOwnersListResponseDto = PaginatedResponse<PetOwnerDto>;
 // Update types reserved for future use
 export type UpdatePetCommand = Partial<Pick<TablesUpdate<"pets">, "name" | "species">>;
 export type UpdateCareEntryCommand = Partial<Pick<TablesUpdate<"care_entries">, "category" | "entry_date" | "note">>;
+
+export type UpdateCareEntryResponseDto = Pick<
+  CareEntryDto,
+  "id" | "pet_id" | "category" | "entry_date" | "note" | "created_at" | "updated_at"
+> & {
+  category_display: string;
+  category_emoji: string;
+};

@@ -137,9 +137,17 @@ Create care entry for pet.
 ```
 - Response 201:
 ```json
-{ "id": "uuid", "pet_id": "uuid", "category": "food", "entry_date": "2026-01-24", "note": "Optional note", "created_at": "iso" }
+{ "id": "uuid", "pet_id": "uuid", "category": "food", "category_display": "Karmienie", "category_emoji": "🍖", "entry_date": "2026-01-24", "note": "Optional note", "created_at": "iso" }
 ```
 - Errors: 400 validation failed, 401 not authenticated, 403 forbidden, 404 pet not found.
+
+**GET** `/api/pets/:petId/care-entries/:entryId`  
+Get single care entry (for edit form).
+- Response 200:
+```json
+{ "id": "uuid", "pet_id": "uuid", "category": "food", "category_display": "Karmienie", "category_emoji": "🍖", "entry_date": "2026-01-24", "note": "Optional note", "created_at": "iso", "updated_at": "iso" }
+```
+- Errors: 401 not authenticated, 403 forbidden, 404 not found (pet or entry).
 
 **PATCH** `/api/pets/:petId/care-entries/:entryId`  
 Update care entry (all fields editable).
@@ -149,7 +157,7 @@ Update care entry (all fields editable).
 ```
 - Response 200:
 ```json
-{ "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "entry_date": "2026-01-25", "note": "Updated note", "created_at": "iso", "updated_at": "iso" }
+{ "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "category_display": "Wizyta u weterynarza", "category_emoji": "🏥", "entry_date": "2026-01-25", "note": "Updated note", "created_at": "iso", "updated_at": "iso" }
 ```
 - Errors: 400 validation failed, 401 not authenticated, 403 forbidden, 404 not found (pet or entry).
 

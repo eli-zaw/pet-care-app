@@ -19,7 +19,7 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 
 ## 3. Wykorzystywane typy
 - `CreateCareEntryCommand` (request body)
-- `CreateCareEntryResponseDto` (response 201)
+- `CreateCareEntryResponseDto` (response 201) + display fields (category_display, category_emoji)
 - `CareEntryDto` (wewnętrzny model po zapisie; bez pól soft delete)
 - `CareCategoryType` (enum)
 - `PetDto` (do weryfikacji istnienia zwierzęcia)
@@ -28,7 +28,7 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 ## 4. Szczegóły odpowiedzi
 - 201 Created:
   ```json
-  { "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "entry_date": "2026-01-24", "note": "Szczepienie...", "created_at": "iso" }
+  { "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "category_display": "Wizyta u weterynarza", "category_emoji": "🏥", "entry_date": "2026-01-24", "note": "Szczepienie...", "created_at": "iso" }
   ```
 - 400 Bad Request: walidacja nieudana (nieprawidłowy UUID, category, date format, note > 1000 chars)
 - 401 Unauthorized: brak sesji
@@ -43,9 +43,10 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 4. Weryfikacja istnienia zwierzęcia przez query do `pets` WHERE `id = petId AND is_deleted = false`; jeśli brak → 404.
 5. Weryfikacja właściciela przez query do `pet_owners` WHERE `pet_id = petId AND user_id = userId`; jeśli brak → 403.
 6. Insert do `care_entries` z `{ pet_id, category, entry_date, note }`.
-7. Zwrócenie `CreateCareEntryResponseDto` (id, pet_id, category, entry_date, note, created_at).
+7. Pobranie utworzonego wpisu z view `v_care_history` (lub z mapowaniem category → display/emoji).
+8. Zwrócenie `CreateCareEntryResponseDto` (id, pet_id, category, category_display, category_emoji, entry_date, note, created_at).
 
-**Optymalizacja**: Kroki 4-5 można połączyć w jedno query z JOIN dla lepszej wydajności (2 queries → 1 query), kosztem mniej precyzyjnych komunikatów błędów (403 vs 404).
+**Optymalizacja**: Kroki 4-5 można połączyć w jedno query z JOIN dla lepszej wydajności (2 queries → 1 query), kosztem mniej precyzyjnych komunikatów błędów (403 vs 404). Krok 7-8 można połączyć używając INSERT...RETURNING z view lub JOIN.
 
 ## 6. Względy bezpieczeństwa
 - Uwierzytelnienie przez Supabase Auth; wymagany zalogowany użytkownik.
