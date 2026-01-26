@@ -169,3 +169,52 @@ export interface PetsListState {
   isEmpty: boolean;
   items: PetCardViewModel[];
 }
+
+// ViewModels for PetForm (Add Pet View)
+export interface PetFormViewModel {
+  name: string;
+  species: SpeciesType | "";
+}
+
+export interface PetFormErrors {
+  name?: string;
+  species?: string;
+  general?: string;
+}
+
+export interface SpeciesOption {
+  value: SpeciesType;
+  label: string;
+  emoji: string;
+}
+
+// ViewModels for Pet Profile (Pet Show View)
+export interface PetHeaderViewModel {
+  id: string;
+  name: string;
+  speciesEmoji: string;
+  speciesDisplay: string;
+  entriesCount: number;
+}
+
+export interface CareEntryCardViewModel {
+  id: string;
+  categoryEmoji: string;
+  categoryDisplay: string;
+  dateFormatted: string;
+  notePreview: string;
+  noteFull: string | null;
+  hasMore: boolean;
+}
+
+export interface CareHistoryListState {
+  isLoading: boolean;
+  isEmpty: boolean;
+  items: CareEntryCardViewModel[];
+}
+
+export interface PetProfileViewModel {
+  header: PetHeaderViewModel;
+  history: CareHistoryListState;
+  pagination: PaginationViewModel;
+}

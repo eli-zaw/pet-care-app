@@ -1,0 +1,88 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { PetForm } from "@/components/PetForm";
+import type { GetPetResponseDto } from "@/types";
+
+// Middleware already handles auth, this page is protected
+
+const { petId } = Astro.params;
+
+// Walidacja petId
+if (!petId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Pobranie danych zwierzęcia
+let petData: GetPetResponseDto | null = null;
+let error: string | null = null;
+
+try {
+  // Pobieranie danych zwierzęcia przez API
+  const apiUrl = new URL(`/api/pets/${petId}`, Astro.url);
+  const response = await fetch(apiUrl.toString(), {
+    headers: {
+      // Przekazanie ciasteczek sesji
+      cookie: Astro.request.headers.get("cookie") || "",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      error = "Zwierzę nie znalezione";
+    } else if (response.status === 403) {
+      error = "Brak dostępu do tego zwierzęcia";
+    } else if (response.status === 401) {
+      return Astro.redirect("/");
+    } else {
+      error = "Wystąpił błąd podczas ładowania danych";
+    }
+  } else {
+    petData = await response.json();
+  }
+} catch (err) {
+  console.error("Error fetching pet data in edit page:", err);
+  error = "Wystąpił błąd podczas ładowania danych";
+}
+
+// Jeśli wystąpił błąd, przekieruj do dashboardu
+if (error || !petData) {
+  return Astro.redirect("/dashboard");
+}
+
+const pageTitle = `Edytuj ${petData.name} - Pet Care Companion`;
+---
+
+<Layout title={pageTitle}>
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <!-- Breadcrumbs -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
+        <ol class="flex items-center gap-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Pulpit
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/pets/${petId}`} class="hover:text-foreground transition-colors">
+              {petData.name}
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground">
+            Edytuj
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Form Component -->
+      <PetForm 
+        mode="edit" 
+        petId={petId} 
+        initialData={petData} 
+        client:load 
+      />
+    </div>
+  </div>
+</Layout>

@@ -72,6 +72,22 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **UX, dostępność i bezpieczeństwo:** Duże kafelki kategorii, domyślna data "dziś".
 - **Mapowanie wymagań:** FR-008, US-007, US-013.
 
+### Strona błędu 403
+- **Ścieżka:** `/403`
+- **Główny cel:** Informować o braku uprawnień i naprowadzić użytkownika na bezpieczny ekran.
+- **Kluczowe informacje:** Krótkie wyjaśnienie problemu, przycisk "Wróć do dashboard" oraz opcjonalny łącznik do pomocy/sekcji kontaktowej.
+- **Kluczowe komponenty:** `ErrorPageLayout`, `Button`, `Link`.
+- **UX, dostępność i bezpieczeństwo:** Komunikat z `aria-live="polite"`, jasny kolor akcentujący informację o ograniczeniu (np. żółte tło), unikamy automatycznego przekierowania.
+- **Mapowanie wymagań:** FR-014 (obsługa błędów auth), US-014.
+
+### Strona błędu 404
+- **Ścieżka:** `/404`
+- **Główny cel:** Powiadomić użytkownika o nieistniejącej stronie i zaproponować dalsze akcje.
+- **Kluczowe informacje:** Numer błędu, przyjazny komunikat, opcje powrotu do pulpitu i/lub wyszukiwarki oraz ilustracja wspierająca ton komunikatu.
+- **Kluczowe komponenty:** `ErrorPageLayout`, `Button`, `Link`, `Illustration`.
+- **UX, dostępność i bezpieczeństwo:** Dostępny nagłówek i `aria-live`, przyciski oznaczone jako `Primary`/`Ghost` w zależności od hierarchii, brzmiące CTA (np. "Wróć na dashboard").
+- **Mapowanie wymagań:** FR-015 (obsługa nieznanych tras), US-015.
+
 ## 4. Mapa podróży użytkownika (Główny przypadek użycia)
 
 1.  **Krok 1 (Start):** Użytkownik ląduje na `/`, zapoznaje się z grafiką lifestyle i klika "Rozpocznij".

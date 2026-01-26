@@ -1,0 +1,39 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { PetProfile } from "@/components/PetProfile";
+import { FAB } from "@/components/FAB";
+
+// Middleware already handles auth, this page is protected
+
+const { petId } = Astro.params;
+
+// Walidacja petId - podstawowa (UUID będzie walidowane przez API)
+if (!petId) {
+  return Astro.redirect("/dashboard");
+}
+
+const pageTitle = "Profil zwierzęcia - Pet Care Companion";
+---
+
+<Layout title={pageTitle}>
+  <div class="min-h-screen bg-background pb-24">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <!-- Breadcrumbs -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
+        <ol class="flex items-center gap-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors"> Pulpit </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground">Profil zwierzęcia</li>
+        </ol>
+      </nav>
+
+      <!-- Pet Profile - loads data client-side via usePetProfile hook -->
+      <PetProfile petId={petId} client:load />
+    </div>
+
+    <!-- Floating Action Button -->
+    <FAB petId={petId} client:load />
+  </div>
+</Layout>

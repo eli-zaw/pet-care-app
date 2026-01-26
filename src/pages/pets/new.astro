@@ -1,0 +1,30 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { PetForm } from "@/components/PetForm";
+
+// Middleware already handles auth, this page is protected
+---
+
+<Layout title="Dodaj zwierzę - Pet Care Companion">
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <!-- Breadcrumbs -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
+        <ol class="flex items-center gap-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Pulpit
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground">
+            Dodaj zwierzę
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Form Component -->
+      <PetForm client:load />
+    </div>
+  </div>
+</Layout>
