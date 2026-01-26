@@ -69,6 +69,12 @@ System stosuje mobile-first design. Breakpoint: 768px (mobile/desktop). Wszystki
 ### FR-014: Error handling
 System wyświetla przyjazne komunikaty błędów dla użytkownika poprzez toast notifications. System loguje szczegółowe błędy do konsoli (development). System zapobiega wyświetlaniu technicznych detali błędów użytkownikowi końcowemu.
 
+### FR-015: Edycja zwierzęcia
+System umożliwia edycję danych zwierzęcia. Edytowalny jest tylko imię zwierzęcia (1-50 znaków). Gatunek jest niemutowalny po utworzeniu. System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Zmiany zostały zapisane". Przycisk/link "Edytuj" jest dostępny w profilu zwierzęcia.
+
+### FR-016: Edycja wpisu opieki
+System umożliwia edycję wpisu opieki. Edytowalne pola: kategoria, data, notatka (te same zasady walidacji jak przy tworzeniu). System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Wpis został zaktualizowany". Wpis pojawia się w odpowiednim miejscu chronologicznym po zmianie daty. Przycisk/link "Edytuj" jest dostępny przy każdym wpisie.
+
 ---
 
 ## 4. Granice produktu
@@ -83,7 +89,6 @@ Autentykacja i konto:
 - Social login (Google, Apple)
 
 Zwierzęta:
-- Edycja danych zwierzęcia
 - Zdjęcia zwierząt (upload do Supabase Storage)
 - Rozszerzone dane: rasa, waga, data urodzenia, numer chipa, notatki dodatkowe
 - Avatary generowane (obecnie tylko emoji gatunku)
@@ -91,7 +96,6 @@ Zwierzęta:
 - Limit liczby zwierząt (obecnie nielimitowane)
 
 Wpisy:
-- Edycja wpisów
 - Dodatkowe pola: tytuł, koszt
 - Filtrowanie po kategorii
 - Wyszukiwanie w tytułach/notatkach
@@ -361,6 +365,48 @@ Kryteria akceptacji:
 
 ---
 
+### US-014: Edycja danych zwierzęcia
+
+Jako użytkownik
+Chcę edytować imię mojego zwierzęcia
+Aby poprawić literówkę lub zmienić nazwę pupila
+
+Kryteria akceptacji:
+- Przycisk/link "Edytuj" jest dostępny w profilu zwierzęcia
+- Kliknięcie otwiera formularz edycji zwierzęcia (modal lub osobna strona)
+- Formularz zawiera pole imię (prefillowane obecnym imieniem)
+- Pole gatunek jest wyświetlane jako read-only (niemutowalne po utworzeniu)
+- System waliduje wymagane pola przed zapisem (imię 1-50 znaków)
+- Przycisk "Zapisz" jest disabled gdy dane nieprawidłowe
+- Po zapisie system wyświetla toast "Zmiany zostały zapisane"
+- System pozostaje w profilu zwierzęcia (lub wraca do niego)
+- Zmienione imię jest widoczne natychmiast w profilu i na dashboardzie
+- Przycisk "Anuluj" zamyka formularz bez zapisywania zmian
+
+---
+
+### US-015: Edycja wpisu opieki
+
+Jako użytkownik
+Chcę edytować wpis w historii zwierzęcia
+Aby poprawić błędy lub uzupełnić brakujące informacje
+
+Kryteria akceptacji:
+- Przycisk/link "Edytuj" jest dostępny przy każdym wpisie
+- Kliknięcie otwiera formularz edycji wpisu (modal lub osobna strona)
+- Formularz zawiera wszystkie pola prefillowane obecnymi danymi: kategoria, data, notatka
+- Wszystkie pola są edytowalne (kategoria, data, notatka)
+- System waliduje dane przed zapisem (te same zasady jak przy tworzeniu)
+- Przycisk "Zapisz" jest disabled gdy dane nieprawidłowe
+- Po zapisie system wyświetla toast "Wpis został zaktualizowany"
+- System pozostaje w profilu zwierzęcia (lub wraca do niego)
+- Jeśli zmieniono datę, wpis pojawia się w odpowiednim miejscu chronologicznym w historii
+- Zmieniony wpis jest widoczny natychmiast w historii
+- Przycisk "Anuluj" zamyka formularz bez zapisywania zmian
+- Edycja wpisu zajmuje maksymalnie 30 sekund
+
+---
+
 ## 6. Metryki sukcesu
 
 ### 6.1 Metryka podstawowa (Must Have)
@@ -386,6 +432,6 @@ REGISTRATION TO FIRST ENTRY
 
 MOBILE USABILITY
 - Definicja: Czy wszystkie funkcje działają płynnie na mobile
-- Cel: Wszystkie 15 user stories działają bez problemów na mobile
+- Cel: Wszystkie 17 user stories działają bez problemów na mobile
 - Pomiar: Manualne testy na prawdziwym telefonie (iOS/Android)
 - Znaczenie: Aplikacja musi być mobile-friendly (kluczowy use case)
