@@ -126,3 +126,46 @@ export type UpdateCareEntryResponseDto = Pick<
   category_display: string;
   category_emoji: string;
 };
+
+// ViewModels for Dashboard
+export interface PetCardViewModel {
+  id: string;
+  name: string;
+  speciesEmoji: string;
+  entriesCount: number;
+  entriesLabel: string;
+  href: string;
+}
+
+export interface PaginationViewModel {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasPrev: boolean;
+  hasNext: boolean;
+}
+
+export interface PetsHeaderViewModel {
+  title: string;
+  countLabel: string;
+}
+
+export interface EmptyStateViewModel {
+  title: string;
+  description: string;
+  ctaLabel: string;
+}
+
+export interface DashboardViewModel {
+  pets: PetCardViewModel[];
+  pagination: PaginationViewModel;
+  header: PetsHeaderViewModel;
+  emptyState: EmptyStateViewModel;
+}
+
+export interface PetsListState {
+  isLoading: boolean;
+  isEmpty: boolean;
+  items: PetCardViewModel[];
+}
