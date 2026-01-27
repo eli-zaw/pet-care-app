@@ -1,13 +1,18 @@
 ---
 import "../styles/global.css";
 import { Toaster } from "@/components/ui/sonner";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 interface Props {
   title?: string;
   hideHeader?: boolean;
 }
 
-const { title = "Pet Care Companion", hideHeader = false } = Astro.props;
+const { title = "Paw Notes", hideHeader = false } = Astro.props;
+
+// Sprawdzenie sesji dla warunkowego renderowania przycisku wylogowania
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+const isAuthenticated = !!session?.user;
 ---
 
 <!doctype html>
@@ -25,20 +30,15 @@ const { title = "Pet Care Companion", hideHeader = false } = Astro.props;
       <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div class="container mx-auto flex h-16 items-center justify-between px-4">
           <!-- Logo and App Name -->
-          <a href="/dashboard" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <a href={isAuthenticated ? "/dashboard" : "/"} class="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div class="text-2xl" aria-hidden="true">🐾</div>
-            <span class="text-lg font-semibold hidden sm:inline">Pet Care Companion</span>
-            <span class="text-lg font-semibold sm:hidden">PCC</span>
+            <span class="text-lg font-semibold hidden sm:inline">Paw Notes</span>
+            <span class="text-lg font-semibold sm:hidden">PN</span>
           </a>
 
           <!-- Navigation / Actions -->
           <nav class="flex items-center gap-2">
-            <!-- Placeholder dla przyszłego przycisku wylogowania -->
-            <!-- 
-            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
-              Wyloguj
-            </button>
-            -->
+            {isAuthenticated && <LogoutButton client:load />}
           </nav>
         </div>
       </header>

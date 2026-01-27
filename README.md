@@ -1,4 +1,4 @@
-# Pet Care Companion
+# Paw Notes
 
 > A centralized pet care journal for tracking veterinary visits, medications, grooming appointments, and health events in one place.
 
@@ -18,7 +18,7 @@
 
 ## 📖 Project Description
 
-**Pet Care Companion** is a web application designed to solve the common problem of scattered pet care information. Pet owners, especially those with pets requiring regular medical care, medications, and frequent specialist visits, often struggle with:
+**Paw Notes** is a web application designed to solve the common problem of scattered pet care information. Pet owners, especially those with pets requiring regular medical care, medications, and frequent specialist visits, often struggle with:
 
 - **Information fragmentation** - notes stored in different places (phone notes, paper, memory, photos)
 - **Lack of accessibility** - difficulty recalling exact dates of vaccinations, medications, or food changes during vet visits

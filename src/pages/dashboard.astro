@@ -1,16 +1,16 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import { Dashboard } from '@/components/Dashboard';
+import Layout from "@/layouts/Layout.astro";
+import { Dashboard } from "@/components/Dashboard";
 
 // Get page from query params
 const url = new URL(Astro.request.url);
-const pageParam = url.searchParams.get('page');
+const pageParam = url.searchParams.get("page");
 const initialPage = pageParam ? parseInt(pageParam, 10) : 1;
 
 // Validate page number
 const validPage = !isNaN(initialPage) && initialPage > 0 ? initialPage : 1;
 ---
 
-<Layout title="Dashboard - Pet Care Companion">
+<Layout title="Dashboard - Paw Notes">
   <Dashboard client:load initialPage={validPage} />
 </Layout>

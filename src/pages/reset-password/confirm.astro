@@ -1,0 +1,25 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ResetPasswordConfirmForm } from "@/components/auth/ResetPasswordConfirmForm";
+
+// Server-side: ekstrakcja tokenu z URL
+const accessToken = Astro.url.searchParams.get("access_token");
+const type = Astro.url.searchParams.get("type");
+
+// Walidacja tokenu
+if (!accessToken || type !== "recovery") {
+  return Astro.redirect("/reset-password?error=invalid_token");
+}
+
+// Weryfikacja tokenu przez Supabase (placeholder - backend not implemented yet)
+// const { data: { user }, error } = await Astro.locals.supabase.auth.getUser(accessToken);
+// if (error || !user) {
+//   return Astro.redirect("/reset-password?error=expired_token");
+// }
+---
+
+<Layout title="Nowe hasło - Paw Notes" hideHeader>
+  <div class="min-h-screen flex items-center justify-center p-4 bg-background">
+    <ResetPasswordConfirmForm client:load accessToken={accessToken} />
+  </div>
+</Layout>

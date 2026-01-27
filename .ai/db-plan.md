@@ -1,4 +1,4 @@
-# Schemat bazy danych - Pet Care Companion MVP
+# Schemat bazy danych - Paw Notes MVP
 
 **Wersja:** 1.0  
 **Data:** 24 stycznia 2026  

@@ -1,4 +1,4 @@
-# PoC: Pet Care Companion - Dziennik Opieki nad Zwierzętami
+# PoC: Paw Notes - Dziennik Opieki nad Zwierzętami
 
 Zbuduj minimalną aplikację webową do zapisywania historii opieki nad zwierzętami.
 

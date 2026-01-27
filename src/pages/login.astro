@@ -1,0 +1,19 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { LoginForm } from "@/components/auth/LoginForm";
+
+// Server-side: sprawdzenie sesji
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+if (session?.user) {
+  return Astro.redirect("/dashboard");
+}
+
+// Obsługa redirect parameter
+const redirectUrl = Astro.url.searchParams.get("redirect") || "/dashboard";
+---
+
+<Layout title="Logowanie - Paw Notes" hideHeader>
+  <div class="min-h-screen flex items-center justify-center p-4 bg-background">
+    <LoginForm client:load redirectUrl={redirectUrl} />
+  </div>
+</Layout>

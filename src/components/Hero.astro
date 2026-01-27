@@ -2,44 +2,31 @@
 import { Button } from "@/components/ui/button";
 ---
 
-<div
-  class="relative w-full mx-auto min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 flex items-center justify-center p-4"
->
+<div class="relative w-full mx-auto min-h-screen bg-background flex items-center justify-center p-4">
   <div class="max-w-4xl mx-auto text-center space-y-8 px-4 sm:px-8">
     <!-- Emoji/Icon -->
-    <div class="text-6xl sm:text-7xl" role="img" aria-label="Paw icon">
-      🐾
-    </div>
+    <div class="text-6xl sm:text-7xl" role="img" aria-label="Paw icon">🐾</div>
 
     <!-- Heading -->
-    <h1
-      class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
-    >
-      Zadbaj o swojego pupila z Pet Care Companion
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+      Zadbaj o swojego pupila z Paw Notes
     </h1>
 
     <!-- Description -->
-    <p class="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
+    <p class="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
       Zapisuj wizyty, leki i wydarzenia. Wszystko w jednym miejscu.
     </p>
 
     <!-- CTA Button -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-      <Button
-        asChild
-        size="lg"
-        class="w-full sm:w-auto min-h-[44px] min-w-[200px] text-lg font-semibold"
-      >
+      <Button asChild size="lg" class="w-full sm:w-auto min-h-[44px] min-w-[200px] text-lg font-semibold">
         <a href="/register">Rozpocznij za darmo</a>
       </Button>
     </div>
 
     <!-- Login Link -->
     <div class="pt-4">
-      <a
-        href="/login"
-        class="text-blue-200 hover:text-white transition-colors underline text-base sm:text-lg"
-      >
+      <a href="/login" class="text-primary hover:text-primary/80 transition-colors underline text-base sm:text-lg">
         Masz już konto? Zaloguj się
       </a>
     </div>

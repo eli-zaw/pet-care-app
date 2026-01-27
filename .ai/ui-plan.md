@@ -1,8 +1,8 @@
-# Architektura UI dla Pet Care Companion
+# Architektura UI dla Paw Notes
 
 ## 1. Przegląd struktury UI
 
-Pet Care Companion to scentralizowany dziennik opieki nad zwierzętami, który zastępuje rozproszone notatki i pamięć właściciela. Aplikacja umożliwia szybkie zapisywanie wszystkich istotnych zdarzeń związanych z opieką nad pupilem (wizyty weterynarza, leki, groomer, zdarzenia zdrowotne) i łatwy dostęp do pełnej historii w jednym miejscu.
+Paw Notes to scentralizowany dziennik opieki nad zwierzętami, który zastępuje rozproszone notatki i pamięć właściciela. Aplikacja umożliwia szybkie zapisywanie wszystkich istotnych zdarzeń związanych z opieką nad pupilem (wizyty weterynarza, leki, groomer, zdarzenia zdrowotne) i łatwy dostęp do pełnej historii w jednym miejscu.
 
 Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** oraz **Lean MVP**, wykorzystując **Tailwind CSS 4** do budowy spójnego, nowoczesnego i wydajnego UI. Aplikacja spełnia rygorystyczne standardy **WCAG**. 
 

@@ -1,8 +1,8 @@
-# Specyfikacja Techniczna - Moduł Uwierzytelniania dla Pet Care Companion
+# Specyfikacja Techniczna - Moduł Uwierzytelniania dla Paw Notes
 
 ## 1. Wprowadzenie
 
-Niniejszy dokument opisuje architekturę i szczegóły implementacyjne modułu uwierzytelniania, autoryzacji oraz zarządzania kontem użytkownika w aplikacji `Pet Care Companion`. Rozwiązanie opiera się na wymaganiach `US-001`, `US-002`, `US-017` z dokumentu PRD oraz wykorzystuje `Supabase Auth` jako dostawcę usług autentykacji, zintegrowanego z frameworkiem `Astro` w trybie renderowania po stronie serwera (SSR).
+Niniejszy dokument opisuje architekturę i szczegóły implementacyjne modułu uwierzytelniania, autoryzacji oraz zarządzania kontem użytkownika w aplikacji `Paw Notes`. Rozwiązanie opiera się na wymaganiach `US-001`, `US-002`, `US-017` z dokumentu PRD oraz wykorzystuje `Supabase Auth` jako dostawcę usług autentykacji, zintegrowanego z frameworkiem `Astro` w trybie renderowania po stronie serwera (SSR).
 
 ### Architektura Server-Side Auth
 
@@ -22,11 +22,12 @@ Interfejs użytkownika zostanie podzielony na dwie główne strefy: publiczną (
 
 -   **`src/layouts/Layout.astro` (modyfikacja istniejącego)**
     -   **Opis:** Główny layout aplikacji, używany na wszystkich stronach.
-    -   **Zmiany:** 
-        - Dodany globalny nagłówek z logo (ikona łapki 🐾) i nazwą aplikacji
+    -   **Funkcje:**
+        - Globalny nagłówek z logo (ikona łapki 🐾) i nazwą aplikacji
         - Komponent `LogoutButton.tsx` w nagłówku dla zalogowanych użytkowników
-        - Prop `hideHeader` ukrywa nagłówek na stronach auth
         - Logo prowadzi do `/dashboard` dla zalogowanych, `/` dla niezalogowanych
+        - Header widoczny na stronach dashboard, ukryty na stronach auth (`hideHeader={true}`)
+        - Landing page używa `hideHeader` dla czystszego wyglądu
     -   **Renderowanie warunkowe:** Przycisk wylogowania widoczny tylko gdy `session?.user` istnieje
 
 ### 2.2. Strony (Pages)
@@ -49,28 +50,28 @@ Szczegółowe plany implementacji widoków znajdują się w osobnych plikach:
     -   **Dostęp:** Publiczny (tylko dla niezalogowanych)
     -   **Zawartość:** `RegisterForm.tsx` (`client:load`), link do `/login`
     -   **Server-side:** Sprawdzenie sesji, przekierowanie zalogowanych do `/dashboard`
-    -   **Layout:** `hideHeader={true}`, gradient background
+    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
 -   **`src/pages/login.astro` (nowa)**
     -   **Ścieżka:** `/login`
     -   **Dostęp:** Publiczny (tylko dla niezalogowanych)
     -   **Zawartość:** `LoginForm.tsx` (`client:load`), link do `/register` i `/reset-password`
     -   **Server-side:** Sprawdzenie sesji, obsługa parametru `?redirect` (UX enhancement: umożliwia powrót do strony, z której użytkownik został przekierowany do logowania)
-    -   **Layout:** `hideHeader={true}`, gradient background
+    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
 -   **`src/pages/reset-password.astro` (nowa)**
     -   **Ścieżka:** `/reset-password`
     -   **Dostęp:** Publiczny
     -   **Zawartość:** `ResetPasswordRequestForm.tsx` (`client:load`)
     -   **Server-side:** Dla niezalogowanych przekierowanie do `/dashboard` opcjonalne
-    -   **Layout:** `hideHeader={true}`, gradient background
+    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
 -   **`src/pages/reset-password/confirm.astro` (nowa)**
     -   **Ścieżka:** `/reset-password/confirm`
     -   **Dostęp:** Publiczny (wymaga tokenu z URL)
     -   **Zawartość:** `ResetPasswordConfirmForm.tsx` (`client:load`), otrzymuje `accessToken` jako prop
     -   **Server-side:** Ekstrakcja `access_token` i `type=recovery` z URL, walidacja tokenu, przekierowanie przy błędzie
-    -   **Layout:** `hideHeader={true}`, gradient background
+    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
 -   **`src/pages/dashboard.astro` (istniejąca)**
     -   **Ścieżka:** `/dashboard`
@@ -86,11 +87,11 @@ Szczegółowe plany implementacji widoków znajdują się w osobnych plikach:
 Komponenty formularzy w `src/components/auth/`. Szczegóły implementacji w odpowiednich planach widoków.
 
 -   **`src/components/auth/RegisterForm.tsx`**
-    -   **Pola:** `email`, `password`
-    -   **Walidacja:** Format email (regex), hasło min 8 znaków
+    -   **Pola:** `email`, `password`, `confirmPassword`
+    -   **Walidacja:** Format email (regex), hasło min 8 znaków, potwierdzenie hasła zgodne z hasłem
     -   **Logika:** POST `/api/auth/register` → toast sukcesu → redirect `/dashboard`
     -   **Elementy UI:** Shadcn/ui (Card, Input, Button, Label), inline error messages
-    -   **Stan:** `useState` dla email, password, isSubmitting, errors
+    -   **Stan:** `useState` dla email, password, confirmPassword, isSubmitting, errors
 
 -   **`src/components/auth/LoginForm.tsx`**
     -   **Props:** `redirectUrl?: string` (domyślnie `/dashboard`)
@@ -423,7 +424,7 @@ export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
 
 **Email Templates:**
 -   **Password Reset:** Customowy template z linkiem `{{ .ConfirmationURL }}`
--   **Subject:** "Resetowanie hasła - Pet Care Companion"
+-   **Subject:** "Resetowanie hasła - Paw Notes"
 
 ### 4.3. Zarządzanie sesjami
 
@@ -502,12 +503,12 @@ CREATE TRIGGER on_auth_user_created
 **Przepływ rejestracji (US-001):**
 1. Użytkownik → `/register`
 2. Server-side sprawdza sesję, niezalogowany widzi formularz
-3. Wypełnia `RegisterForm.tsx` (email, password)
+3. Wypełnia `RegisterForm.tsx` (email, password, confirmPassword)
 4. Client-side walidacja on blur
 5. Submit → POST `/api/auth/register`
 6. API waliduje Zod, wywołuje `supabase.auth.signUp()`
 7. Automatyczne utworzenie sesji (cookies ustawione przez Supabase)
-8. Response 201 → toast "Witaj w Pet Care Companion" → redirect `/dashboard`
+8. Response 201 → toast "Witaj w Paw Notes" → redirect `/dashboard`
 
 **Przepływ logowania (US-002):**
 1. Użytkownik → `/login` (lub przekierowanie z chronionej trasy)
@@ -814,17 +815,19 @@ export const resetPasswordConfirmSchema = z.object({
 
 ## 12. Podsumowanie
 
-Specyfikacja obejmuje kompletny system autentykacji dla Pet Care Companion MVP, wykorzystujący Supabase Auth jako dostawcę autentykacji. 
+Specyfikacja obejmuje kompletny system autentykacji dla Paw Notes MVP, wykorzystujący Supabase Auth jako dostawcę autentykacji.
 
 **Kluczowe elementy:**
 1. **Cztery główne flow:** Rejestracja, logowanie, wylogowanie, reset hasła
-2. **SSR rendering:** Wszystkie strony renderowane server-side
-3. **Middleware protection:** Automatyczna ochrona chronionych tras
-4. **React formularze:** Interaktywne formularze z walidacją client-side i server-side
-5. **Supabase Auth:** Zarządzanie użytkownikami, sesjami i emailami
-6. **Bezpieczeństwo:** XSS, CSRF, SQL injection, enumeration protection
-7. **Responsywność:** Mobile-first design (768px breakpoint)
-8. **Accessibility:** WCAG AA compliance
+2. **Adaptacyjny header:** Nagłówek widoczny na stronach dashboard, ukryty na stronach auth
+3. **Jasna kolorystyka:** Wszystkie strony używają jasnego motywu kolorystycznego aplikacji
+4. **SSR rendering:** Wszystkie strony renderowane server-side
+5. **Middleware protection:** Automatyczna ochrona chronionych tras
+6. **React formularze:** Interaktywne formularze z walidacją client-side i server-side
+7. **Supabase Auth:** Zarządzanie użytkownikami, sesjami i emailami
+8. **Bezpieczeństwo:** XSS, CSRF, SQL injection, enumeration protection
+9. **Responsywność:** Mobile-first design (768px breakpoint)
+10. **Accessibility:** WCAG AA compliance
 
 **Szczegółowe plany implementacji widoków:**
 - `.ai/register-view-implementation-plan.md`

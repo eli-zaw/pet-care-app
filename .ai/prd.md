@@ -1,4 +1,4 @@
-# Dokument wymagań produktu (PRD) - Pet Care Companion MVP
+# Dokument wymagań produktu (PRD) - Paw Notes MVP
 
 Wersja: 1.0 MVP Lean
 Data: 21 stycznia 2026
@@ -9,7 +9,7 @@ Autor: Product Manager
 
 ## 1. Przegląd produktu
 
-Pet Care Companion to scentralizowany dziennik opieki nad zwierzętami, który zastępuje rozproszone notatki i pamięć właściciela. Aplikacja umożliwia szybkie zapisywanie wszystkich istotnych zdarzeń związanych z opieką nad pupilem (wizyty weterynaryjne, leki, groomer, zdarzenia zdrowotne) i łatwy dostęp do pełnej historii w jednym miejscu.
+Paw Notes to scentralizowany dziennik opieki nad zwierzętami, który zastępuje rozproszone notatki i pamięć właściciela. Aplikacja umożliwia szybkie zapisywanie wszystkich istotnych zdarzeń związanych z opieką nad pupilem (wizyty weterynaryjne, leki, groomer, zdarzenia zdrowotne) i łatwy dostęp do pełnej historii w jednym miejscu.
 Właściciele zwierząt domowych (psów, kotów i innych), szczególnie tych wymagających regularnej opieki medycznej, przyjmowania leków i częstych wizyt u specjalistów (weterynarze, groomerzy).
 
 ## 2. Problem użytkownika
@@ -58,7 +58,7 @@ System wyświetla wszystkie wpisy opieki dla danego zwierzęcia. Sortowanie: naj
 System wyświetla przycisk "Usuń" przy każdym wpisie. System wyświetla modal potwierdzenia: "Czy na pewno usunąć ten wpis?". Po potwierdzeniu system wykonuje usunięcie. System wyświetla toast "Wpis został usunięty". Wpis znika z listy natychmiast.
 
 ### FR-011: Landing page
-System wyświetla landing page dla użytkowników niezalogowanych na głównym URL. Hero section zawiera: nagłówek "Zadbaj o swojego pupila z Pet Care Companion", krótki opis, CTA "Rozpocznij za darmo". System przekierowuje zalogowanych użytkowników do dashboardu automatycznie.
+System wyświetla landing page dla użytkowników niezalogowanych na głównym URL. Hero section zawiera: nagłówek "Zadbaj o swojego pupila z Paw Notes", krótki opis, CTA "Rozpocznij za darmo". System przekierowuje zalogowanych użytkowników do dashboardu automatycznie.
 
 ### FR-012: Toast notifications
 System wyświetla toast notifications dla operacji (sukces, błąd). Toast sukcesu (zielony): auto-hide po 3 sekundach. Toast błędu (czerwony): auto-hide po 5 sekundach. Toasty są dismissable. Pozycja: bottom-right (desktop), bottom-center (mobile). System używa Sonner/Toast z Shadcn/ui.
@@ -144,7 +144,7 @@ Kryteria akceptacji:
 - Konto jest aktywne natychmiast po rejestracji (bez email verification)
 - Po sukcesie system automatycznie loguje użytkownika
 - System przekierowuje do dashboardu
-- System wyświetla toast "Witaj w Pet Care Companion"
+- System wyświetla toast "Witaj w Paw Notes"
 - W przypadku błędu (np. email już istnieje) system wyświetla toast z komunikatem
 - Link "Masz już konto? Zaloguj się" prowadzi do strony logowania
 
@@ -338,7 +338,7 @@ Aby zdecydować czy chcę się zarejestrować
 Kryteria akceptacji:
 - Landing page wyświetla się dla użytkowników niezalogowanych na głównym URL (/)
 - Hero section zawiera:
-  - Nagłówek: "Zadbaj o swojego pupila z Pet Care Companion"
+  - Nagłówek: "Zadbaj o swojego pupila z Paw Notes"
   - Krótki opis (1-2 zdania): "Zapisuj wizyty, leki i wydarzenia. Wszystko w jednym miejscu."
   - Wyraźny CTA button: "Rozpocznij za darmo"
 - Kliknięcie CTA prowadzi do strony rejestracji

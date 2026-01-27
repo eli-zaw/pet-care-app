@@ -1,0 +1,16 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { RegisterForm } from "@/components/auth/RegisterForm";
+
+// Server-side: sprawdzenie sesji
+const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+if (session?.user) {
+  return Astro.redirect("/dashboard");
+}
+---
+
+<Layout title="Rejestracja - Paw Notes" hideHeader>
+  <div class="min-h-screen flex items-center justify-center p-4 bg-background">
+    <RegisterForm client:load />
+  </div>
+</Layout>
