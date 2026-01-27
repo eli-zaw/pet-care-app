@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DeletePetDialog } from "@/components/DeletePetDialog";
+import { CareStatusBadge } from "@/components/CareStatusBadge";
 import type { PetHeaderViewModel } from "@/types";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
@@ -43,13 +44,14 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 {pet.name}
               </h1>
-              <div className="flex items-center gap-3 mt-2">
+              <div className="flex flex-wrap items-center gap-3 mt-2">
                 <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-0.5 text-sm font-medium">
                   {pet.speciesDisplay}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {entriesLabel}
                 </span>
+                <CareStatusBadge lastEntryDate={pet.lastEntryDate} />
               </div>
             </div>
           </div>

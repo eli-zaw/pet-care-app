@@ -9,6 +9,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 ## 3. Struktura komponentów
 - `PetProfilePage` (Astro page, dynamiczna)
 - `PetHeader` (React, client:load)
+- `CareStatusBadge` (React)
 - `CareHistoryList` (React, client:load)
 - `CareEntryCard` (React)
 - `FAB` (React) — Floating Action Button
@@ -29,17 +30,35 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: brak.
 
 ### `PetHeader`
-- Opis komponentu: Nagłówek profilu z emoji gatunku, imieniem, gatunkiem i przyciskiem "Usuń zwierzę".
+- Opis komponentu: Nagłówek profilu z emoji gatunku, imieniem, gatunkiem, statusem opieki i przyciskiem "Usuń zwierzę".
 - Główne elementy:
   - `header`: emoji (species_emoji), h1 (name), badge (species_display), licznik wpisów
+  - `CareStatusBadge` (status opieki z tooltip)
   - Button „Usuń zwierzę" (variant destructive, ikona Trash2)
   - `DeletePetDialog` (modal potwierdzenia)
 - Obsługiwane interakcje:
   - Kliknięcie „Usuń zwierzę" -> otwarcie modala
   - Potwierdzenie w modalu -> DELETE `/api/pets/:petId` -> toast -> przekierowanie do dashboard
+  - Najechanie na `CareStatusBadge` (desktop) -> wyświetlenie tooltip z datą ostatniego wpisu
+  - Kliknięcie `CareStatusBadge` (mobile) -> wyświetlenie tooltip z datą ostatniego wpisu
 - Obsługiwana walidacja: brak.
-- Typy: `PetHeaderViewModel`, `GetPetResponseDto`.
-- Propsy: `petId`, `name`, `speciesEmoji`, `speciesDisplay`, `entriesCount`, `onDelete`.
+- Typy: `PetHeaderViewModel`, `GetPetResponseDto`, `CareStatusViewModel`.
+- Propsy: `petId`, `name`, `speciesEmoji`, `speciesDisplay`, `entriesCount`, `lastEntryDate`, `onDelete`.
+
+### `CareStatusBadge`
+- Opis komponentu: Wskaźnik aktualności opieki na podstawie daty ostatniego wpisu.
+- Główne elementy:
+  - `div` z emoji wskaźnika (🟢/🟡/🔴) i etykietą tekstową ("Aktualne"/"Wymaga uwagi"/"Nieaktualne")
+  - Tooltip (Shadcn/ui) z datą ostatniego wpisu lub "Brak wpisów"
+- Obsługiwane interakcje:
+  - Desktop: najechanie myszą -> wyświetlenie tooltip
+  - Mobile: kliknięcie -> wyświetlenie tooltip
+- Obsługiwana walidacja: obliczenie statusu na podstawie daty ostatniego wpisu:
+  - ≤30 dni → 🟢 "Aktualne"
+  - 31-90 dni → 🟡 "Wymaga uwagi"
+  - >90 dni lub brak wpisów → 🔴 "Nieaktualne"
+- Typy: `CareStatusViewModel`.
+- Propsy: `lastEntryDate: Date | null`, `status: "current" | "attention" | "outdated"`.
 
 ### `CareHistoryList`
 - Opis komponentu: Lista wpisów opieki lub empty state. Obsługuje paginację i loading.
@@ -159,6 +178,13 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - `speciesEmoji: string`
   - `speciesDisplay: string`
   - `entriesCount: number`
+  - `lastEntryDate: Date | null`
+- `CareStatusViewModel`
+  - `status: "current" | "attention" | "outdated"`
+  - `emoji: string` (🟢/🟡/🔴)
+  - `label: string` ("Aktualne"/"Wymaga uwagi"/"Nieaktualne")
+  - `tooltipText: string` ("Ostatni wpis: DD.MM.YYYY" lub "Brak wpisów")
+  - `lastEntryDate: Date | null`
 - `CareEntryCardViewModel`
   - `id: string`
   - `categoryEmoji: string`
@@ -307,13 +333,15 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
-1. Dodaj typy `PetHeaderViewModel`, `CareEntryCardViewModel`, `CareHistoryListState`, `PetProfileViewModel` do `src/types.ts`.
+1. Dodaj typy `PetHeaderViewModel`, `CareEntryCardViewModel`, `CareHistoryListState`, `PetProfileViewModel`, `CareStatusViewModel` do `src/types.ts`.
 2. Utwórz custom hook `src/lib/hooks/usePetProfile.ts` z logiką pobierania danych, paginacji, usuwania i rozwijania wpisów.
-3. Utwórz komponenty React: `PetHeader`, `CareHistoryList`, `CareEntryCard`, `FAB`, `DeletePetDialog`, `DeleteEntryDialog`, `SkeletonEntryCard`.
+3. Utwórz komponenty React: `PetHeader`, `CareStatusBadge`, `CareHistoryList`, `CareEntryCard`, `FAB`, `DeletePetDialog`, `DeleteEntryDialog`, `SkeletonEntryCard`.
 4. Utwórz stronę `src/pages/pets/[petId].astro` z layoutem, breadcrumbs, walidacją petId i renderowaniem komponentów React z `client:load`.
-5. Dodaj obsługę nawigacji: FAB -> `/pets/[petId]/entries/new`, delete pet -> dashboard.
-6. Dodaj toasty błędów i sukcesu dla wszystkich operacji.
-7. Sprawdź responsywność: wpisy pełna szerokość na mobile, FAB min 56x56px, touch targets min 44x44px.
-8. Przetestuj optimistic UI: usuwanie zwierzęcia i wpisów, cofanie przy błędach.
-9. Przetestuj paginację: mobile („Załaduj więcej" append), desktop (numery stron replace).
-10. Lint, build, commit.
+5. Dodaj logikę obliczania statusu opieki w `usePetProfile` hook na podstawie daty ostatniego wpisu.
+6. Dodaj obsługę nawigacji: FAB -> `/pets/[petId]/entries/new`, delete pet -> dashboard.
+7. Dodaj toasty błędów i sukcesu dla wszystkich operacji.
+8. Sprawdź responsywność: wpisy pełna szerokość na mobile, FAB min 56x56px, touch targets min 44x44px, status badge responsywny.
+9. Przetestuj optimistic UI: usuwanie zwierzęcia i wpisów, cofanie przy błędach, aktualizacja statusu po dodaniu/usunięciu wpisu.
+10. Przetestuj paginację: mobile („Załaduj więcej" append), desktop (numery stron replace).
+11. Przetestuj tooltip statusu opieki: desktop (hover), mobile (click).
+12. Lint, build, commit.

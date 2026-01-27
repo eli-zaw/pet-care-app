@@ -75,6 +75,9 @@ System umożliwia edycję danych zwierzęcia. Edytowalny jest tylko imię zwierz
 ### FR-016: Edycja wpisu opieki
 System umożliwia edycję wpisu opieki. Edytowalne pola: kategoria, data, notatka (te same zasady walidacji jak przy tworzeniu). System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Wpis został zaktualizowany". Wpis pojawia się w odpowiednim miejscu chronologicznym po zmianie daty. Przycisk/link "Edytuj" jest dostępny przy każdym wpisie.
 
+### FR-017: Status opieki zwierzęcia
+System oblicza i wyświetla status opieki zwierzęcia na podstawie daty ostatniego wpisu w profilu zwierzęcia. Status prezentowany jako wskaźnik aktualności opieki z emoji: 🟢 (≤30 dni), 🟡 (31-90 dni), 🔴 (>90 dni lub brak wpisów). Status aktualizuje się automatycznie po dodaniu lub usunięciu wpisu. System wyświetla tooltip z informacją o dacie ostatniego wpisu przy najechaniu na status (desktop) lub przy kliknięciu (mobile).
+
 ---
 
 ## 4. Granice produktu
@@ -194,6 +197,7 @@ Kryteria akceptacji:
 - System automatycznie przekierowuje do profilu nowo dodanego zwierzęcia
 - Profil wyświetla empty state "Jeszcze nie ma wpisów. Dodaj pierwszy!"
 - Dodanie zwierzęcia zajmuje maksymalnie 15 sekund
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -211,6 +215,7 @@ Kryteria akceptacji:
 - Przycisk "Dodaj zwierzę" jest zawsze widoczny (prominent, na górze lub sticky)
 - Dashboard jest responsywny (karty układają się w kolumny na desktop, lista na mobile)
 - System wyświetla licznik zwierząt (np. "Masz 3 zwierzęta")
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -229,6 +234,8 @@ Kryteria akceptacji:
 - System przekierowuje do dashboardu
 - Zwierzę znika z listy natychmiast
 - Dane są usunięte permanentnie (brak możliwości odzyskania w MVP)
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
+
 
 ---
 
@@ -251,6 +258,8 @@ Kryteria akceptacji:
 - Po zapisie system wyświetla toast "Wpis został dodany"
 - Wpis pojawia się natychmiast w historii (na górze listy)
 - Dodanie wpisu zajmuje maksymalnie 20 sekund (cel: <15s)
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
+
 
 ---
 
@@ -274,6 +283,7 @@ Kryteria akceptacji:
 - System wyświetla "Brak wpisów. Dodaj pierwszy!" dla zwierząt bez historii
 - Lista jest scrollowalna i responsywna
 - Na mobile wpisy zajmują pełną szerokość
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -292,6 +302,7 @@ Kryteria akceptacji:
 - Wpis znika z listy natychmiast
 - Dane są usunięte permanentnie (brak możliwości odzyskania w MVP)
 - Modal zamyka się automatycznie po usunięciu
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -312,6 +323,7 @@ Kryteria akceptacji:
 - Karty zwierząt układają się w jedną kolumnę na mobile
 - Przyciski kategorii we wpisach są wystarczająco duże do kliknięcia palcem
 - Date picker działa poprawnie na touch devices
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -331,6 +343,7 @@ Kryteria akceptacji:
 - Link "Masz już konto? Zaloguj się" prowadzi do logowania
 - Zalogowani użytkownicy są automatycznie przekierowywani do dashboardu (nie widzą landing page)
 - Landing page jest responsywna (wygląda dobrze na mobile i desktop)
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -346,6 +359,7 @@ Kryteria akceptacji:
 - Wpis jest dodawany do historii w odpowiednim miejscu chronologicznym (sortowanie po dacie, nie po created_at)
 - Wpis z datą z przeszłości wyświetla się poprawnie w liście (nie na końcu, ale w kolejności chronologicznej)
 - Data jest wyświetlana w czytelnym formacie (DD.MM.YYYY)
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -362,6 +376,7 @@ Kryteria akceptacji:
 - Wpis bez notatki nie ma clickable expand (nie ma czego rozwijać)
 - Wpis wygląda kompletnie i nie sugeruje błędu lub braku danych
 - Dodanie wpisu bez notatki zajmuje <10 sekund
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -382,6 +397,7 @@ Kryteria akceptacji:
 - System pozostaje w profilu zwierzęcia (lub wraca do niego)
 - Zmienione imię jest widoczne natychmiast w profilu i na dashboardzie
 - Przycisk "Anuluj" zamyka formularz bez zapisywania zmian
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -404,6 +420,29 @@ Kryteria akceptacji:
 - Zmieniony wpis jest widoczny natychmiast w historii
 - Przycisk "Anuluj" zamyka formularz bez zapisywania zmian
 - Edycja wpisu zajmuje maksymalnie 30 sekund
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
+
+---
+
+### US-016: Monitorowanie aktualności opieki nad zwierzęciem
+
+Jako użytkownik
+Chcę widzieć status aktualności opieki nad moim zwierzęciem
+Aby szybko ocenić czy regularnie dokumentuję opiekę
+
+Kryteria akceptacji:
+- Status opieki wyświetlany w profilu zwierzęcia przy nagłówku (obok imienia lub licznika wpisów)
+- Status prezentowany jako emoji wskaźnika z etykietą tekstową:
+  - 🟢 "Aktualne" - ostatni wpis ≤30 dni temu
+  - 🟡 "Wymaga uwagi" - ostatni wpis 31-90 dni temu
+  - 🔴 "Nieaktualne" - ostatni wpis >90 dni temu lub brak wpisów
+- Status aktualizuje się automatycznie po dodaniu nowego wpisu
+- Status aktualizuje się automatycznie po usunięciu wpisu
+- Zwierzę bez wpisów ma status 🔴 "Nieaktualne"
+- Tooltip wyświetla datę ostatniego wpisu przy najechaniu na status (desktop) lub kliknięciu (mobile)
+- Format daty w tooltip: "Ostatni wpis: DD.MM.YYYY" lub "Brak wpisów"
+- Status responsywny (pełna szerokość na mobile, inline na desktop)
+- Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
 ---
 
@@ -432,6 +471,6 @@ REGISTRATION TO FIRST ENTRY
 
 MOBILE USABILITY
 - Definicja: Czy wszystkie funkcje działają płynnie na mobile
-- Cel: Wszystkie 17 user stories działają bez problemów na mobile
+- Cel: Wszystkie 18 user stories działają bez problemów na mobile
 - Pomiar: Manualne testy na prawdziwym telefonie (iOS/Android)
 - Znaczenie: Aplikacja musi być mobile-friendly (kluczowy use case)

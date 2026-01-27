@@ -1,8 +1,17 @@
 ---
-import Welcome from "../components/Welcome.astro";
+import Hero from "../components/Hero.astro";
 import Layout from "../layouts/Layout.astro";
+
+// Server-side sprawdzenie sesji użytkownika
+const supabase = Astro.locals.supabase;
+const { data: { session } } = await supabase.auth.getSession();
+
+// Jeśli użytkownik zalogowany, przekieruj do dashboardu
+if (session?.user) {
+  return Astro.redirect("/dashboard");
+}
 ---
 
 <Layout hideHeader>
-  <Welcome />
+  <Hero />
 </Layout>

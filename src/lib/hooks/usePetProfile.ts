@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import type {
   GetPetResponseDto,
   CareEntriesListResponseDto,
+  CareHistoryDto,
   PetHeaderViewModel,
   CareEntryCardViewModel,
   PaginationViewModel,
@@ -36,18 +37,19 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
 
   // Mapowanie GetPetResponseDto -> PetHeaderViewModel
   const mapPetToViewModel = useCallback(
-    (petData: GetPetResponseDto, entriesCount: number): PetHeaderViewModel => ({
+    (petData: GetPetResponseDto, entriesCount: number, lastEntryDate: Date | null = null): PetHeaderViewModel => ({
       id: petData.id,
       name: petData.name,
       speciesEmoji: petData.species_emoji,
       speciesDisplay: petData.species_display,
       entriesCount,
+      lastEntryDate,
     }),
     []
   );
 
   // Mapowanie CareHistoryDto -> CareEntryCardViewModel
-  const mapEntryToViewModel = useCallback((entry: any): CareEntryCardViewModel => {
+  const mapEntryToViewModel = useCallback((entry: CareHistoryDto): CareEntryCardViewModel => {
     const noteText = entry.note || "";
     const hasMore = noteText.length > 100;
 
@@ -149,9 +151,11 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
 
         setPagination(mappedPagination);
 
-        // Aktualizacja liczby wpisów w nagłówku
+        // Aktualizacja liczby wpisów i daty ostatniego wpisu w nagłówku
         if (pet) {
-          setPet((prev) => (prev ? { ...prev, entriesCount: data.pagination.total } : null));
+          const lastEntryDate =
+            data.items.length > 0 && data.items[0].entry_date ? new Date(data.items[0].entry_date) : null;
+          setPet((prev) => (prev ? { ...prev, entriesCount: data.pagination.total, lastEntryDate } : null));
         }
       } catch (err) {
         console.error("Error fetching entries:", err);
@@ -195,12 +199,16 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
         setEntries(mappedEntries);
         setPagination(mappedPagination);
 
-        // Mapowanie pet z prawidłową liczbą wpisów
-        const petViewModel = mapPetToViewModel(petData, entriesData.pagination.total);
+        // Mapowanie pet z prawidłową liczbą wpisów i datą ostatniego wpisu
+        const lastEntryDate =
+          entriesData.items.length > 0 && entriesData.items[0].entry_date
+            ? new Date(entriesData.items[0].entry_date)
+            : null;
+        const petViewModel = mapPetToViewModel(petData, entriesData.pagination.total, lastEntryDate);
         setPet(petViewModel);
       } else {
         // Jeśli nie udało się pobrać wpisów, ustaw pet z count 0
-        const petViewModel = mapPetToViewModel(petData, 0);
+        const petViewModel = mapPetToViewModel(petData, 0, null);
         setPet(petViewModel);
         setEntries([]);
         setPagination({
@@ -212,7 +220,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
           hasNext: false,
         });
       }
-    } catch (err) {
+    } catch {
       setError("Wystąpił błąd podczas ładowania danych");
     } finally {
       setIsLoading(false);

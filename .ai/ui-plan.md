@@ -43,10 +43,10 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 ### Profil zwierzęcia
 - **Ścieżka:** `/pets/[petId]`
 - **Główny cel:** Przegląd historii, szybkie dodawanie wpisów oraz zarządzanie danymi pupila.
-- **Kluczowe informacje:** Chronologiczna lista wpisów, licznik, dane pupila, opcje edycji i usuwania.
-- **Kluczowe komponenty:** `CareHistoryList`, `EntryItem`, `FAB`, `LoadMoreButton`, `DeletePetDialog`, `DeleteEntryDialog`.
-- **UX, dostępność i bezpieczeństwo:** Optimistic UI przy usuwaniu, modalne potwierdzenia dla akcji destrukcyjnych, tooltipy (desktop). Sprawdzanie uprawnień (403).
-- **Mapowanie wymagań:** FR-006, FR-007, FR-009, FR-010, US-006, US-008, US-009, US-012.
+- **Kluczowe informacje:** Chronologiczna lista wpisów, licznik, dane pupila, status opieki, opcje edycji i usuwania.
+- **Kluczowe komponenty:** `CareHistoryList`, `EntryItem`, `FAB`, `LoadMoreButton`, `DeletePetDialog`, `DeleteEntryDialog`, `CareStatusBadge`.
+- **UX, dostępność i bezpieczeństwo:** Optimistic UI przy usuwaniu, modalne potwierdzenia dla akcji destrukcyjnych, tooltipy (desktop). Sprawdzanie uprawnień (403). Status opieki z tooltip wyświetlającym datę ostatniego wpisu.
+- **Mapowanie wymagań:** FR-006, FR-007, FR-009, FR-010, FR-017, US-006, US-008, US-009, US-012, US-016.
 
 ### Edytuj zwierzę
 - **Ścieżka:** `/pets/[petId]/edit`
@@ -119,3 +119,4 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Card (Shadcn/ui):** Kontenery dla `PetCard` na Dashboardzie oraz poszczególnych wpisów w historii.
 - **Dropdown Menu (Shadcn/ui):** Menu opcji przy wpisach (Edytuj/Usuń) oraz w Headerze (Wyloguj).
 - **Sticky Header:** Stały pasek nawigacyjny z logo i dostępem do profilu użytkownika.
+- **CareStatusBadge:** Wskaźnik aktualności opieki w profilu zwierzęcia z emoji (🟢/🟡/🔴) i tooltipem z datą ostatniego wpisu.

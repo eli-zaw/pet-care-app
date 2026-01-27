@@ -195,6 +195,15 @@ export interface PetHeaderViewModel {
   speciesEmoji: string;
   speciesDisplay: string;
   entriesCount: number;
+  lastEntryDate: Date | null;
+}
+
+export interface CareStatusViewModel {
+  status: "current" | "attention" | "outdated";
+  emoji: string;
+  label: string;
+  tooltipText: string;
+  lastEntryDate: Date | null;
 }
 
 export interface CareEntryCardViewModel {
