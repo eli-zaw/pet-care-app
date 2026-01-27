@@ -78,6 +78,9 @@ System umożliwia edycję wpisu opieki. Edytowalne pola: kategoria, data, notatk
 ### FR-017: Status opieki zwierzęcia
 System oblicza i wyświetla status opieki zwierzęcia na podstawie daty ostatniego wpisu w profilu zwierzęcia. Status prezentowany jako wskaźnik aktualności opieki z emoji: 🟢 (≤30 dni), 🟡 (31-90 dni), 🔴 (>90 dni lub brak wpisów). Status aktualizuje się automatycznie po dodaniu lub usunięciu wpisu. System wyświetla tooltip z informacją o dacie ostatniego wpisu przy najechaniu na status (desktop) lub przy kliknięciu (mobile).
 
+### FR-018: Resetowanie hasła
+System umożliwia użytkownikowi zresetowanie zapomnianego hasła przez email. Użytkownik wprowadza email w formularzu resetowania. System wysyła email z linkiem resetującym (ważny 1 godzinę). Link prowadzi do formularza ustawienia nowego hasła. Nowe hasło musi mieć minimum 8 znaków. Po pomyślnej zmianie hasła system wyświetla toast "Hasło zostało zmienione" i przekierowuje do logowania. System używa Supabase Auth do obsługi procesu resetowania hasła.
+
 ---
 
 ## 4. Granice produktu
@@ -85,7 +88,6 @@ POZA ZAKRESEM (możliwe w przyszłych wersjach):
 
 Autentykacja i konto:
 - Email verification (weryfikacja przez link)
-- Reset hasła przez email
 - Zmiana hasła w ustawieniach
 - Edycja danych użytkownika (imię, nazwisko)
 - Usunięcie konta
@@ -446,6 +448,32 @@ Kryteria akceptacji:
 
 ---
 
+### US-017: Resetowanie zapomnianego hasła
+
+Jako użytkownik, który zapomniał hasła
+Chcę móc zresetować hasło przez email
+Aby odzyskać dostęp do mojego konta
+
+Kryteria akceptacji:
+- Link "Zapomniałeś hasła?" jest dostępny na stronie logowania
+- Kliknięcie prowadzi do formularza resetowania hasła
+- Formularz wymaga adresu email (walidacja formatu)
+- Po wysłaniu system wyświetla komunikat: "Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email"
+- System nie ujawnia czy email istnieje w bazie (bezpieczeństwo)
+- Email zawiera link resetujący ważny przez 1 godzinę
+- Kliknięcie linku prowadzi do formularza ustawienia nowego hasła
+- Formularz nowego hasła wymaga: nowe hasło (min 8 znaków), potwierdzenie hasła
+- System waliduje zgodność hasła i potwierdzenia
+- Po sukcesie system wyświetla toast "Hasło zostało zmienione"
+- System przekierowuje do strony logowania
+- Wygasły lub użyty link wyświetla komunikat: "Link resetujący wygasł lub został już użyty. Wygeneruj nowy link."
+- Email jest wysyłany przez Supabase Auth
+- Link resetujący można użyć tylko raz
+- Po zmianie hasła wszystkie aktywne sesje pozostają aktywne (uproszczenie dla MVP)
+- Responsywność: formularz działa poprawnie na mobile i desktop
+
+---
+
 ## 6. Metryki sukcesu
 
 ### 6.1 Metryka podstawowa (Must Have)
@@ -471,6 +499,6 @@ REGISTRATION TO FIRST ENTRY
 
 MOBILE USABILITY
 - Definicja: Czy wszystkie funkcje działają płynnie na mobile
-- Cel: Wszystkie 18 user stories działają bez problemów na mobile
+- Cel: Wszystkie 19 user stories działają bez problemów na mobile
 - Pomiar: Manualne testy na prawdziwym telefonie (iOS/Android)
 - Znaczenie: Aplikacja musi być mobile-friendly (kluczowy use case)
