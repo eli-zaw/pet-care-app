@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DeletePetDialog } from "@/components/DeletePetDialog";
 import type { PetHeaderViewModel } from "@/types";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 interface PetHeaderProps {
   pet: PetHeaderViewModel;
@@ -19,6 +19,10 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
     // onDelete przekierowuje do dashboard, więc nie resetujemy isDeleting
   };
 
+  const handleAddEntry = () => {
+    window.location.href = `/pets/${pet.id}/entries/new`;
+  };
+
   const entriesLabel =
     pet.entriesCount === 0
       ? "Brak wpisów"
@@ -29,7 +33,7 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
   return (
     <>
       <header className="mb-8">
-        <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           {/* Emoji i tytuł */}
           <div className="flex items-center gap-3">
             <div className="text-5xl sm:text-6xl" aria-hidden="true">
@@ -52,12 +56,24 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
 
           {/* Przyciski akcji */}
           <div className="flex items-center gap-2">
+            {/* Przycisk Dodaj wpis - główna akcja */}
+            <Button
+              onClick={handleAddEntry}
+              className="min-h-[44px] sm:min-h-0"
+              aria-label="Dodaj wpis"
+            >
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Dodaj wpis</span>
+            </Button>
+
+            {/* Przyciski zarządzania zwierzęciem */}
             <Button
               variant="outline"
               size="icon"
               onClick={() => (window.location.href = `/pets/${pet.id}/edit`)}
               aria-label="Edytuj zwierzę"
               title="Edytuj"
+              className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -67,6 +83,7 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
               onClick={() => setIsDeleteDialogOpen(true)}
               aria-label="Usuń zwierzę"
               title="Usuń"
+              className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

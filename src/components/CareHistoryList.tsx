@@ -37,7 +37,7 @@ export function CareHistoryList({
   // Wrapper dla paginacji - wykrywa czy to mobile append czy desktop page change
   const handlePageChange = async (page: number) => {
     if (!pagination) return;
-    
+
     // Jeśli page > current page, to jest append (mobile "Załaduj więcej")
     if (page > pagination.page) {
       await onLoadMore();
@@ -105,6 +105,7 @@ export function CareHistoryList({
           {items.map((entry) => (
             <li key={entry.id}>
               <CareEntryCard
+                petId={petId}
                 entry={entry}
                 isExpanded={expandedEntryIds.has(entry.id)}
                 onToggleExpand={() => onToggleExpand(entry.id)}
@@ -116,11 +117,7 @@ export function CareHistoryList({
 
         {/* Paginacja */}
         {pagination && pagination.totalPages > 1 && (
-          <PaginationControls
-            pagination={pagination}
-            isLoading={isLoading}
-            onPageChange={handlePageChange}
-          />
+          <PaginationControls pagination={pagination} isLoading={isLoading} onPageChange={handlePageChange} />
         )}
       </section>
 

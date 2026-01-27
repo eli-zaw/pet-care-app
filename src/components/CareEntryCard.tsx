@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import type { CareEntryCardViewModel } from "@/types";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface CareEntryCardProps {
+  petId: string;
   entry: CareEntryCardViewModel;
   isExpanded: boolean;
   onToggleExpand: () => void;
@@ -10,12 +11,17 @@ interface CareEntryCardProps {
 }
 
 export function CareEntryCard({
+  petId,
   entry,
   isExpanded,
   onToggleExpand,
   onDelete,
 }: CareEntryCardProps) {
   const displayNote = isExpanded && entry.noteFull ? entry.noteFull : entry.notePreview;
+
+  const handleEdit = () => {
+    window.location.href = `/pets/${petId}/entries/${entry.id}/edit`;
+  };
 
   return (
     <article className="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50">
@@ -57,16 +63,27 @@ export function CareEntryCard({
           )}
         </div>
 
-        {/* Przycisk usuń */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onDelete}
-          className="shrink-0 text-muted-foreground hover:text-destructive"
-          aria-label="Usuń wpis"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {/* Przyciski akcji */}
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleEdit}
+            className="text-muted-foreground hover:text-primary"
+            aria-label="Edytuj wpis"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onDelete}
+            className="text-muted-foreground hover:text-destructive"
+            aria-label="Usuń wpis"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </article>
   );

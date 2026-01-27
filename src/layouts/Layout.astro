@@ -4,9 +4,10 @@ import { Toaster } from "@/components/ui/sonner";
 
 interface Props {
   title?: string;
+  hideHeader?: boolean;
 }
 
-const { title = "Pet Care Companion" } = Astro.props;
+const { title = "Pet Care Companion", hideHeader = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,7 +20,34 @@ const { title = "Pet Care Companion" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <!-- Global Header -->
+    {!hideHeader && (
+      <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4">
+          <!-- Logo and App Name -->
+          <a href="/dashboard" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div class="text-2xl" aria-hidden="true">🐾</div>
+            <span class="text-lg font-semibold hidden sm:inline">Pet Care Companion</span>
+            <span class="text-lg font-semibold sm:hidden">PCC</span>
+          </a>
+
+          <!-- Navigation / Actions -->
+          <nav class="flex items-center gap-2">
+            <!-- Placeholder dla przyszłego przycisku wylogowania -->
+            <!-- 
+            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+              Wyloguj
+            </button>
+            -->
+          </nav>
+        </div>
+      </header>
+    )}
+
+    <!-- Page Content -->
     <slot />
+
+    <!-- Global Toast Notifications -->
     <Toaster client:load position="bottom-center" class="sm:!bottom-right sm:!items-end" />
   </body>
 </html>

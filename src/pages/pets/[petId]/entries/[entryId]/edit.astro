@@ -1,0 +1,108 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CareEntryForm } from "@/components/CareEntryForm";
+import type { CareEntryDto, GetPetResponseDto } from "@/types";
+
+// Middleware already handles auth, this page is protected
+
+const { petId, entryId } = Astro.params;
+
+// Walidacja parametrów
+if (!petId || !entryId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Pobranie danych zwierzęcia (dla breadcrumbs)
+let petData: GetPetResponseDto | null = null;
+let entryData: CareEntryDto | null = null;
+let error: string | null = null;
+
+try {
+  // Pobierz dane zwierzęcia
+  const petUrl = new URL(`/api/pets/${petId}`, Astro.url);
+  const petResponse = await fetch(petUrl.toString(), {
+    headers: {
+      cookie: Astro.request.headers.get("cookie") || "",
+    },
+  });
+
+  if (!petResponse.ok) {
+    if (petResponse.status === 404) {
+      return Astro.redirect("/dashboard");
+    }
+    if (petResponse.status === 403 || petResponse.status === 401) {
+      return Astro.redirect("/");
+    }
+    return Astro.redirect("/dashboard");
+  }
+
+  petData = await petResponse.json();
+
+  // Pobierz dane wpisu
+  const entryUrl = new URL(`/api/pets/${petId}/care-entries/${entryId}`, Astro.url);
+  const entryResponse = await fetch(entryUrl.toString(), {
+    headers: {
+      cookie: Astro.request.headers.get("cookie") || "",
+    },
+  });
+
+  if (!entryResponse.ok) {
+    if (entryResponse.status === 404) {
+      // Wpis nie znaleziony - redirect do profilu zwierzęcia
+      return Astro.redirect(`/pets/${petId}`);
+    }
+    if (entryResponse.status === 403 || entryResponse.status === 401) {
+      return Astro.redirect("/");
+    }
+    return Astro.redirect(`/pets/${petId}`);
+  }
+
+  entryData = await entryResponse.json();
+} catch (err) {
+  console.error("Error fetching data in edit care entry page:", err);
+  return Astro.redirect(`/pets/${petId}`);
+}
+
+if (!petData || !entryData) {
+  return Astro.redirect(`/pets/${petId}`);
+}
+
+const pageTitle = `Edytuj wpis - ${petData.name} - Pet Care Companion`;
+---
+
+<Layout title={pageTitle}>
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <!-- Breadcrumbs -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
+        <ol class="flex items-center gap-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Pulpit
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/pets/${petId}`} class="hover:text-foreground transition-colors">
+              {petData.name}
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground">
+            Edytuj wpis
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Form Component -->
+      <CareEntryForm
+        mode="edit"
+        petId={petId}
+        petName={petData.name}
+        entryId={entryId}
+        initialData={entryData}
+        client:load
+      />
+    </div>
+  </div>
+</Layout>

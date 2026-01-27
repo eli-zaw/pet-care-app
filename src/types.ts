@@ -218,3 +218,23 @@ export interface PetProfileViewModel {
   history: CareHistoryListState;
   pagination: PaginationViewModel;
 }
+
+// ViewModels for Care Entry Form (Add Care Entry View)
+export interface CareEntryFormViewModel {
+  category: CareCategoryType | null;
+  entryDate: Date;
+  note: string;
+}
+
+export interface CareEntryFormErrors {
+  category?: string;
+  entryDate?: string;
+  note?: string;
+  general?: string;
+}
+
+export interface CareCategoryOption {
+  value: CareCategoryType;
+  label: string;
+  emoji: string;
+}

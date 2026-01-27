@@ -47,23 +47,20 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
   );
 
   // Mapowanie CareHistoryDto -> CareEntryCardViewModel
-  const mapEntryToViewModel = useCallback(
-    (entry: any): CareEntryCardViewModel => {
-      const noteText = entry.note || "";
-      const hasMore = noteText.length > 100;
+  const mapEntryToViewModel = useCallback((entry: any): CareEntryCardViewModel => {
+    const noteText = entry.note || "";
+    const hasMore = noteText.length > 100;
 
-      return {
-        id: entry.id,
-        categoryEmoji: entry.category_emoji,
-        categoryDisplay: entry.category_display,
-        dateFormatted: entry.entry_date_formatted,
-        notePreview: hasMore ? noteText.substring(0, 100) + "..." : noteText,
-        noteFull: hasMore ? noteText : null,
-        hasMore,
-      };
-    },
-    []
-  );
+    return {
+      id: entry.id,
+      categoryEmoji: entry.category_emoji,
+      categoryDisplay: entry.category_display,
+      dateFormatted: entry.entry_date_formatted,
+      notePreview: hasMore ? noteText.substring(0, 100) + "..." : noteText,
+      noteFull: hasMore ? noteText : null,
+      hasMore,
+    };
+  }, []);
 
   // Mapowanie PaginationDto -> PaginationViewModel
   const mapPaginationToViewModel = useCallback(
@@ -121,7 +118,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
 
   // Pobieranie wpisów opieki
   const fetchEntries = useCallback(
-    async (page: number = 1, append: boolean = false) => {
+    async (page = 1, append = false) => {
       try {
         const params = new URLSearchParams({
           page: page.toString(),
@@ -154,11 +151,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
 
         // Aktualizacja liczby wpisów w nagłówku
         if (pet) {
-          setPet((prev) =>
-            prev
-              ? { ...prev, entriesCount: data.pagination.total }
-              : null
-          );
+          setPet((prev) => (prev ? { ...prev, entriesCount: data.pagination.total } : null));
         }
       } catch (err) {
         console.error("Error fetching entries:", err);
@@ -314,9 +307,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
 
       // Aktualizacja licznika
       if (pet) {
-        setPet((prev) =>
-          prev ? { ...prev, entriesCount: prev.entriesCount - 1 } : null
-        );
+        setPet((prev) => (prev ? { ...prev, entriesCount: prev.entriesCount - 1 } : null));
       }
 
       try {
@@ -333,9 +324,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
           });
 
           if (pet) {
-            setPet((prev) =>
-              prev ? { ...prev, entriesCount: prev.entriesCount + 1 } : null
-            );
+            setPet((prev) => (prev ? { ...prev, entriesCount: prev.entriesCount + 1 } : null));
           }
 
           if (response.status === 404) {
@@ -356,9 +345,7 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
         // Przywrócenie wpisu w przypadku błędu sieci
         setEntries((prev) => [...prev, entryToDelete]);
         if (pet) {
-          setPet((prev) =>
-            prev ? { ...prev, entriesCount: prev.entriesCount + 1 } : null
-          );
+          setPet((prev) => (prev ? { ...prev, entriesCount: prev.entriesCount + 1 } : null));
         }
 
         console.error("Error deleting entry:", err);

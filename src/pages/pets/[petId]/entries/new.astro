@@ -1,0 +1,80 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CareEntryForm } from "@/components/CareEntryForm";
+import type { GetPetResponseDto } from "@/types";
+
+// Middleware already handles auth, this page is protected
+
+const { petId } = Astro.params;
+
+// Walidacja petId
+if (!petId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Pobranie danych zwierzęcia (dla breadcrumbs i nagłówka formularza)
+let petData: GetPetResponseDto | null = null;
+
+try {
+  const apiUrl = new URL(`/api/pets/${petId}`, Astro.url);
+  const response = await fetch(apiUrl.toString(), {
+    headers: {
+      cookie: Astro.request.headers.get("cookie") || "",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      return Astro.redirect("/dashboard");
+    }
+    if (response.status === 403) {
+      return Astro.redirect("/dashboard");
+    }
+    if (response.status === 401) {
+      return Astro.redirect("/");
+    }
+    return Astro.redirect("/dashboard");
+  }
+
+  petData = await response.json();
+} catch (err) {
+  console.error("Error fetching pet data in add care entry page:", err);
+  return Astro.redirect("/dashboard");
+}
+
+if (!petData) {
+  return Astro.redirect("/dashboard");
+}
+
+const pageTitle = `Dodaj wpis dla ${petData.name} - Pet Care Companion`;
+---
+
+<Layout title={pageTitle}>
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <!-- Breadcrumbs -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
+        <ol class="flex items-center gap-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Pulpit
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/pets/${petId}`} class="hover:text-foreground transition-colors">
+              {petData.name}
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground">
+            Dodaj wpis
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Form Component -->
+      <CareEntryForm petId={petId} petName={petData.name} client:load />
+    </div>
+  </div>
+</Layout>
