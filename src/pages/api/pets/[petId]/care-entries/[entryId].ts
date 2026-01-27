@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CareEntryDto, UpdateCareEntryCommand, UpdateCareEntryResponseDto } from "../../../../../types";
-import { DEFAULT_USER_ID } from "../../../../../db/supabase.client";
 
 // Disable prerendering for API routes
 export const prerender = false;
@@ -76,8 +75,22 @@ export const GET: APIRoute = async ({ params, locals }) => {
     // Step 1: Get supabase client from context.locals
     const { supabase } = locals;
 
-    // TODO: Replace with authenticated user ID once auth is implemented
-    const userId = DEFAULT_USER_ID;
+    // Step 1.5: Check if user is authenticated
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Użytkownik nie jest zalogowany",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Step 2: Get authenticated user ID
+    const userId = locals.user.id;
 
     // Step 2: Validate petId and entryId using Zod schema (UUID format)
     const validationResult = ParamsSchema.safeParse(params);
@@ -270,8 +283,22 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Step 1: Get supabase client from context.locals
     const { supabase } = locals;
 
-    // TODO: Replace with authenticated user ID once auth is implemented
-    const userId = DEFAULT_USER_ID;
+    // Step 1.5: Check if user is authenticated
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Użytkownik nie jest zalogowany",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Step 2: Get authenticated user ID
+    const userId = locals.user.id;
 
     // Step 2: Validate petId and entryId using Zod schema (UUID format)
     const paramsValidation = ParamsSchema.safeParse(params);
@@ -513,8 +540,22 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // Step 1: Get supabase client from context.locals
     const { supabase } = locals;
 
-    // TODO: Replace with authenticated user ID once auth is implemented
-    const userId = DEFAULT_USER_ID;
+    // Step 1.5: Check if user is authenticated
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Użytkownik nie jest zalogowany",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Step 2: Get authenticated user ID
+    const userId = locals.user.id;
 
     // Step 2: Validate petId and entryId using Zod schema (UUID format)
     const paramsValidation = ParamsSchema.safeParse(params);

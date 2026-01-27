@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,17 +10,27 @@ export function LogoutButton() {
     setIsLoading(true);
 
     try {
-      // Placeholder for API call - backend not implemented yet
-      console.log("Logout attempt");
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const data = await response.json();
 
-      // Placeholder success - in real implementation would handle response
+      if (!response.ok) {
+        console.error("Logout failed:", data.error);
+        toast.error("Nie udało się wylogować");
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - redirect to home page
       window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
-      alert("Nie udało się wylogować");
+      toast.error("Nie udało się wylogować");
       setIsLoading(false);
     }
   };
@@ -30,6 +41,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       disabled={isLoading}
       className="min-h-[44px] sm:min-h-0"
+      aria-label={isLoading ? "Wylogowywanie..." : "Wyloguj się z aplikacji"}
     >
       <LogOut className="h-4 w-4 sm:mr-2" />
       <span className="hidden sm:inline">
