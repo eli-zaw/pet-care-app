@@ -5,6 +5,14 @@ import { pl } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { CategoryPicker } from "@/components/CategoryPicker";
@@ -331,107 +339,105 @@ export function CareEntryForm({
   const isSubmitDisabled = !isValid || isSubmitting || (mode === "edit" && isUnchanged);
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">{headerTitle}</h1>
-          <p className="text-muted-foreground">{headerDescription}</p>
-        </div>
-
-        {/* Błąd ogólny */}
-        {errors.general && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {errors.general}
-          </div>
-        )}
-
-        {/* Pole: Kategoria */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium leading-none">
-            Kategoria <span className="text-destructive">*</span>
-          </label>
-          <CategoryPicker
-            value={formData.category}
-            onChange={handleCategoryChange}
-            error={errors.category}
-          />
-        </div>
-
-        {/* Pole: Data */}
-        <div className="space-y-2">
-          <label htmlFor="entry-date" className="text-sm font-medium leading-none">
-            Data <span className="text-destructive">*</span>
-          </label>
-          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                id="entry-date"
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal text-base md:text-sm",
-                  !formData.entryDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.entryDate ? (
-                  format(formData.entryDate, "dd.MM.yyyy", { locale: pl })
-                ) : (
-                  <span>Wybierz datę</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={formData.entryDate}
-                onSelect={handleDateChange}
-                initialFocus
-                locale={pl}
-              />
-            </PopoverContent>
-          </Popover>
-          {errors.entryDate && (
-            <p className="text-sm text-destructive">{errors.entryDate}</p>
+    <Card className="mx-auto max-w-2xl">
+      <form onSubmit={handleSubmit}>
+        <CardHeader>
+          <CardTitle>{headerTitle}</CardTitle>
+          <CardDescription>{headerDescription}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Błąd ogólny */}
+          {errors.general && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {errors.general}
+            </div>
           )}
-        </div>
 
-        {/* Pole: Notatka */}
-        <div className="space-y-2">
-          <label htmlFor="note" className="text-sm font-medium leading-none">
-            Notatka (opcjonalnie)
-          </label>
-          <Textarea
-            id="note"
-            value={formData.note}
-            onChange={handleNoteChange}
-            maxLength={1000}
-            rows={6}
-            placeholder="Dodaj szczegóły (opcjonalnie)..."
-            className="resize-none text-base md:text-sm"
-            aria-describedby="note-counter"
-          />
-          <div className="flex justify-between items-center text-xs">
-            <span
-              id="note-counter"
-              className={cn(
-                "text-muted-foreground",
-                isNoteWarning && "text-destructive font-medium"
-              )}
-            >
-              {noteLength}/1000
-            </span>
-            {isNoteWarning && (
-              <span className="text-destructive">Zbliżasz się do limitu</span>
+          {/* Pole: Kategoria */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none">
+              Kategoria <span className="text-destructive">*</span>
+            </label>
+            <CategoryPicker
+              value={formData.category}
+              onChange={handleCategoryChange}
+              error={errors.category}
+            />
+          </div>
+
+          {/* Pole: Data */}
+          <div className="space-y-2">
+            <label htmlFor="entry-date" className="text-sm font-medium leading-none">
+              Data <span className="text-destructive">*</span>
+            </label>
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  id="entry-date"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal text-base md:text-sm",
+                    !formData.entryDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formData.entryDate ? (
+                    format(formData.entryDate, "dd.MM.yyyy", { locale: pl })
+                  ) : (
+                    <span>Wybierz datę</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.entryDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                  locale={pl}
+                />
+              </PopoverContent>
+            </Popover>
+            {errors.entryDate && (
+              <p className="text-sm text-destructive">{errors.entryDate}</p>
             )}
           </div>
-          {errors.note && (
-            <p className="text-sm text-destructive">{errors.note}</p>
-          )}
-        </div>
 
-        {/* Przyciski akcji */}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          {/* Pole: Notatka */}
+          <div className="space-y-2">
+            <label htmlFor="note" className="text-sm font-medium leading-none">
+              Notatka (opcjonalnie)
+            </label>
+            <Textarea
+              id="note"
+              value={formData.note}
+              onChange={handleNoteChange}
+              maxLength={1000}
+              rows={6}
+              placeholder="Dodaj szczegóły (opcjonalnie)..."
+              className="resize-none text-base md:text-sm"
+              aria-describedby="note-counter"
+            />
+            <div className="flex justify-between items-center text-xs">
+              <span
+                id="note-counter"
+                className={cn(
+                  "text-muted-foreground",
+                  isNoteWarning && "text-destructive font-medium"
+                )}
+              >
+                {noteLength}/1000
+              </span>
+              {isNoteWarning && (
+                <span className="text-destructive">Zbliżasz się do limitu</span>
+              )}
+            </div>
+            {errors.note && (
+              <p className="text-sm text-destructive">{errors.note}</p>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
@@ -448,8 +454,8 @@ export function CareEntryForm({
           >
             {isSubmitting ? "Zapisywanie..." : submitButtonText}
           </Button>
-        </div>
+        </CardFooter>
       </form>
-    </div>
+    </Card>
   );
 }

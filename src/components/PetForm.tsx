@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -316,93 +324,91 @@ export function PetForm({
     !isValid || isSubmitting || (mode === "edit" && isUnchanged);
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">{headerTitle}</h1>
-          <p className="text-muted-foreground">{headerDescription}</p>
-        </div>
-
-        {/* Błąd ogólny */}
-        {errors.general && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {errors.general}
-          </div>
-        )}
-
-        {/* Pole: Imię */}
-        <div className="space-y-2">
-          <label
-            htmlFor="name"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Imię
-          </label>
-          <Input
-            id="name"
-            ref={nameInputRef}
-            type="text"
-            value={formData.name}
-            onChange={handleNameChange}
-            onBlur={handleNameBlur}
-            maxLength={50}
-            aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? "name-error" : undefined}
-            className="text-base md:text-sm"
-            placeholder="np. Luna, Max, Reksio"
-          />
-          {errors.name && (
-            <p id="name-error" className="text-sm text-destructive">
-              {errors.name}
-            </p>
+    <Card className="mx-auto max-w-2xl">
+      <form onSubmit={handleSubmit}>
+        <CardHeader>
+          <CardTitle>{headerTitle}</CardTitle>
+          <CardDescription>{headerDescription}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Błąd ogólny */}
+          {errors.general && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {errors.general}
+            </div>
           )}
-        </div>
 
-        {/* Pole: Gatunek */}
-        <div className="space-y-2">
-          <label
-            htmlFor="species"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Gatunek
-          </label>
-          <Select
-            value={formData.species}
-            onValueChange={handleSpeciesChange}
-            disabled={mode === "edit"}
-          >
-            <SelectTrigger
-              id="species"
-              aria-invalid={!!errors.species}
+          {/* Pole: Imię */}
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Imię
+            </label>
+            <Input
+              id="name"
+              ref={nameInputRef}
+              type="text"
+              value={formData.name}
+              onChange={handleNameChange}
+              onBlur={handleNameBlur}
+              maxLength={50}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
               className="text-base md:text-sm"
+              placeholder="np. Luna, Max, Reksio"
+            />
+            {errors.name && (
+              <p id="name-error" className="text-sm text-destructive">
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          {/* Pole: Gatunek */}
+          <div className="space-y-2">
+            <label
+              htmlFor="species"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Gatunek
+            </label>
+            <Select
+              value={formData.species}
+              onValueChange={handleSpeciesChange}
               disabled={mode === "edit"}
             >
-              <SelectValue placeholder="Wybierz gatunek" />
-            </SelectTrigger>
-            <SelectContent>
-              {SPECIES_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  <span className="flex items-center gap-2">
-                    <span>{option.emoji}</span>
-                    <span>{option.label}</span>
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {mode === "edit" && (
-            <p className="text-xs text-muted-foreground">
-              Gatunek nie może być zmieniony po utworzeniu
-            </p>
-          )}
-          {errors.species && (
-            <p className="text-sm text-destructive">{errors.species}</p>
-          )}
-        </div>
-
-        {/* Przyciski akcji */}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <SelectTrigger
+                id="species"
+                aria-invalid={!!errors.species}
+                className="text-base md:text-sm"
+                disabled={mode === "edit"}
+              >
+                <SelectValue placeholder="Wybierz gatunek" />
+              </SelectTrigger>
+              <SelectContent>
+                {SPECIES_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    <span className="flex items-center gap-2">
+                      <span>{option.emoji}</span>
+                      <span>{option.label}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {mode === "edit" && (
+              <p className="text-xs text-muted-foreground">
+                Gatunek nie może być zmieniony po utworzeniu
+              </p>
+            )}
+            {errors.species && (
+              <p className="text-sm text-destructive">{errors.species}</p>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
@@ -419,8 +425,8 @@ export function PetForm({
           >
             {isSubmitting ? "Zapisywanie..." : submitButtonText}
           </Button>
-        </div>
+        </CardFooter>
       </form>
-    </div>
+    </Card>
   );
 }
