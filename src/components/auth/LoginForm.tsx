@@ -87,17 +87,29 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
     setErrors({});
 
     try {
-      // Placeholder for API call - backend not implemented yet
-      console.log("Login attempt:", formData);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      // Placeholder success - in real implementation would handle response
+      if (!response.ok) {
+        setErrors({ general: data.error || "Wystąpił błąd podczas logowania" });
+        return;
+      }
+
+      // Sukces - przekieruj do redirectUrl
       window.location.href = redirectUrl;
     } catch (error) {
       console.error("Login error:", error);
-      setErrors({ general: "Nieprawidłowy email lub hasło" });
+      setErrors({ general: "Wystąpił błąd podczas logowania" });
     } finally {
       setIsSubmitting(false);
     }

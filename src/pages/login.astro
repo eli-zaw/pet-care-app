@@ -2,13 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-// Server-side: sprawdzenie sesji
-const { data: { session } } = await Astro.locals.supabase.auth.getSession();
-if (session?.user) {
-  return Astro.redirect("/dashboard");
-}
-
-// Obsługa redirect parameter
+// Obsługa redirect parameter - middleware już sprawdził sesję
 const redirectUrl = Astro.url.searchParams.get("redirect") || "/dashboard";
 ---
 
