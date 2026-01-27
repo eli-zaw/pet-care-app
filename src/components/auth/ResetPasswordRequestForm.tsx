@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export function ResetPasswordRequestForm() {
   const [email, setEmail] = useState("");
@@ -43,17 +44,30 @@ export function ResetPasswordRequestForm() {
     setError(undefined);
 
     try {
-      // Placeholder for API call - backend not implemented yet
-      console.log("Reset password request:", email);
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      // Always show success (security - don't reveal if email exists)
+      if (!response.ok) {
+        setError(data.error || "Wystąpił błąd podczas wysyłania linku resetującego");
+        return;
+      }
+
+      // Zawsze pokazuj sukces (bezpieczeństwo - nie ujawniaj czy email istnieje)
+      toast.success(data.message || "Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email");
       setIsSuccess(true);
     } catch (error) {
       console.error("Reset password request error:", error);
-      // Even on error, show success for security
+      // Nawet w przypadku błędu, pokazuj sukces dla bezpieczeństwa
+      toast.success("Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email");
       setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
@@ -74,13 +88,12 @@ export function ResetPasswordRequestForm() {
           <p className="text-muted-foreground">
             Jeśli konto z tym adresem email istnieje, wysłaliśmy link resetujący hasło. Link jest ważny przez 1 godzinę.
           </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Nie otrzymałeś emaila? Sprawdź folder spam lub spróbuj ponownie.
+          </p>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button
-            onClick={handleBackToLogin}
-            variant="outline"
-            className="min-h-[44px] sm:min-h-0"
-          >
+          <Button onClick={handleBackToLogin} variant="outline" className="min-h-[44px] sm:min-h-0">
             Wróć do logowania
           </Button>
         </CardFooter>
@@ -94,18 +107,12 @@ export function ResetPasswordRequestForm() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Resetowanie hasła</CardTitle>
-        <CardDescription>
-          Podaj adres email przypisany do Twojego konta
-        </CardDescription>
+        <CardDescription>Podaj adres email przypisany do Twojego konta</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Błąd */}
-          {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
+          {error && <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
           {/* Pole: Email */}
           <div className="space-y-2">
@@ -135,20 +142,13 @@ export function ResetPasswordRequestForm() {
           </div>
 
           {/* Przycisk submit */}
-          <Button
-            type="submit"
-            className="w-full min-h-[44px] sm:min-h-0"
-            disabled={!isValid || isSubmitting}
-          >
+          <Button type="submit" className="w-full min-h-[44px] sm:min-h-0" disabled={!isValid || isSubmitting}>
             {isSubmitting ? "Wysyłanie..." : "Wyślij link resetujący"}
           </Button>
         </form>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <a
-          href="/login"
-          className="text-sm text-muted-foreground hover:underline"
-        >
+        <a href="/login" className="text-sm text-muted-foreground hover:underline">
           Wróć do logowania
         </a>
       </CardFooter>

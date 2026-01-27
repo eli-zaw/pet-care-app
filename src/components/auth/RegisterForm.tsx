@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -110,15 +111,30 @@ export function RegisterForm() {
     setErrors({});
 
     try {
-      // Placeholder for API call - backend not implemented yet
-      console.log("Register attempt:", formData);
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      // Placeholder success - in real implementation would handle response
-      alert("Rejestracja zakończona sukcesem!");
-      window.location.href = "/dashboard";
+      if (!response.ok) {
+        setErrors({ general: data.error || "Wystąpił błąd podczas rejestracji" });
+        return;
+      }
+
+      // Sukces - pokaż komunikat i przekieruj do strony logowania
+      // Użytkownik musi potwierdzić email przed zalogowaniem
+      toast.success(data.message || "Rejestracja zakończona sukcesem! Sprawdź swoją skrzynkę email i potwierdź konto.");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000); // Krótkie opóźnienie żeby użytkownik zobaczył toast
     } catch (error) {
       console.error("Register error:", error);
       setErrors({ general: "Wystąpił błąd podczas rejestracji" });
@@ -138,7 +154,9 @@ export function RegisterForm() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Rejestracja</CardTitle>
-        <CardDescription>Utwórz nowe konto w Paw Notes</CardDescription>
+        <CardDescription>
+          Utwórz nowe konto w Paw Notes. Po rejestracji otrzymasz email z linkiem do potwierdzenia konta.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

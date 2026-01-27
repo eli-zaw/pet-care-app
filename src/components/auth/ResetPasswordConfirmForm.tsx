@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 interface ResetPasswordConfirmFormProps {
   accessToken: string;
@@ -89,17 +90,29 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
     setErrors({});
 
     try {
-      // Placeholder for API call - backend not implemented yet
-      console.log("Reset password confirm:", { accessToken, password: formData.password });
+      const response = await fetch('/api/auth/reset-password/confirm', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accessToken: accessToken,
+          newPassword: formData.password,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
 
-      // Placeholder success - in real implementation would handle response
-      alert("Hasło zostało zmienione");
+      if (!response.ok) {
+        setErrors({ general: data.error || "Nie udało się zmienić hasła" });
+        return;
+      }
+
+      // Sukces - pokaż komunikat i przekieruj do logowania
+      toast.success(data.message || "Hasło zostało zmienione");
       setTimeout(() => {
         window.location.href = "/login";
-      }, 1000);
+      }, 2000); // Krótkie opóźnienie żeby użytkownik zobaczył toast
     } catch (error) {
       console.error("Reset password confirm error:", error);
       setErrors({ general: "Nie udało się zmienić hasła" });
@@ -114,7 +127,9 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Ustaw nowe hasło</CardTitle>
-        <CardDescription>Wprowadź nowe hasło do swojego konta</CardDescription>
+        <CardDescription>
+          Wprowadź nowe hasło do swojego konta. Link resetujący jest jednorazowy i wygaśnie po użyciu.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

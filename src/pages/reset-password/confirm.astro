@@ -2,7 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import { ResetPasswordConfirmForm } from "@/components/auth/ResetPasswordConfirmForm";
 
-// Server-side: ekstrakcja tokenu z URL
+// Server-side: ekstrakcja i walidacja tokenu z URL
+// Token jest weryfikowany po stronie klienta w komponencie ResetPasswordConfirmForm
 const accessToken = Astro.url.searchParams.get("access_token");
 const type = Astro.url.searchParams.get("type");
 

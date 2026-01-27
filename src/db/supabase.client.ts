@@ -24,8 +24,22 @@ export const createSupabaseServerInstance = (context: {
   const supabaseUrl = import.meta.env.SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseKey = import.meta.env.SUPABASE_KEY || 'placeholder-key';
 
-  console.log('Creating Supabase instance with URL:', supabaseUrl ? 'present' : 'missing');
-  console.log('Supabase key present:', !!supabaseKey);
+  console.log('Creating Supabase instance with:', {
+    url: supabaseUrl,
+    keyPresent: !!supabaseKey,
+    keyLength: supabaseKey.length,
+    isPlaceholder: supabaseUrl === 'https://placeholder.supabase.co'
+  });
+
+  // Sprawdź czy mamy prawidłowe credentials
+  if (supabaseUrl === 'https://placeholder.supabase.co' || !supabaseKey || supabaseKey === 'placeholder-key') {
+    console.error('Invalid Supabase credentials:', {
+      url: supabaseUrl,
+      keyPresent: !!supabaseKey,
+      keyLength: supabaseKey.length
+    });
+    throw new Error('Supabase credentials not configured. Please check your .env file.');
+  }
 
   const supabase = createServerClient<Database>(
     supabaseUrl,

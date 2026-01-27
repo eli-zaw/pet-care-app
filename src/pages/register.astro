@@ -2,11 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
-// Server-side: sprawdzenie sesji
-const { data: { session } } = await Astro.locals.supabase.auth.getSession();
-if (session?.user) {
-  return Astro.redirect("/dashboard");
-}
+// Obsługa sesji - middleware już sprawdził czy użytkownik jest zalogowany
+// Jeśli jest zalogowany, zostanie automatycznie przekierowany do dashboardu
 ---
 
 <Layout title="Rejestracja - Paw Notes" hideHeader>
