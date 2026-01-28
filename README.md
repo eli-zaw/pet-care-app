@@ -50,6 +50,16 @@
 - **[GitHub Actions](https://github.com/features/actions)** - CI/CD pipelines
 - **[DigitalOcean](https://www.digitalocean.com/)** - Application hosting via Docker containers
 
+### Testing
+
+- **[Vitest](https://vitest.dev/)** - Fast unit testing framework with native ESM support
+- **[Testing Library](https://testing-library.com/)** - User-centric testing utilities for React components
+- **[Happy-dom](https://github.com/capricorn86/happy-dom)** - Fast DOM environment for unit tests
+- **[Playwright](https://playwright.dev/)** - End-to-end testing across multiple browsers
+- **[MSW](https://mswjs.io/)** (Mock Service Worker) - API mocking for integration tests
+- **[axe-core](https://github.com/dequelabs/axe-core)** - Automated accessibility testing (WCAG compliance)
+- **[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)** - Performance testing and Core Web Vitals monitoring
+
 ## 🚀 Getting Started Locally
 
 ### Prerequisites
@@ -98,7 +108,19 @@ The application will be available at `http://localhost:4321`
 | `npm run lint` | Run ESLint to check code quality |
 | `npm run lint:fix` | Fix auto-fixable ESLint errors |
 | `npm run format` | Format code with Prettier |
+| `npm run test` | Run unit and integration tests with Vitest |
+| `npm run test:watch` | Run Vitest in watch mode for iterative feedback |
+| `npm run test:unit` | Alias for `npm run test` to emphasize unit testing focus |
+| `npm run test:e2e` | Run end-to-end tests with Playwright |
+| `npm run test:e2e:headed` | Run Playwright in headed mode for debugging |
+| `npm run test:e2e:codegen` | Launch Playwright Codegen to record flows |
 | `npm run astro` | Run Astro CLI commands directly |
+## 🧪 Testing
+
+- **Unit + integration** – `npm run test` initializes the Vitest suite with `jsdom`, shared setup files, and coverage reports. Use `npm run test:watch` during development and `npm run test:unit` when you need an explicit unit-test run that mirrors `npm run test`.
+- **End-to-end** – Playwright targets Chromium (Desktop Chrome) only; `npm run test:e2e` launches the server, reuses browser contexts, and records traces/screenshots under `tests/e2e/results`. Use `npm run test:e2e:headed` when you need a visible browser and `npm run test:e2e:codegen` to scaffold new flows.
+- **Project structure** – Store reusable selectors and navigation logic in `tests/e2e/pages` (POM), keep screenshots under `tests/e2e/report`, and rely on Playwright hooks for setup/teardown so contexts stay isolated per test.
+- **Testing library** – The global setup file (`tests/setup/vitest.setup.ts`) loads `@testing-library/jest-dom`, so component tests can use familiar matchers, while Vitest encourages `expectTypeOf` and `vi` helpers for typed, deterministic assertions.
 
 ### Development Workflow
 
@@ -109,6 +131,11 @@ npm run dev
 # Before committing
 npm run lint        # Check for errors
 npm run format      # Format code
+npm run test        # Run unit tests
+
+# Testing
+npm run test        # Unit and integration tests
+npm run test:e2e    # End-to-end tests
 
 # Build for production
 npm run build
