@@ -25,23 +25,24 @@ export function PetCard({ pet, onOpen }: PetCardProps) {
         }
       }}
       aria-label={`Otwórz profil ${pet.name}`}
+      data-testid={`pet-card-${pet.id}`}
     >
       <div className="flex items-start gap-4">
         {/* Species Emoji */}
-        <div className="text-4xl" aria-hidden="true">
+        <div className="text-4xl" aria-hidden="true" data-testid="pet-card-emoji">
           {pet.speciesEmoji}
         </div>
 
         {/* Pet Info */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-lg text-card-foreground truncate group-hover:text-primary transition-colors">
+        <div className="flex-1 min-w-0" data-testid="pet-card-info">
+          <h3 className="font-semibold text-lg text-card-foreground truncate group-hover:text-primary transition-colors" data-testid="pet-card-name">
             {pet.name}
           </h3>
-          <p className="text-sm text-muted-foreground mt-1">{pet.entriesLabel}</p>
+          <p className="text-sm text-muted-foreground mt-1" data-testid="pet-card-entries">{pet.entriesLabel}</p>
         </div>
 
         {/* Arrow Icon */}
-        <div className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all">
+        <div className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" data-testid="pet-card-arrow">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

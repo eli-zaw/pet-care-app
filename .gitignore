@@ -16,6 +16,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.testing
 
 # macOS-specific files
 .DS_Store
@@ -28,3 +29,7 @@ tests/e2e/results/
 tests/e2e/report/
 .playwright/
 coverage/
+tests/e2e/auth/auth-session.json
+.env.test
+tests/e2e/home.spec.ts-snapshots/
+tests/e2e/pages/basic-ui.spec.ts-snapshots/

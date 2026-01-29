@@ -6,22 +6,28 @@ interface EmptyStateProps {
   onCta: () => void;
 }
 
-export function EmptyState({ viewModel, onCta }: EmptyStateProps) {
+interface EmptyStateProps {
+  viewModel: EmptyStateViewModel;
+  onCta: () => void;
+  ["data-testid"]?: string;
+}
+
+export function EmptyState({ viewModel, onCta, "data-testid": testId }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center" data-testid={testId}>
       {/* Icon */}
-      <div className="mb-4 text-6xl" aria-hidden="true">
+      <div className="mb-4 text-6xl" aria-hidden="true" data-testid={`${testId}-icon`}>
         🐾
       </div>
 
       {/* Title */}
-      <h2 className="text-2xl font-semibold text-card-foreground mb-2">{viewModel.title}</h2>
+      <h2 className="text-2xl font-semibold text-card-foreground mb-2" data-testid={`${testId}-title`}>{viewModel.title}</h2>
 
       {/* Description */}
-      <p className="text-muted-foreground mb-6 max-w-sm">{viewModel.description}</p>
+      <p className="text-muted-foreground mb-6 max-w-sm" data-testid={`${testId}-description`}>{viewModel.description}</p>
 
       {/* CTA */}
-      <Button onClick={onCta} size="lg" className="min-h-[44px] min-w-[44px]">
+      <Button onClick={onCta} size="lg" className="min-h-[44px] min-w-[44px]" data-testid={`${testId}-cta-button`}>
         {viewModel.ctaLabel}
       </Button>
     </div>

@@ -28,7 +28,7 @@ export function PetsList({
   // Loading state
   if (isLoading && items.length === 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="pets-list-loading">
         <SkeletonPetCard count={6} />
       </div>
     );
@@ -36,13 +36,13 @@ export function PetsList({
 
   // Empty state
   if (isEmpty && !isLoading) {
-    return <EmptyState viewModel={emptyState} onCta={onAddPet} />;
+    return <EmptyState viewModel={emptyState} onCta={onAddPet} data-testid="pets-list-empty" />;
   }
 
   return (
-    <div>
+    <div data-testid="pets-list">
       {/* Pets Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" data-testid="pets-list-grid">
         {items.map((pet) => (
           <PetCard key={pet.id} pet={pet} onOpen={onPetOpen} />
         ))}
@@ -50,14 +50,14 @@ export function PetsList({
 
       {/* Loading more items skeleton (for mobile append) */}
       {isLoading && items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" data-testid="pets-list-loading-more">
           <SkeletonPetCard count={3} />
         </div>
       )}
 
       {/* Pagination Controls */}
       {!isEmpty && (
-        <PaginationControls pagination={pagination} onPageChange={onPageChange} isLoading={isLoading} />
+        <PaginationControls pagination={pagination} onPageChange={onPageChange} isLoading={isLoading} data-testid="pets-list-pagination" />
       )}
     </div>
   );

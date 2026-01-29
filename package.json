@@ -13,9 +13,15 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:codegen": "playwright codegen"
+    "test:e2e": "node tests/e2e/index.cjs",
+    "test:e2e:headed": "node tests/e2e/index.cjs --headed",
+    "test:e2e:codegen": "node tests/e2e/index.cjs --codegen",
+    "dev:e2e": "astro dev --mode testing",
+    "test:e2e:full": "npm run dev:e2e -- --port 4173 & sleep 5 && npm run test:e2e && pkill -f 'astro dev'",
+    "test:e2e:manual": "playwright test --grep-invert 'PET-' && echo 'Uruchom najpierw: npm run dev:e2e -- --port 4173'",
+    "test:e2e:auth": "node tests/e2e/index.cjs auth-diagnostic.spec.ts",
+    "test:e2e:seeded": "E2E_SEED_DB=true node tests/e2e/index.cjs",
+    "test:e2e:direct": "playwright test"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
@@ -75,7 +81,8 @@
     "vitest": "^1.5.3",
     "vitest-axe": "^0.1.0",
     "@vitest/coverage-v8": "^1.5.3",
-    "jsdom": "^23.0.0"
+    "jsdom": "^23.0.0",
+    "dotenv-cli": "^7.4.2"
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [

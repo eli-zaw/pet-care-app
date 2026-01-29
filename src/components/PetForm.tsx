@@ -324,25 +324,26 @@ export function PetForm({
     !isValid || isSubmitting || (mode === "edit" && isUnchanged);
 
   return (
-    <Card className="mx-auto max-w-2xl">
-      <form onSubmit={handleSubmit}>
+    <Card className="mx-auto max-w-2xl" data-testid="pet-form">
+      <form onSubmit={handleSubmit} data-testid="pet-form-form">
         <CardHeader>
-          <CardTitle>{headerTitle}</CardTitle>
-          <CardDescription>{headerDescription}</CardDescription>
+          <CardTitle data-testid="pet-form-title">{headerTitle}</CardTitle>
+          <CardDescription data-testid="pet-form-description">{headerDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Błąd ogólny */}
           {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive" data-testid="pet-form-general-error">
               {errors.general}
             </div>
           )}
 
           {/* Pole: Imię */}
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="pet-form-name-field">
             <label
               htmlFor="name"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              data-testid="pet-form-name-label"
             >
               Imię
             </label>
@@ -358,19 +359,21 @@ export function PetForm({
               aria-describedby={errors.name ? "name-error" : undefined}
               className="text-base md:text-sm"
               placeholder="np. Luna, Max, Reksio"
+              data-testid="pet-form-name-input"
             />
             {errors.name && (
-              <p id="name-error" className="text-sm text-destructive">
+              <p id="name-error" className="text-sm text-destructive" data-testid="pet-form-name-error">
                 {errors.name}
               </p>
             )}
           </div>
 
           {/* Pole: Gatunek */}
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="pet-form-species-field">
             <label
               htmlFor="species"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              data-testid="pet-form-species-label"
             >
               Gatunek
             </label>
@@ -378,18 +381,24 @@ export function PetForm({
               value={formData.species}
               onValueChange={handleSpeciesChange}
               disabled={mode === "edit"}
+              data-testid="pet-form-species-select"
             >
               <SelectTrigger
                 id="species"
                 aria-invalid={!!errors.species}
                 className="text-base md:text-sm"
                 disabled={mode === "edit"}
+                data-testid="pet-form-species-trigger"
               >
                 <SelectValue placeholder="Wybierz gatunek" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent data-testid="pet-form-species-content">
                 {SPECIES_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    data-testid={`pet-form-species-option-${option.value}`}
+                  >
                     <span className="flex items-center gap-2">
                       <span>{option.emoji}</span>
                       <span>{option.label}</span>
@@ -399,12 +408,12 @@ export function PetForm({
               </SelectContent>
             </Select>
             {mode === "edit" && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground" data-testid="pet-form-species-disabled-hint">
                 Gatunek nie może być zmieniony po utworzeniu
               </p>
             )}
             {errors.species && (
-              <p className="text-sm text-destructive">{errors.species}</p>
+              <p className="text-sm text-destructive" data-testid="pet-form-species-error">{errors.species}</p>
             )}
           </div>
         </CardContent>
@@ -415,6 +424,7 @@ export function PetForm({
             onClick={handleCancel}
             disabled={isSubmitting}
             className="min-h-[44px] sm:min-h-0"
+            data-testid="pet-form-cancel-button"
           >
             Anuluj
           </Button>
@@ -422,6 +432,7 @@ export function PetForm({
             type="submit"
             disabled={isSubmitDisabled}
             className="min-h-[44px] sm:min-h-0"
+            data-testid="pet-form-submit-button"
           >
             {isSubmitting ? "Zapisywanie..." : submitButtonText}
           </Button>

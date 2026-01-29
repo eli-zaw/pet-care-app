@@ -6,9 +6,10 @@ interface PaginationControlsProps {
   pagination: PaginationViewModel;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
+  ["data-testid"]?: string;
 }
 
-export function PaginationControls({ pagination, onPageChange, isLoading = false }: PaginationControlsProps) {
+export function PaginationControls({ pagination, onPageChange, isLoading = false, "data-testid": testId }: PaginationControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -24,20 +25,21 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
   if (isMobile) {
     if (!pagination.hasNext) {
       return (
-        <div className="flex justify-center py-8">
-          <p className="text-sm text-muted-foreground">Wszystkie dane zostały załadowane</p>
+        <div className="flex justify-center py-8" data-testid={`${testId}-end`}>
+          <p className="text-sm text-muted-foreground" data-testid={`${testId}-end-message`}>Wszystkie dane zostały załadowane</p>
         </div>
       );
     }
 
     return (
-      <div className="flex justify-center py-6">
+      <div className="flex justify-center py-6" data-testid={`${testId}-mobile`}>
         <Button
           onClick={() => onPageChange(pagination.page + 1)}
           disabled={isLoading || !pagination.hasNext}
           size="lg"
           variant="outline"
           className="w-full sm:w-auto min-h-[44px] min-w-[44px]"
+          data-testid={`${testId}-load-more-button`}
         >
           {isLoading ? "Ładowanie..." : "Załaduj więcej"}
         </Button>
@@ -49,7 +51,7 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
   const pageNumbers = generatePageNumbers(pagination.page, pagination.totalPages);
 
   return (
-    <nav className="flex items-center justify-center gap-2 py-6" aria-label="Paginacja">
+    <nav className="flex items-center justify-center gap-2 py-6" aria-label="Paginacja" data-testid={`${testId}-desktop`}>
       {/* Previous button */}
       <Button
         onClick={() => onPageChange(pagination.page - 1)}
@@ -57,16 +59,17 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
         variant="outline"
         size="default"
         aria-label="Poprzednia strona"
+        data-testid={`${testId}-prev-button`}
       >
         Poprzednia
       </Button>
 
       {/* Page numbers */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" data-testid={`${testId}-page-numbers`}>
         {pageNumbers.map((pageNum, index) => {
           if (pageNum === "...") {
             return (
-              <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+              <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground" data-testid={`${testId}-ellipsis-${index}`}>
                 ...
               </span>
             );
@@ -85,6 +88,7 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
               aria-label={`Strona ${page}`}
               aria-current={isCurrent ? "page" : undefined}
               className="min-w-[44px]"
+              data-testid={`${testId}-page-${page}${isCurrent ? '-current' : ''}`}
             >
               {page}
             </Button>
@@ -99,6 +103,7 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
         variant="outline"
         size="default"
         aria-label="Następna strona"
+        data-testid={`${testId}-next-button`}
       >
         Następna
       </Button>
