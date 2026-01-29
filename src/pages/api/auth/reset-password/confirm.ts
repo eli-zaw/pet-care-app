@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createSupabaseServerInstance } from '../../../../db/supabase.client';
-import { resetPasswordConfirmSchema } from '../../../lib/schemas/auth';
+import { resetPasswordConfirmSchema } from '../../../../lib/schemas/auth';
 
 export const prerender = false;
 
