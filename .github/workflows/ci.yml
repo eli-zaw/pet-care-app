@@ -1,0 +1,37 @@
+name: CI / build-and-test
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    name: Run unit tests
+    runs-on: macos-latest
+    env:
+      NODE_ENV: test
+    steps:
+      - name: Prepare Node environment
+        uses: ./.github/actions/node-bootstrap
+        with:
+          node-version: 22.14.0
+
+      - name: Run unit tests
+        run: npm run test
+
+  build:
+    name: Build production artifacts
+    needs: test
+    runs-on: macos-latest
+    env:
+      NODE_ENV: production
+    steps:
+      - name: Prepare Node environment
+        uses: ./.github/actions/node-bootstrap
+        with:
+          node-version: 22.14.0
+
+      - name: Build production artifacts
+        run: npm run build
