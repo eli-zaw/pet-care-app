@@ -64,6 +64,16 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      - name: Create .env.testing for E2E
+        run: |
+          cat <<'EOF' > .env.testing
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          E2E_USERNAME=${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
+          NODE_ENV=test
+          EOF
+
       - name: Start app server
         run: npm run dev:e2e -- --host 127.0.0.1 --port 4173 & echo $! > /tmp/astro.pid
 
