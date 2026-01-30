@@ -41,3 +41,24 @@ jobs:
 
       - name: Build production artifacts
         run: npm run build
+
+  e2e:
+    name: Run E2E tests (basic UI)
+    needs: test
+    runs-on: macos-latest
+    env:
+      NODE_ENV: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Node environment
+        uses: ./.github/actions/node-bootstrap
+        with:
+          node-version: 22.14.0
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests (no server)
+        run: npm run test:e2e:manual
