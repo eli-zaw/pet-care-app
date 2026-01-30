@@ -26,7 +26,7 @@ jobs:
 
   build:
     name: Build production artifacts
-    needs: test
+    needs: e2e
     runs-on: macos-latest
     env:
       NODE_ENV: production
@@ -44,7 +44,7 @@ jobs:
 
   e2e:
     name: Run E2E tests
-    needs: build
+    needs: test
     runs-on: macos-latest
     env:
       NODE_ENV: test
@@ -65,12 +65,12 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Start app server
-        run: npm run dev:e2e -- --port 4173 & echo $! > /tmp/astro.pid
+        run: npm run dev:e2e -- --host 127.0.0.1 --port 4173 & echo $! > /tmp/astro.pid
 
       - name: Wait for app to be ready
         run: |
           for i in {1..60}; do
-            if curl -sf http://localhost:4173/ > /dev/null; then
+            if nc -z 127.0.0.1 4173; then
               echo "Server is ready"
               exit 0
             fi
