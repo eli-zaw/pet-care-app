@@ -43,11 +43,15 @@ jobs:
         run: npm run build
 
   e2e:
-    name: Run E2E tests (basic UI)
-    needs: test
+    name: Run E2E tests
+    needs: build
     runs-on: macos-latest
     env:
       NODE_ENV: test
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,5 +64,27 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run E2E tests (no server)
-        run: npm run test:e2e:manual
+      - name: Start app server
+        run: npm run dev:e2e -- --port 4173 & echo $! > /tmp/astro.pid
+
+      - name: Wait for app to be ready
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://localhost:4173/ > /dev/null; then
+              echo "Server is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server did not start in time"
+          exit 1
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Stop app server
+        if: always()
+        run: |
+          if [ -f /tmp/astro.pid ]; then
+            kill "$(cat /tmp/astro.pid)" || true
+          fi

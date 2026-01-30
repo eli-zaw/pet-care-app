@@ -113,7 +113,6 @@ npm run test:e2e:manual
 # Utwórz plik .env.testing z zawartością:
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_ANON_KEY=your-anon-key-here
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 
 # Dane użytkownika testowego (linie 6-7 z .env.example):
 E2E_USERNAME=twój@email.testowy
