@@ -50,6 +50,7 @@ jobs:
       NODE_ENV: test
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
     steps:
@@ -69,6 +70,7 @@ jobs:
           cat <<'EOF' > .env.testing
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           E2E_USERNAME=${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
           NODE_ENV=test
