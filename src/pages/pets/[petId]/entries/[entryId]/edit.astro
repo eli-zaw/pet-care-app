@@ -57,8 +57,7 @@ try {
   }
 
   entryData = await entryResponse.json();
-} catch (err) {
-  console.error("Error fetching data in edit care entry page:", err);
+} catch {
   return Astro.redirect(`/pets/${petId}`);
 }
 

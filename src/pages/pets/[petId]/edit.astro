@@ -39,8 +39,7 @@ try {
   } else {
     petData = await response.json();
   }
-} catch (err) {
-  console.error("Error fetching pet data in edit page:", err);
+} catch {
   error = "Wystąpił błąd podczas ładowania danych";
 }
 

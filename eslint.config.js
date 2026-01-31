@@ -65,6 +65,18 @@ export default tseslint.config(
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier,
   tseslint.config({
+    files: ["src/pages/api/**/*.{js,jsx,ts,tsx}", "src/middleware/**/*.{js,jsx,ts,tsx}", "src/db/**/*.{js,jsx,ts,tsx}"],
+    rules: {
+      "no-console": "off",
+    },
+  }),
+  tseslint.config({
+    files: ["**/*.astro"],
+    rules: {
+      "prettier/prettier": "off",
+    },
+  }),
+  tseslint.config({
     files: ["tests/e2e/**/*.{js,jsx,ts,tsx,cjs}"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",

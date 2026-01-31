@@ -107,8 +107,7 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
 
       // Sukces - przekieruj do redirectUrl
       window.location.href = redirectUrl;
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       setErrors({ general: "Wystąpił błąd podczas logowania" });
     } finally {
       setIsSubmitting(false);

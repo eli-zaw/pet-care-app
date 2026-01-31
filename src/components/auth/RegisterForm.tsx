@@ -135,8 +135,7 @@ export function RegisterForm() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000); // Krótkie opóźnienie żeby użytkownik zobaczył toast
-    } catch (error) {
-      console.error("Register error:", error);
+    } catch {
       setErrors({ general: "Wystąpił błąd podczas rejestracji" });
     } finally {
       setIsSubmitting(false);

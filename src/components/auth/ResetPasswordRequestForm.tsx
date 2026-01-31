@@ -64,8 +64,7 @@ export function ResetPasswordRequestForm() {
       // Zawsze pokazuj sukces (bezpieczeństwo - nie ujawniaj czy email istnieje)
       toast.success(data.message || "Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email");
       setIsSuccess(true);
-    } catch (error) {
-      console.error("Reset password request error:", error);
+    } catch {
       // Nawet w przypadku błędu, pokazuj sukces dla bezpieczeństwa
       toast.success("Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email");
       setIsSuccess(true);

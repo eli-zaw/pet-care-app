@@ -113,8 +113,7 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000); // Krótkie opóźnienie żeby użytkownik zobaczył toast
-    } catch (error) {
-      console.error("Reset password confirm error:", error);
+    } catch {
       setErrors({ general: "Nie udało się zmienić hasła" });
     } finally {
       setIsSubmitting(false);

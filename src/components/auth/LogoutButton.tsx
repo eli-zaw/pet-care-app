@@ -17,10 +17,7 @@ export function LogoutButton() {
         },
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        console.error("Logout failed:", data.error);
         toast.error("Nie udało się wylogować");
         setIsLoading(false);
         return;
@@ -28,8 +25,7 @@ export function LogoutButton() {
 
       // Success - redirect to home page
       window.location.href = "/";
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
       toast.error("Nie udało się wylogować");
       setIsLoading(false);
     }

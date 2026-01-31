@@ -248,7 +248,6 @@ export function CareEntryForm({
       } else {
         // Tryb EDIT: PATCH /api/pets/:petId/care-entries/:entryId
         if (!entryId) {
-          console.error("CareEntryForm: entryId is required in edit mode");
           toast.error("Wystąpił błąd");
           setIsSubmitting(false);
           return;
@@ -293,7 +292,6 @@ export function CareEntryForm({
       }
     } catch (error) {
       // Błąd sieci
-      console.error("Network error in CareEntryForm:", error);
       if (error instanceof TypeError) {
         toast.error("Brak połączenia. Sprawdź internet.");
       } else {

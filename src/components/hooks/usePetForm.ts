@@ -132,7 +132,6 @@ export const usePetForm = ({ mode = "create", petId, initialData, onSuccess }: U
       }
 
       if (!petId) {
-        console.error("PetForm: petId is required in edit mode");
         toast.error("Wystąpił błąd");
         return;
       }
@@ -159,7 +158,6 @@ export const usePetForm = ({ mode = "create", petId, initialData, onSuccess }: U
         return;
       }
 
-      console.error("Network error in PetForm:", error);
       if (error instanceof TypeError) {
         toast.error("Brak połączenia. Sprawdź internet.");
       } else {

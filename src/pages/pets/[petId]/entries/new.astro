@@ -37,8 +37,7 @@ try {
   }
 
   petData = await response.json();
-} catch (err) {
-  console.error("Error fetching pet data in add care entry page:", err);
+} catch {
   return Astro.redirect("/dashboard");
 }
 
