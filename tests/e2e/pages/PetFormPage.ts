@@ -62,10 +62,10 @@ export class PetFormPage extends BasePage {
     // Clear the input completely using triple-click to select all, then type
     await this.nameInput.click({ clickCount: 3 });
     await this.nameInput.type(name, { delay: 50 });
-    
+
     // Blur to trigger validation
     await this.nameInput.blur();
-    
+
     // Wait a bit for React Hook Form to process the validation
     await this.page.waitForTimeout(100);
   }
@@ -79,7 +79,7 @@ export class PetFormPage extends BasePage {
     await this.speciesTrigger.click();
     await this.page.locator(`[data-testid="pet-form-species-option-${species}"]`).click();
     await expect(this.speciesTrigger).toHaveText(new RegExp(speciesLabels[species], "i"));
-    
+
     // Wait a bit for React Hook Form to process the validation
     await this.page.waitForTimeout(100);
   }
