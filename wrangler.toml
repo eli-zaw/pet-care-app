@@ -1,7 +1,4 @@
 name = "pet-care-app"
 compatibility_date = "2026-01-31"
 compatibility_flags = ["nodejs_compat"]
-main = "./dist/_worker.js"
-
-[assets]
-directory = "./dist"
+pages_build_output_dir = "dist"
