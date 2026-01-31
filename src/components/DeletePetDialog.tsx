@@ -17,22 +17,21 @@ interface DeletePetDialogProps {
   onCancel: () => void;
 }
 
-export function DeletePetDialog({
-  open,
-  petName,
-  isDeleting,
-  onConfirm,
-  onCancel,
-}: DeletePetDialogProps) {
+export function DeletePetDialog({ open, petName, isDeleting, onConfirm, onCancel }: DeletePetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="sm:max-w-md" data-testid="delete-pet-dialog">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10" data-testid="delete-pet-dialog-icon">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10"
+              data-testid="delete-pet-dialog-icon"
+            >
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <DialogTitle className="text-xl" data-testid="delete-pet-dialog-title">Usuń {petName}?</DialogTitle>
+            <DialogTitle className="text-xl" data-testid="delete-pet-dialog-title">
+              Usuń {petName}?
+            </DialogTitle>
           </div>
           <DialogDescription className="text-base pt-2" data-testid="delete-pet-dialog-description">
             To usunie również <strong>wszystkie wpisy</strong> opieki związane z tym zwierzęciem.

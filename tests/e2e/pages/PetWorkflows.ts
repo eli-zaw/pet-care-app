@@ -1,8 +1,8 @@
-import { type Page } from '@playwright/test';
-import { PetFormPage } from './PetFormPage';
-import { PetProfilePage } from './PetProfilePage';
-import { DeletePetDialogPage } from './DeletePetDialogPage';
-import { PetsListPage } from './PetsListPage';
+import { type Page } from "@playwright/test";
+import { PetFormPage } from "./PetFormPage";
+import { PetProfilePage } from "./PetProfilePage";
+import { DeletePetDialogPage } from "./DeletePetDialogPage";
+import { PetsListPage } from "./PetsListPage";
 
 /**
  * Workflow helpers for complex pet management operations
@@ -26,9 +26,9 @@ export class PetWorkflows {
   /**
    * Complete workflow: Create pet -> Verify in list -> Edit name -> Delete
    */
-  async createEditAndDeletePet(petName: string, species: 'dog' | 'cat' | 'other', newName: string): Promise<void> {
+  async createEditAndDeletePet(petName: string, species: "dog" | "cat" | "other", newName: string): Promise<void> {
     // Navigate to dashboard
-    await this.page.goto('/dashboard');
+    await this.page.goto("/dashboard");
     await this.petsList.waitForList();
 
     // Create pet
@@ -54,7 +54,7 @@ export class PetWorkflows {
   /**
    * Create a new pet and return its ID
    */
-  async createPet(name: string, species: 'dog' | 'cat' | 'other'): Promise<string> {
+  async createPet(name: string, species: "dog" | "cat" | "other"): Promise<string> {
     // Go to add pet form
     await this.petsList.clickAddPet();
     await this.petForm.waitForForm();
@@ -70,7 +70,7 @@ export class PetWorkflows {
     const url = this.page.url();
     const petIdMatch = url.match(/\/pets\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
     if (!petIdMatch) {
-      throw new Error('Could not extract pet ID from URL after creation');
+      throw new Error("Could not extract pet ID from URL after creation");
     }
 
     return petIdMatch[1];
@@ -81,7 +81,7 @@ export class PetWorkflows {
    */
   async editPetName(petId: string, newName: string): Promise<void> {
     // Go to pet profile and wait for page to be fully loaded
-    await this.page.goto(`/pets/${petId}`, { waitUntil: 'networkidle' });
+    await this.page.goto(`/pets/${petId}`, { waitUntil: "networkidle" });
     await this.petProfile.waitForProfile();
 
     // Click edit
@@ -102,7 +102,7 @@ export class PetWorkflows {
    */
   async deletePet(petId: string): Promise<void> {
     // Go to pet profile and wait for page to be fully loaded
-    await this.page.goto(`/pets/${petId}`, { waitUntil: 'networkidle' });
+    await this.page.goto(`/pets/${petId}`, { waitUntil: "networkidle" });
     await this.petProfile.waitForProfile();
 
     // Click delete
@@ -113,14 +113,14 @@ export class PetWorkflows {
     await this.deleteDialog.confirmDeletion();
 
     // Wait for redirect to dashboard
-    await this.page.waitForURL('/dashboard');
+    await this.page.waitForURL("/dashboard");
     await this.petsList.waitForList();
   }
 
   /**
    * Try to create pet with duplicate name and expect error
    */
-  async attemptDuplicatePetCreation(name: string, species: 'dog' | 'cat' | 'other'): Promise<void> {
+  async attemptDuplicatePetCreation(name: string, species: "dog" | "cat" | "other"): Promise<void> {
     // Go to add pet form
     await this.petsList.clickAddPet();
     await this.petForm.waitForForm();
@@ -131,14 +131,14 @@ export class PetWorkflows {
     await this.petForm.submitForm();
 
     // Expect error on name field (409 conflict sets name error, not general)
-    await this.petForm.expectNameError('Zwierzę o tej nazwie już istnieje');
+    await this.petForm.expectNameError("Zwierzę o tej nazwie już istnieje");
   }
 
   /**
    * Navigate to dashboard and prepare for pet operations
    */
   async prepareDashboard(): Promise<void> {
-    await this.page.goto('/dashboard');
+    await this.page.goto("/dashboard");
     await this.petsList.waitForList();
   }
 }

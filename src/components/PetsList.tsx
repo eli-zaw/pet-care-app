@@ -57,7 +57,12 @@ export function PetsList({
 
       {/* Pagination Controls */}
       {!isEmpty && (
-        <PaginationControls pagination={pagination} onPageChange={onPageChange} isLoading={isLoading} data-testid="pets-list-pagination" />
+        <PaginationControls
+          pagination={pagination}
+          onPageChange={onPageChange}
+          isLoading={isLoading}
+          data-testid="pets-list-pagination"
+        />
       )}
     </div>
   );

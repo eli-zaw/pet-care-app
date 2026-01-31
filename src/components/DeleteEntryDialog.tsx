@@ -16,12 +16,7 @@ interface DeleteEntryDialogProps {
   onCancel: () => void;
 }
 
-export function DeleteEntryDialog({
-  open,
-  isDeleting,
-  onConfirm,
-  onCancel,
-}: DeleteEntryDialogProps) {
+export function DeleteEntryDialog({ open, isDeleting, onConfirm, onCancel }: DeleteEntryDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="sm:max-w-md">
@@ -38,13 +33,7 @@ export function DeleteEntryDialog({
         </DialogHeader>
 
         <DialogFooter className="flex-col-reverse sm:flex-row gap-2 sm:gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isDeleting}
-            className="w-full sm:w-auto"
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isDeleting} className="w-full sm:w-auto">
             Anuluj
           </Button>
           <Button

@@ -12,7 +12,7 @@ export interface TestUserData {
  */
 export function getTestUser(): TestUserData {
   return {
-    email: process.env.E2E_USERNAME || 'test@example.com',
-    password: process.env.E2E_PASSWORD || 'testpassword123',
+    email: process.env.E2E_USERNAME || "test@example.com",
+    password: process.env.E2E_PASSWORD || "testpassword123",
   };
 }

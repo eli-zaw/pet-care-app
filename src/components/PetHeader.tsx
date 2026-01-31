@@ -25,11 +25,7 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
   };
 
   const entriesLabel =
-    pet.entriesCount === 0
-      ? "Brak wpisów"
-      : pet.entriesCount === 1
-      ? "1 wpis"
-      : `${pet.entriesCount} wpisów`;
+    pet.entriesCount === 0 ? "Brak wpisów" : pet.entriesCount === 1 ? "1 wpis" : `${pet.entriesCount} wpisów`;
 
   return (
     <>
@@ -48,9 +44,7 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
                 <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-0.5 text-sm font-medium">
                   {pet.speciesDisplay}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  {entriesLabel}
-                </span>
+                <span className="text-sm text-muted-foreground">{entriesLabel}</span>
                 <CareStatusBadge lastEntryDate={pet.lastEntryDate} />
               </div>
             </div>

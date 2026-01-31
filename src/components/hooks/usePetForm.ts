@@ -14,12 +14,7 @@ interface UsePetFormOptions {
   onSuccess?: (petId: string) => void;
 }
 
-export const usePetForm = ({
-  mode = "create",
-  petId,
-  initialData,
-  onSuccess,
-}: UsePetFormOptions) => {
+export const usePetForm = ({ mode = "create", petId, initialData, onSuccess }: UsePetFormOptions) => {
   const defaultValues = useMemo<PetFormViewModel>(() => {
     if (mode === "edit" && initialData) {
       return {
@@ -91,19 +86,19 @@ export const usePetForm = ({
         case 401:
           toast.error("Sesja wygasła");
           setTimeout(() => {
-            window.location.href = "/";
+            window.location.assign("/");
           }, 1000);
           break;
         case 403:
           toast.error("Brak dostępu do tego zwierzęcia");
           setTimeout(() => {
-            window.location.href = "/dashboard";
+            window.location.assign("/dashboard");
           }, 1000);
           break;
         case 404:
           toast.error("Zwierzę nie znalezione");
           setTimeout(() => {
-            window.location.href = "/dashboard";
+            window.location.assign("/dashboard");
           }, 1000);
           break;
         case 409:
@@ -131,7 +126,7 @@ export const usePetForm = ({
         if (onSuccess) {
           onSuccess(result.id);
         } else {
-          window.location.href = `/pets/${result.id}`;
+          window.location.assign(`/pets/${result.id}`);
         }
         return;
       }
@@ -149,7 +144,7 @@ export const usePetForm = ({
       if (onSuccess) {
         onSuccess(result.id);
       } else {
-        window.location.href = `/pets/${result.id}`;
+        window.location.assign(`/pets/${result.id}`);
       }
     },
     [mode, onSuccess, petId]

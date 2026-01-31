@@ -37,9 +37,7 @@ export function CategoryPicker({ value, onChange, error }: CategoryPickerProps) 
               <span className="text-3xl" aria-hidden="true">
                 {option.emoji}
               </span>
-              <span className="text-sm font-medium leading-tight">
-                {option.label}
-              </span>
+              <span className="text-sm font-medium leading-tight">{option.label}</span>
             </Button>
           );
         })}

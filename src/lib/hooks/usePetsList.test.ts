@@ -1,11 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type {
-  PetsListResponseDto,
-  PetSummaryDto,
-  DashboardViewModel,
-  PetCardViewModel,
-  PaginationViewModel,
-} from '@/types';
+import { describe, it, expect } from "vitest";
+import type { PetsListResponseDto, DashboardViewModel, PetCardViewModel, PaginationViewModel } from "@/types";
 
 // Test versions of usePetsList functions
 const mapPetsToViewModel = (response: PetsListResponseDto): DashboardViewModel => {
@@ -65,22 +59,22 @@ const getCountLabel = (count: number): string => {
   return `Masz ${count} zwierząt`;
 };
 
-describe('usePetsList', () => {
-  describe('mapPetsToViewModel', () => {
-    it('should map PetsListResponseDto to DashboardViewModel with single pet', () => {
+describe("usePetsList", () => {
+  describe("mapPetsToViewModel", () => {
+    it("should map PetsListResponseDto to DashboardViewModel with single pet", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [
           {
-            id: 'pet-123',
-            animal_code: 'MAX001',
-            name: 'Max',
-            species: 'dog',
-            species_display: 'Pies',
-            species_emoji: '🐕',
+            id: "pet-123",
+            animal_code: "MAX001",
+            name: "Max",
+            species: "dog",
+            species_display: "Pies",
+            species_emoji: "🐕",
             entries_count: 5,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z',
+            created_at: "2024-01-01T00:00:00Z",
+            updated_at: "2024-01-01T00:00:00Z",
           },
         ],
         pagination: {
@@ -97,12 +91,12 @@ describe('usePetsList', () => {
       expect(result).toEqual({
         pets: [
           {
-            id: 'pet-123',
-            name: 'Max',
-            speciesEmoji: '🐕',
+            id: "pet-123",
+            name: "Max",
+            speciesEmoji: "🐕",
             entriesCount: 5,
-            entriesLabel: '5 wpisów',
-            href: '/pets/pet-123',
+            entriesLabel: "5 wpisów",
+            href: "/pets/pet-123",
           },
         ],
         pagination: {
@@ -114,42 +108,42 @@ describe('usePetsList', () => {
           hasNext: false,
         },
         header: {
-          title: 'Twoje zwierzęta',
-          countLabel: 'Masz 1 zwierzę',
+          title: "Twoje zwierzęta",
+          countLabel: "Masz 1 zwierzę",
         },
         emptyState: {
-          title: 'Dodaj swojego pierwszego pupila',
-          description: 'Zacznij dokumentować opiekę nad swoim zwierzęciem',
-          ctaLabel: 'Dodaj zwierzę',
+          title: "Dodaj swojego pierwszego pupila",
+          description: "Zacznij dokumentować opiekę nad swoim zwierzęciem",
+          ctaLabel: "Dodaj zwierzę",
         },
       });
     });
 
-    it('should map PetsListResponseDto to DashboardViewModel with multiple pets', () => {
+    it("should map PetsListResponseDto to DashboardViewModel with multiple pets", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [
           {
-            id: 'pet-123',
-            animal_code: 'MAX001',
-            name: 'Max',
-            species: 'dog',
-            species_display: 'Pies',
-            species_emoji: '🐕',
+            id: "pet-123",
+            animal_code: "MAX001",
+            name: "Max",
+            species: "dog",
+            species_display: "Pies",
+            species_emoji: "🐕",
             entries_count: 5,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z',
+            created_at: "2024-01-01T00:00:00Z",
+            updated_at: "2024-01-01T00:00:00Z",
           },
           {
-            id: 'pet-456',
-            animal_code: 'LUN001',
-            name: 'Luna',
-            species: 'cat',
-            species_display: 'Kot',
-            species_emoji: '🐱',
+            id: "pet-456",
+            animal_code: "LUN001",
+            name: "Luna",
+            species: "cat",
+            species_display: "Kot",
+            species_emoji: "🐱",
             entries_count: 0,
-            created_at: '2024-01-02T00:00:00Z',
-            updated_at: '2024-01-02T00:00:00Z',
+            created_at: "2024-01-02T00:00:00Z",
+            updated_at: "2024-01-02T00:00:00Z",
           },
         ],
         pagination: {
@@ -165,25 +159,25 @@ describe('usePetsList', () => {
       // Assert
       expect(result.pets).toHaveLength(2);
       expect(result.pets[0]).toEqual({
-        id: 'pet-123',
-        name: 'Max',
-        speciesEmoji: '🐕',
+        id: "pet-123",
+        name: "Max",
+        speciesEmoji: "🐕",
         entriesCount: 5,
-        entriesLabel: '5 wpisów',
-        href: '/pets/pet-123',
+        entriesLabel: "5 wpisów",
+        href: "/pets/pet-123",
       });
       expect(result.pets[1]).toEqual({
-        id: 'pet-456',
-        name: 'Luna',
-        speciesEmoji: '🐱',
+        id: "pet-456",
+        name: "Luna",
+        speciesEmoji: "🐱",
         entriesCount: 0,
-        entriesLabel: 'Brak wpisów',
-        href: '/pets/pet-456',
+        entriesLabel: "Brak wpisów",
+        href: "/pets/pet-456",
       });
-      expect(result.header.countLabel).toBe('Masz 2 zwierzęta');
+      expect(result.header.countLabel).toBe("Masz 2 zwierzęta");
     });
 
-    it('should handle pagination correctly', () => {
+    it("should handle pagination correctly", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [],
@@ -208,7 +202,7 @@ describe('usePetsList', () => {
       });
     });
 
-    it('should handle last page correctly', () => {
+    it("should handle last page correctly", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [],
@@ -227,7 +221,7 @@ describe('usePetsList', () => {
       expect(result.pagination.hasNext).toBe(false); // page === totalPages
     });
 
-    it('should handle first page correctly', () => {
+    it("should handle first page correctly", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [],
@@ -246,7 +240,7 @@ describe('usePetsList', () => {
       expect(result.pagination.hasNext).toBe(true);
     });
 
-    it('should handle empty results', () => {
+    it("should handle empty results", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [],
@@ -263,10 +257,10 @@ describe('usePetsList', () => {
       // Assert
       expect(result.pets).toEqual([]);
       expect(result.pagination.totalPages).toBe(0);
-      expect(result.header.countLabel).toBe('Nie masz jeszcze zwierząt');
+      expect(result.header.countLabel).toBe("Nie masz jeszcze zwierząt");
     });
 
-    it('should handle single page results', () => {
+    it("should handle single page results", () => {
       // Arrange
       const response: PetsListResponseDto = {
         items: [],
@@ -287,111 +281,110 @@ describe('usePetsList', () => {
     });
   });
 
-  describe('getEntriesLabel', () => {
+  describe("getEntriesLabel", () => {
     it('should return "Brak wpisów" for 0 entries', () => {
       // Act & Assert
-      expect(getEntriesLabel(0)).toBe('Brak wpisów');
+      expect(getEntriesLabel(0)).toBe("Brak wpisów");
     });
 
     it('should return "1 wpis" for 1 entry', () => {
       // Act & Assert
-      expect(getEntriesLabel(1)).toBe('1 wpis');
+      expect(getEntriesLabel(1)).toBe("1 wpis");
     });
 
-    it('should return correct plural forms for 2-4 entries', () => {
+    it("should return correct plural forms for 2-4 entries", () => {
       // Act & Assert
-      expect(getEntriesLabel(2)).toBe('2 wpisy');
-      expect(getEntriesLabel(3)).toBe('3 wpisy');
-      expect(getEntriesLabel(4)).toBe('4 wpisy');
+      expect(getEntriesLabel(2)).toBe("2 wpisy");
+      expect(getEntriesLabel(3)).toBe("3 wpisy");
+      expect(getEntriesLabel(4)).toBe("4 wpisy");
     });
 
     it('should return "X wpisów" for 5+ entries', () => {
       // Act & Assert
-      expect(getEntriesLabel(5)).toBe('5 wpisów');
-      expect(getEntriesLabel(10)).toBe('10 wpisów');
-      expect(getEntriesLabel(21)).toBe('21 wpisów');
-      expect(getEntriesLabel(100)).toBe('100 wpisów');
+      expect(getEntriesLabel(5)).toBe("5 wpisów");
+      expect(getEntriesLabel(10)).toBe("10 wpisów");
+      expect(getEntriesLabel(21)).toBe("21 wpisów");
+      expect(getEntriesLabel(100)).toBe("100 wpisów");
     });
 
-    it('should handle edge cases', () => {
+    it("should handle edge cases", () => {
       // Act & Assert
-      expect(getEntriesLabel(11)).toBe('11 wpisów');
-      expect(getEntriesLabel(12)).toBe('12 wpisów');
-      expect(getEntriesLabel(13)).toBe('13 wpisów');
-      expect(getEntriesLabel(14)).toBe('14 wpisów');
+      expect(getEntriesLabel(11)).toBe("11 wpisów");
+      expect(getEntriesLabel(12)).toBe("12 wpisów");
+      expect(getEntriesLabel(13)).toBe("13 wpisów");
+      expect(getEntriesLabel(14)).toBe("14 wpisów");
     });
 
-    describe('Polish grammar rules', () => {
-      it('should follow Polish plural rules correctly', () => {
+    describe("Polish grammar rules", () => {
+      it("should follow Polish plural rules correctly", () => {
         // Test the pattern: 1 (singular), 2-4 (plural form 1), 5+ (plural form 2)
-        expect(getEntriesLabel(1)).toBe('1 wpis'); // singular
-        expect(getEntriesLabel(2)).toBe('2 wpisy'); // plural 1 (2-4)
-        expect(getEntriesLabel(4)).toBe('4 wpisy'); // plural 1 (2-4)
-        expect(getEntriesLabel(5)).toBe('5 wpisów'); // plural 2 (5+)
-        expect(getEntriesLabel(11)).toBe('11 wpisów'); // plural 2 (5+)
-        expect(getEntriesLabel(21)).toBe('21 wpisów'); // plural 2 (5+)
-        expect(getEntriesLabel(22)).toBe('22 wpisów'); // plural 2 (5+)
-        expect(getEntriesLabel(25)).toBe('25 wpisów'); // plural 2 (5+)
+        expect(getEntriesLabel(1)).toBe("1 wpis"); // singular
+        expect(getEntriesLabel(2)).toBe("2 wpisy"); // plural 1 (2-4)
+        expect(getEntriesLabel(4)).toBe("4 wpisy"); // plural 1 (2-4)
+        expect(getEntriesLabel(5)).toBe("5 wpisów"); // plural 2 (5+)
+        expect(getEntriesLabel(11)).toBe("11 wpisów"); // plural 2 (5+)
+        expect(getEntriesLabel(21)).toBe("21 wpisów"); // plural 2 (5+)
+        expect(getEntriesLabel(22)).toBe("22 wpisów"); // plural 2 (5+)
+        expect(getEntriesLabel(25)).toBe("25 wpisów"); // plural 2 (5+)
       });
     });
   });
 
-  describe('getCountLabel', () => {
+  describe("getCountLabel", () => {
     it('should return "Nie masz jeszcze zwierząt" for 0 pets', () => {
       // Act & Assert
-      expect(getCountLabel(0)).toBe('Nie masz jeszcze zwierząt');
+      expect(getCountLabel(0)).toBe("Nie masz jeszcze zwierząt");
     });
 
     it('should return "Masz 1 zwierzę" for 1 pet', () => {
       // Act & Assert
-      expect(getCountLabel(1)).toBe('Masz 1 zwierzę');
+      expect(getCountLabel(1)).toBe("Masz 1 zwierzę");
     });
 
-    it('should return correct plural forms for 2-4 pets', () => {
+    it("should return correct plural forms for 2-4 pets", () => {
       // Act & Assert
-      expect(getCountLabel(2)).toBe('Masz 2 zwierzęta');
-      expect(getCountLabel(3)).toBe('Masz 3 zwierzęta');
-      expect(getCountLabel(4)).toBe('Masz 4 zwierzęta');
+      expect(getCountLabel(2)).toBe("Masz 2 zwierzęta");
+      expect(getCountLabel(3)).toBe("Masz 3 zwierzęta");
+      expect(getCountLabel(4)).toBe("Masz 4 zwierzęta");
     });
 
     it('should return "Masz X zwierząt" for 5+ pets', () => {
       // Act & Assert
-      expect(getCountLabel(5)).toBe('Masz 5 zwierząt');
-      expect(getCountLabel(10)).toBe('Masz 10 zwierząt');
-      expect(getCountLabel(21)).toBe('Masz 21 zwierząt');
-      expect(getCountLabel(100)).toBe('Masz 100 zwierząt');
+      expect(getCountLabel(5)).toBe("Masz 5 zwierząt");
+      expect(getCountLabel(10)).toBe("Masz 10 zwierząt");
+      expect(getCountLabel(21)).toBe("Masz 21 zwierząt");
+      expect(getCountLabel(100)).toBe("Masz 100 zwierząt");
     });
 
-    it('should handle edge cases', () => {
+    it("should handle edge cases", () => {
       // Act & Assert
-      expect(getCountLabel(11)).toBe('Masz 11 zwierząt');
-      expect(getCountLabel(12)).toBe('Masz 12 zwierząt');
-      expect(getCountLabel(13)).toBe('Masz 13 zwierząt');
-      expect(getCountLabel(14)).toBe('Masz 14 zwierząt');
+      expect(getCountLabel(11)).toBe("Masz 11 zwierząt");
+      expect(getCountLabel(12)).toBe("Masz 12 zwierząt");
+      expect(getCountLabel(13)).toBe("Masz 13 zwierząt");
+      expect(getCountLabel(14)).toBe("Masz 14 zwierząt");
     });
 
-    describe('Polish grammar rules', () => {
-      it('should follow Polish plural rules for animals correctly', () => {
+    describe("Polish grammar rules", () => {
+      it("should follow Polish plural rules for animals correctly", () => {
         // Test the pattern: 1 (singular), 2-4 (plural form 1), 5+ (plural form 2)
-        expect(getCountLabel(1)).toBe('Masz 1 zwierzę'); // singular
-        expect(getCountLabel(2)).toBe('Masz 2 zwierzęta'); // plural 1 (2-4)
-        expect(getCountLabel(4)).toBe('Masz 4 zwierzęta'); // plural 1 (2-4)
-        expect(getCountLabel(5)).toBe('Masz 5 zwierząt'); // plural 2 (5+)
-        expect(getCountLabel(11)).toBe('Masz 11 zwierząt'); // plural 2 (5+)
-        expect(getCountLabel(21)).toBe('Masz 21 zwierząt'); // plural 2 (5+)
-        expect(getCountLabel(22)).toBe('Masz 22 zwierząt'); // plural 2 (5+)
-        expect(getCountLabel(25)).toBe('Masz 25 zwierząt'); // plural 2 (5+)
+        expect(getCountLabel(1)).toBe("Masz 1 zwierzę"); // singular
+        expect(getCountLabel(2)).toBe("Masz 2 zwierzęta"); // plural 1 (2-4)
+        expect(getCountLabel(4)).toBe("Masz 4 zwierzęta"); // plural 1 (2-4)
+        expect(getCountLabel(5)).toBe("Masz 5 zwierząt"); // plural 2 (5+)
+        expect(getCountLabel(11)).toBe("Masz 11 zwierząt"); // plural 2 (5+)
+        expect(getCountLabel(21)).toBe("Masz 21 zwierząt"); // plural 2 (5+)
+        expect(getCountLabel(22)).toBe("Masz 22 zwierząt"); // plural 2 (5+)
+        expect(getCountLabel(25)).toBe("Masz 25 zwierząt"); // plural 2 (5+)
       });
     });
   });
 
-  describe('pagination logic', () => {
-    describe('loadMore function', () => {
-      it('should increment page when hasNext is true and not loading', () => {
+  describe("pagination logic", () => {
+    describe("loadMore function", () => {
+      it("should increment page when hasNext is true and not loading", () => {
         // This would require testing the hook itself, which is complex
         // For now, we'll test the logic conceptually
         const pagination = { page: 1, hasNext: true };
-        const isLoading = false;
 
         // Expected behavior: page should become 2
         const expectedNewPage = pagination.page + 1;
@@ -399,9 +392,8 @@ describe('usePetsList', () => {
         expect(expectedNewPage).toBe(2);
       });
 
-      it('should not increment page when hasNext is false', () => {
+      it("should not increment page when hasNext is false", () => {
         const pagination = { page: 3, hasNext: false };
-        const isLoading = false;
 
         // Expected behavior: page should remain 3
         const expectedNewPage = pagination.page;
@@ -409,9 +401,8 @@ describe('usePetsList', () => {
         expect(expectedNewPage).toBe(3);
       });
 
-      it('should not increment page when loading', () => {
+      it("should not increment page when loading", () => {
         const pagination = { page: 1, hasNext: true };
-        const isLoading = true;
 
         // Expected behavior: page should remain 1
         const expectedNewPage = pagination.page;
@@ -420,8 +411,8 @@ describe('usePetsList', () => {
       });
     });
 
-    describe('setPage function', () => {
-      it('should update page to valid page number', () => {
+    describe("setPage function", () => {
+      it("should update page to valid page number", () => {
         // This tests the conceptual logic
         const currentQuery = { page: 1 };
         const newPage = 3;
@@ -432,61 +423,55 @@ describe('usePetsList', () => {
         expect(expectedQuery.page).toBe(3);
       });
 
-      it('should handle edge cases conceptually', () => {
+      it("should handle edge cases conceptually", () => {
         // Test boundary conditions
         expect(() => {
           // Invalid page numbers should be handled
           const invalidPage = 0;
           if (invalidPage < 1) {
-            throw new Error('Invalid page');
+            throw new Error("Invalid page");
           }
-        }).toThrow('Invalid page');
+        }).toThrow("Invalid page");
 
         expect(() => {
           // Negative page numbers should be handled
           const negativePage = -1;
           if (negativePage < 1) {
-            throw new Error('Invalid page');
+            throw new Error("Invalid page");
           }
-        }).toThrow('Invalid page');
+        }).toThrow("Invalid page");
       });
     });
   });
 
-  describe('mobile vs desktop behavior', () => {
-    it('should append pets on mobile when page > 1', () => {
+  describe("mobile vs desktop behavior", () => {
+    it("should append pets on mobile when page > 1", () => {
       // Conceptual test for mobile append behavior
       const isMobile = true;
       const currentPage = 2;
-      const existingPets = [{ id: '1', name: 'Max' }];
-      const newPets = [{ id: '2', name: 'Luna' }];
+      const existingPets = [{ id: "1", name: "Max" }];
+      const newPets = [{ id: "2", name: "Luna" }];
 
       // Expected behavior: combine arrays
-      const expectedPets = isMobile && currentPage > 1
-        ? [...existingPets, ...newPets]
-        : newPets;
+      const expectedPets = isMobile && currentPage > 1 ? [...existingPets, ...newPets] : newPets;
 
       expect(expectedPets).toEqual([
-        { id: '1', name: 'Max' },
-        { id: '2', name: 'Luna' }
+        { id: "1", name: "Max" },
+        { id: "2", name: "Luna" },
       ]);
     });
 
-    it('should replace pets on desktop or first page', () => {
+    it("should replace pets on desktop or first page", () => {
       // Conceptual test for desktop replace behavior
       const isMobile = false;
       const currentPage = 1;
-      const existingPets = [{ id: '1', name: 'Max' }];
-      const newPets = [{ id: '2', name: 'Luna' }];
+      const existingPets = [{ id: "1", name: "Max" }];
+      const newPets = [{ id: "2", name: "Luna" }];
 
       // Expected behavior: replace array
-      const expectedPets = isMobile && currentPage > 1
-        ? [...existingPets, ...newPets]
-        : newPets;
+      const expectedPets = isMobile && currentPage > 1 ? [...existingPets, ...newPets] : newPets;
 
-      expect(expectedPets).toEqual([
-        { id: '2', name: 'Luna' }
-      ]);
+      expect(expectedPets).toEqual([{ id: "2", name: "Luna" }]);
     });
   });
 });

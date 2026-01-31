@@ -35,7 +35,7 @@ export class AuthPage extends BasePage {
     // Fill credentials (use clear + type to trigger React onChange)
     await this.emailInput.clear();
     await this.emailInput.type(loginEmail, { delay: 50 });
-    
+
     await this.passwordInput.clear();
     await this.passwordInput.type(loginPassword, { delay: 50 });
     // Submit form

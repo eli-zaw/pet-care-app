@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import type {
   GetPetResponseDto,
   CareHistoryDto,
   PetHeaderViewModel,
   CareEntryCardViewModel,
   PaginationViewModel,
-} from '@/types';
+} from "@/types";
 
 // Test versions of the mapping functions from usePetProfile
 const mapPetToViewModel = (
@@ -52,46 +52,46 @@ const mapPaginationToViewModel = (paginationDto: {
   };
 };
 
-describe('usePetProfile mapping functions', () => {
-  describe('mapPetToViewModel', () => {
-    it('should map GetPetResponseDto to PetHeaderViewModel with entries count and last entry date', () => {
+describe("usePetProfile mapping functions", () => {
+  describe("mapPetToViewModel", () => {
+    it("should map GetPetResponseDto to PetHeaderViewModel with entries count and last entry date", () => {
       // Arrange
       const petData: GetPetResponseDto = {
-        id: 'pet-123',
-        name: 'Max',
-        species: 'dog',
-        species_display: 'Pies',
-        species_emoji: '🐕',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
+        id: "pet-123",
+        name: "Max",
+        species: "dog",
+        species_display: "Pies",
+        species_emoji: "🐕",
+        created_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
       };
       const entriesCount = 5;
-      const lastEntryDate = new Date('2024-01-10T00:00:00Z');
+      const lastEntryDate = new Date("2024-01-10T00:00:00Z");
 
       // Act
       const result = mapPetToViewModel(petData, entriesCount, lastEntryDate);
 
       // Assert
       expect(result).toEqual({
-        id: 'pet-123',
-        name: 'Max',
-        speciesEmoji: '🐕',
-        speciesDisplay: 'Pies',
+        id: "pet-123",
+        name: "Max",
+        speciesEmoji: "🐕",
+        speciesDisplay: "Pies",
         entriesCount: 5,
-        lastEntryDate: new Date('2024-01-10T00:00:00Z'),
+        lastEntryDate: new Date("2024-01-10T00:00:00Z"),
       });
     });
 
-    it('should handle null lastEntryDate', () => {
+    it("should handle null lastEntryDate", () => {
       // Arrange
       const petData: GetPetResponseDto = {
-        id: 'pet-456',
-        name: 'Luna',
-        species: 'cat',
-        species_display: 'Kot',
-        species_emoji: '🐱',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
+        id: "pet-456",
+        name: "Luna",
+        species: "cat",
+        species_display: "Kot",
+        species_emoji: "🐱",
+        created_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
       };
       const entriesCount = 0;
       const lastEntryDate = null;
@@ -101,25 +101,25 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'pet-456',
-        name: 'Luna',
-        speciesEmoji: '🐱',
-        speciesDisplay: 'Kot',
+        id: "pet-456",
+        name: "Luna",
+        speciesEmoji: "🐱",
+        speciesDisplay: "Kot",
         entriesCount: 0,
         lastEntryDate: null,
       });
     });
 
-    it('should handle zero entries count', () => {
+    it("should handle zero entries count", () => {
       // Arrange
       const petData: GetPetResponseDto = {
-        id: 'pet-789',
-        name: 'Buddy',
-        species: 'bird',
-        species_display: 'Ptak',
-        species_emoji: '🐦',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
+        id: "pet-789",
+        name: "Buddy",
+        species: "bird",
+        species_display: "Ptak",
+        species_emoji: "🐦",
+        created_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
       };
       const entriesCount = 0;
 
@@ -128,30 +128,30 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'pet-789',
-        name: 'Buddy',
-        speciesEmoji: '🐦',
-        speciesDisplay: 'Ptak',
+        id: "pet-789",
+        name: "Buddy",
+        speciesEmoji: "🐦",
+        speciesDisplay: "Ptak",
         entriesCount: 0,
         lastEntryDate: null,
       });
     });
   });
 
-  describe('mapEntryToViewModel', () => {
-    it('should map CareHistoryDto to CareEntryCardViewModel with short note', () => {
+  describe("mapEntryToViewModel", () => {
+    it("should map CareHistoryDto to CareEntryCardViewModel with short note", () => {
       // Arrange
       const entry: CareHistoryDto = {
-        id: 'entry-123',
-        pet_id: 'pet-123',
-        category: 'feeding',
-        category_display: 'Karmienie',
-        category_emoji: '🍖',
-        entry_date: '2024-01-10T00:00:00Z',
-        entry_date_formatted: '10.01.2024',
-        note: 'Pies zjadł całą karmę',
-        created_at: '2024-01-10T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z',
+        id: "entry-123",
+        pet_id: "pet-123",
+        category: "feeding",
+        category_display: "Karmienie",
+        category_emoji: "🍖",
+        entry_date: "2024-01-10T00:00:00Z",
+        entry_date_formatted: "10.01.2024",
+        note: "Pies zjadł całą karmę",
+        created_at: "2024-01-10T00:00:00Z",
+        updated_at: "2024-01-10T00:00:00Z",
       };
 
       // Act
@@ -159,30 +159,30 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'entry-123',
-        categoryEmoji: '🍖',
-        categoryDisplay: 'Karmienie',
-        dateFormatted: '10.01.2024',
-        notePreview: 'Pies zjadł całą karmę',
+        id: "entry-123",
+        categoryEmoji: "🍖",
+        categoryDisplay: "Karmienie",
+        dateFormatted: "10.01.2024",
+        notePreview: "Pies zjadł całą karmę",
         noteFull: null,
         hasMore: false,
       });
     });
 
-    it('should handle note longer than 100 characters', () => {
+    it("should handle note longer than 100 characters", () => {
       // Arrange
-      const longNote = 'A'.repeat(150); // 150 characters
+      const longNote = "A".repeat(150); // 150 characters
       const entry: CareHistoryDto = {
-        id: 'entry-456',
-        pet_id: 'pet-123',
-        category: 'vet',
-        category_display: 'Weterynarz',
-        category_emoji: '🏥',
-        entry_date: '2024-01-10T00:00:00Z',
-        entry_date_formatted: '10.01.2024',
+        id: "entry-456",
+        pet_id: "pet-123",
+        category: "vet",
+        category_display: "Weterynarz",
+        category_emoji: "🏥",
+        entry_date: "2024-01-10T00:00:00Z",
+        entry_date_formatted: "10.01.2024",
         note: longNote,
-        created_at: '2024-01-10T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z',
+        created_at: "2024-01-10T00:00:00Z",
+        updated_at: "2024-01-10T00:00:00Z",
       };
 
       // Act
@@ -190,30 +190,30 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'entry-456',
-        categoryEmoji: '🏥',
-        categoryDisplay: 'Weterynarz',
-        dateFormatted: '10.01.2024',
-        notePreview: 'A'.repeat(100) + '...',
+        id: "entry-456",
+        categoryEmoji: "🏥",
+        categoryDisplay: "Weterynarz",
+        dateFormatted: "10.01.2024",
+        notePreview: "A".repeat(100) + "...",
         noteFull: longNote,
         hasMore: true,
       });
     });
 
-    it('should handle note exactly 100 characters (boundary)', () => {
+    it("should handle note exactly 100 characters (boundary)", () => {
       // Arrange
-      const exactNote = 'A'.repeat(100); // Exactly 100 characters
+      const exactNote = "A".repeat(100); // Exactly 100 characters
       const entry: CareHistoryDto = {
-        id: 'entry-789',
-        pet_id: 'pet-123',
-        category: 'grooming',
-        category_display: 'Pielęgnacja',
-        category_emoji: '✂️',
-        entry_date: '2024-01-10T00:00:00Z',
-        entry_date_formatted: '10.01.2024',
+        id: "entry-789",
+        pet_id: "pet-123",
+        category: "grooming",
+        category_display: "Pielęgnacja",
+        category_emoji: "✂️",
+        entry_date: "2024-01-10T00:00:00Z",
+        entry_date_formatted: "10.01.2024",
         note: exactNote,
-        created_at: '2024-01-10T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z',
+        created_at: "2024-01-10T00:00:00Z",
+        updated_at: "2024-01-10T00:00:00Z",
       };
 
       // Act
@@ -221,29 +221,29 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'entry-789',
-        categoryEmoji: '✂️',
-        categoryDisplay: 'Pielęgnacja',
-        dateFormatted: '10.01.2024',
+        id: "entry-789",
+        categoryEmoji: "✂️",
+        categoryDisplay: "Pielęgnacja",
+        dateFormatted: "10.01.2024",
         notePreview: exactNote,
         noteFull: null,
         hasMore: false,
       });
     });
 
-    it('should handle null note', () => {
+    it("should handle null note", () => {
       // Arrange
       const entry: CareHistoryDto = {
-        id: 'entry-999',
-        pet_id: 'pet-123',
-        category: 'walking',
-        category_display: 'Spacer',
-        category_emoji: '🚶',
-        entry_date: '2024-01-10T00:00:00Z',
-        entry_date_formatted: '10.01.2024',
+        id: "entry-999",
+        pet_id: "pet-123",
+        category: "walking",
+        category_display: "Spacer",
+        category_emoji: "🚶",
+        entry_date: "2024-01-10T00:00:00Z",
+        entry_date_formatted: "10.01.2024",
         note: null,
-        created_at: '2024-01-10T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z',
+        created_at: "2024-01-10T00:00:00Z",
+        updated_at: "2024-01-10T00:00:00Z",
       };
 
       // Act
@@ -251,29 +251,29 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'entry-999',
-        categoryEmoji: '🚶',
-        categoryDisplay: 'Spacer',
-        dateFormatted: '10.01.2024',
-        notePreview: '',
+        id: "entry-999",
+        categoryEmoji: "🚶",
+        categoryDisplay: "Spacer",
+        dateFormatted: "10.01.2024",
+        notePreview: "",
         noteFull: null,
         hasMore: false,
       });
     });
 
-    it('should handle empty string note', () => {
+    it("should handle empty string note", () => {
       // Arrange
       const entry: CareHistoryDto = {
-        id: 'entry-000',
-        pet_id: 'pet-123',
-        category: 'other',
-        category_display: 'Inne',
-        category_emoji: '📝',
-        entry_date: '2024-01-10T00:00:00Z',
-        entry_date_formatted: '10.01.2024',
-        note: '',
-        created_at: '2024-01-10T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z',
+        id: "entry-000",
+        pet_id: "pet-123",
+        category: "other",
+        category_display: "Inne",
+        category_emoji: "📝",
+        entry_date: "2024-01-10T00:00:00Z",
+        entry_date_formatted: "10.01.2024",
+        note: "",
+        created_at: "2024-01-10T00:00:00Z",
+        updated_at: "2024-01-10T00:00:00Z",
       };
 
       // Act
@@ -281,19 +281,19 @@ describe('usePetProfile mapping functions', () => {
 
       // Assert
       expect(result).toEqual({
-        id: 'entry-000',
-        categoryEmoji: '📝',
-        categoryDisplay: 'Inne',
-        dateFormatted: '10.01.2024',
-        notePreview: '',
+        id: "entry-000",
+        categoryEmoji: "📝",
+        categoryDisplay: "Inne",
+        dateFormatted: "10.01.2024",
+        notePreview: "",
         noteFull: null,
         hasMore: false,
       });
     });
   });
 
-  describe('mapPaginationToViewModel', () => {
-    it('should map pagination DTO to view model with calculated fields', () => {
+  describe("mapPaginationToViewModel", () => {
+    it("should map pagination DTO to view model with calculated fields", () => {
       // Arrange
       const paginationDto = {
         page: 2,
@@ -315,7 +315,7 @@ describe('usePetProfile mapping functions', () => {
       });
     });
 
-    it('should handle first page correctly', () => {
+    it("should handle first page correctly", () => {
       // Arrange
       const paginationDto = {
         page: 1,
@@ -337,7 +337,7 @@ describe('usePetProfile mapping functions', () => {
       });
     });
 
-    it('should handle last page correctly', () => {
+    it("should handle last page correctly", () => {
       // Arrange
       const paginationDto = {
         page: 5,
@@ -359,7 +359,7 @@ describe('usePetProfile mapping functions', () => {
       });
     });
 
-    it('should handle single page correctly', () => {
+    it("should handle single page correctly", () => {
       // Arrange
       const paginationDto = {
         page: 1,
@@ -381,7 +381,7 @@ describe('usePetProfile mapping functions', () => {
       });
     });
 
-    it('should handle empty results correctly', () => {
+    it("should handle empty results correctly", () => {
       // Arrange
       const paginationDto = {
         page: 1,
@@ -403,7 +403,7 @@ describe('usePetProfile mapping functions', () => {
       });
     });
 
-    it('should handle partial last page correctly', () => {
+    it("should handle partial last page correctly", () => {
       // Arrange
       const paginationDto = {
         page: 3,

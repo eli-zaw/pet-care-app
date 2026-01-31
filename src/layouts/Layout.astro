@@ -3,15 +3,11 @@ import "../styles/global.css";
 import { Toaster } from "@/components/ui/sonner";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 
-interface Props {
-  title?: string;
-  hideHeader?: boolean;
-}
-
 const { title = "Paw Notes", hideHeader = false } = Astro.props;
 
 // Sprawdzenie stanu użytkownika dla warunkowego renderowania
-const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+const sessionResult = await Astro.locals.supabase.auth.getSession();
+const session = sessionResult.data.session;
 const isAuthenticated = !!session?.user;
 const userEmail = session?.user?.email || null;
 ---

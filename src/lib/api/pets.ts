@@ -1,11 +1,14 @@
 import type { CreatePetCommand, CreatePetResponseDto, GetPetResponseDto, UpdatePetCommand } from "@/types";
 
-type ApiErrorData = { error?: string; message?: string };
+interface ApiErrorData {
+  error?: string;
+  message?: string;
+}
 
-export type ApiError = {
+export interface ApiError {
   status: number;
   data: ApiErrorData;
-};
+}
 
 const parseJson = async (response: Response): Promise<ApiErrorData> => {
   try {
@@ -32,10 +35,7 @@ export const createPet = async (command: CreatePetCommand): Promise<CreatePetRes
   return data as CreatePetResponseDto;
 };
 
-export const updatePet = async (
-  petId: string,
-  command: UpdatePetCommand
-): Promise<GetPetResponseDto> => {
+export const updatePet = async (petId: string, command: UpdatePetCommand): Promise<GetPetResponseDto> => {
   const response = await fetch(`/api/pets/${petId}`, {
     method: "PATCH",
     headers: {

@@ -36,31 +36,31 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
-    setFormData(prev => ({ ...prev, email: newEmail }));
+    setFormData((prev) => ({ ...prev, email: newEmail }));
     if (errors.email) {
-      setErrors(prev => ({ ...prev, email: undefined }));
+      setErrors((prev) => ({ ...prev, email: undefined }));
     }
   };
 
   const handleEmailBlur = () => {
     const error = validateEmail(formData.email);
     if (error) {
-      setErrors(prev => ({ ...prev, email: error }));
+      setErrors((prev) => ({ ...prev, email: error }));
     }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    setFormData(prev => ({ ...prev, password: newPassword }));
+    setFormData((prev) => ({ ...prev, password: newPassword }));
     if (errors.password) {
-      setErrors(prev => ({ ...prev, password: undefined }));
+      setErrors((prev) => ({ ...prev, password: undefined }));
     }
   };
 
   const handlePasswordBlur = () => {
     const error = validatePassword(formData.password);
     if (error) {
-      setErrors(prev => ({ ...prev, password: error }));
+      setErrors((prev) => ({ ...prev, password: error }));
     }
   };
 
@@ -87,10 +87,10 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
     setErrors({});
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email,
@@ -127,9 +127,7 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Błąd ogólny */}
           {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {errors.general}
-            </div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{errors.general}</div>
           )}
 
           {/* Pole: Email */}
@@ -189,11 +187,7 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
                 disabled={isSubmitting}
                 aria-label={showPassword ? "Ukryj hasło" : "Pokaż hasło"}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
             {errors.password && (
@@ -205,20 +199,13 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
 
           {/* Link do resetowania hasła */}
           <div className="text-right">
-            <a
-              href="/reset-password"
-              className="text-sm text-primary hover:underline"
-            >
+            <a href="/reset-password" className="text-sm text-primary hover:underline">
               Zapomniałeś hasła?
             </a>
           </div>
 
           {/* Przycisk submit */}
-          <Button
-            type="submit"
-            className="w-full min-h-[44px] sm:min-h-0"
-            disabled={!isValid || isSubmitting}
-          >
+          <Button type="submit" className="w-full min-h-[44px] sm:min-h-0" disabled={!isValid || isSubmitting}>
             {isSubmitting ? "Logowanie..." : "Zaloguj się"}
           </Button>
         </form>

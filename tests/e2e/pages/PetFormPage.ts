@@ -1,5 +1,5 @@
-import { type Locator, type Page, expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { type Locator, type Page, expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
 export class PetFormPage extends BasePage {
   // Form container
@@ -63,7 +63,7 @@ export class PetFormPage extends BasePage {
     await this.nameInput.type(name, { delay: 50 });
   }
 
-  async selectSpecies(species: 'dog' | 'cat' | 'other'): Promise<void> {
+  async selectSpecies(species: "dog" | "cat" | "other"): Promise<void> {
     await this.speciesTrigger.click();
     await this.page.locator(`[data-testid="pet-form-species-option-${species}"]`).click();
   }

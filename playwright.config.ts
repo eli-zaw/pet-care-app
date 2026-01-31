@@ -41,7 +41,13 @@ export default defineConfig({
     // Tests that require authentication
     {
       name: "authenticated",
-      testIgnore: [/home\.spec\.ts/, /basic-ui\.spec\.ts/, /auth-diagnostic\.spec\.ts/, /auth\.setup\.ts/, /auth\.teardown\.ts/],
+      testIgnore: [
+        /home\.spec\.ts/,
+        /basic-ui\.spec\.ts/,
+        /auth-diagnostic\.spec\.ts/,
+        /auth\.setup\.ts/,
+        /auth\.teardown\.ts/,
+      ],
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],

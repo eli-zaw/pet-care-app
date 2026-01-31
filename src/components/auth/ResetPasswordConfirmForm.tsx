@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
@@ -39,31 +39,31 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    setFormData(prev => ({ ...prev, password: newPassword }));
+    setFormData((prev) => ({ ...prev, password: newPassword }));
     if (errors.password) {
-      setErrors(prev => ({ ...prev, password: undefined }));
+      setErrors((prev) => ({ ...prev, password: undefined }));
     }
   };
 
   const handlePasswordBlur = () => {
     const error = validatePassword(formData.password);
     if (error) {
-      setErrors(prev => ({ ...prev, password: error }));
+      setErrors((prev) => ({ ...prev, password: error }));
     }
   };
 
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newConfirmPassword = e.target.value;
-    setFormData(prev => ({ ...prev, confirmPassword: newConfirmPassword }));
+    setFormData((prev) => ({ ...prev, confirmPassword: newConfirmPassword }));
     if (errors.confirmPassword) {
-      setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+      setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
     }
   };
 
   const handleConfirmPasswordBlur = () => {
     const error = validateConfirmPassword(formData.password, formData.confirmPassword);
     if (error) {
-      setErrors(prev => ({ ...prev, confirmPassword: error }));
+      setErrors((prev) => ({ ...prev, confirmPassword: error }));
     }
   };
 
@@ -90,10 +90,10 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
     setErrors({});
 
     try {
-      const response = await fetch('/api/auth/reset-password/confirm', {
-        method: 'POST',
+      const response = await fetch("/api/auth/reset-password/confirm", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           accessToken: accessToken,
@@ -121,7 +121,11 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
     }
   };
 
-  const isValid = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length >= 8;
+  const isValid =
+    formData.password &&
+    formData.confirmPassword &&
+    formData.password === formData.confirmPassword &&
+    formData.password.length >= 8;
 
   return (
     <Card className="w-full max-w-md">
@@ -135,9 +139,7 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Błąd ogólny */}
           {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {errors.general}
-            </div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{errors.general}</div>
           )}
 
           {/* Pole: Nowe hasło */}
@@ -170,11 +172,7 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
                 disabled={isSubmitting}
                 aria-label={showPassword ? "Ukryj hasło" : "Pokaż hasło"}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
             {errors.password && (
@@ -215,11 +213,7 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
                 disabled={isSubmitting}
                 aria-label={showConfirmPassword ? "Ukryj hasło" : "Pokaż hasło"}
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
             {errors.confirmPassword && (
@@ -230,11 +224,7 @@ export function ResetPasswordConfirmForm({ accessToken }: ResetPasswordConfirmFo
           </div>
 
           {/* Przycisk submit */}
-          <Button
-            type="submit"
-            className="w-full min-h-[44px] sm:min-h-0"
-            disabled={!isValid || isSubmitting}
-          >
+          <Button type="submit" className="w-full min-h-[44px] sm:min-h-0" disabled={!isValid || isSubmitting}>
             {isSubmitting ? "Zapisywanie..." : "Zmień hasło"}
           </Button>
         </form>

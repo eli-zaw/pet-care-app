@@ -9,7 +9,12 @@ interface PaginationControlsProps {
   ["data-testid"]?: string;
 }
 
-export function PaginationControls({ pagination, onPageChange, isLoading = false, "data-testid": testId }: PaginationControlsProps) {
+export function PaginationControls({
+  pagination,
+  onPageChange,
+  isLoading = false,
+  "data-testid": testId,
+}: PaginationControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -26,7 +31,9 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
     if (!pagination.hasNext) {
       return (
         <div className="flex justify-center py-8" data-testid={`${testId}-end`}>
-          <p className="text-sm text-muted-foreground" data-testid={`${testId}-end-message`}>Wszystkie dane zostały załadowane</p>
+          <p className="text-sm text-muted-foreground" data-testid={`${testId}-end-message`}>
+            Wszystkie dane zostały załadowane
+          </p>
         </div>
       );
     }
@@ -51,7 +58,11 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
   const pageNumbers = generatePageNumbers(pagination.page, pagination.totalPages);
 
   return (
-    <nav className="flex items-center justify-center gap-2 py-6" aria-label="Paginacja" data-testid={`${testId}-desktop`}>
+    <nav
+      className="flex items-center justify-center gap-2 py-6"
+      aria-label="Paginacja"
+      data-testid={`${testId}-desktop`}
+    >
       {/* Previous button */}
       <Button
         onClick={() => onPageChange(pagination.page - 1)}
@@ -69,7 +80,11 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
         {pageNumbers.map((pageNum, index) => {
           if (pageNum === "...") {
             return (
-              <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground" data-testid={`${testId}-ellipsis-${index}`}>
+              <span
+                key={`ellipsis-${index}`}
+                className="px-2 text-muted-foreground"
+                data-testid={`${testId}-ellipsis-${index}`}
+              >
                 ...
               </span>
             );
@@ -88,7 +103,7 @@ export function PaginationControls({ pagination, onPageChange, isLoading = false
               aria-label={`Strona ${page}`}
               aria-current={isCurrent ? "page" : undefined}
               className="min-w-[44px]"
-              data-testid={`${testId}-page-${page}${isCurrent ? '-current' : ''}`}
+              data-testid={`${testId}-page-${page}${isCurrent ? "-current" : ""}`}
             >
               {page}
             </Button>
@@ -125,7 +140,7 @@ function generatePageNumbers(currentPage: number, totalPages: number): (number |
     pages.push(1);
 
     if (currentPage > 3) {
-      pages.push('...');
+      pages.push("...");
     }
 
     const start = Math.max(2, currentPage - 1);
@@ -136,7 +151,7 @@ function generatePageNumbers(currentPage: number, totalPages: number): (number |
     }
 
     if (currentPage < totalPages - 2) {
-      pages.push('...');
+      pages.push("...");
     }
 
     pages.push(totalPages);

@@ -10,10 +10,10 @@ export function LogoutButton() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -44,9 +44,7 @@ export function LogoutButton() {
       aria-label={isLoading ? "Wylogowywanie..." : "Wyloguj się z aplikacji"}
     >
       <LogOut className="h-4 w-4 sm:mr-2" />
-      <span className="hidden sm:inline">
-        {isLoading ? "Wylogowywanie..." : "Wyloguj"}
-      </span>
+      <span className="hidden sm:inline">{isLoading ? "Wylogowywanie..." : "Wyloguj"}</span>
     </Button>
   );
 }

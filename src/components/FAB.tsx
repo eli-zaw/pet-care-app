@@ -9,13 +9,11 @@ interface FABProps {
 
 export function FAB({ petId, label = "Dodaj wpis" }: FABProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Sprawdzenie czy mobile
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
       // Na mobile zawsze widoczny
       if (mobile) {
         setIsVisible(true);
@@ -25,7 +23,7 @@ export function FAB({ petId, label = "Dodaj wpis" }: FABProps) {
     // Obsługa scroll - pokazuj FAB na desktop po scrollu
     const handleScroll = () => {
       const mobile = window.innerWidth < 768;
-      
+
       if (mobile) {
         // Na mobile zawsze widoczny
         setIsVisible(true);

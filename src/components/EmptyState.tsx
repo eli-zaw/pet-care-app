@@ -21,10 +21,14 @@ export function EmptyState({ viewModel, onCta, "data-testid": testId }: EmptySta
       </div>
 
       {/* Title */}
-      <h2 className="text-2xl font-semibold text-card-foreground mb-2" data-testid={`${testId}-title`}>{viewModel.title}</h2>
+      <h2 className="text-2xl font-semibold text-card-foreground mb-2" data-testid={`${testId}-title`}>
+        {viewModel.title}
+      </h2>
 
       {/* Description */}
-      <p className="text-muted-foreground mb-6 max-w-sm" data-testid={`${testId}-description`}>{viewModel.description}</p>
+      <p className="text-muted-foreground mb-6 max-w-sm" data-testid={`${testId}-description`}>
+        {viewModel.description}
+      </p>
 
       {/* CTA */}
       <Button onClick={onCta} size="lg" className="min-h-[44px] min-w-[44px]" data-testid={`${testId}-cta-button`}>

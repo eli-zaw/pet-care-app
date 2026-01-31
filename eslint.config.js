@@ -51,6 +51,7 @@ const reactConfig = tseslint.config({
   settings: { react: { version: "detect" } },
   rules: {
     ...eslintPluginReactHooks.configs.recommended.rules,
+    "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "react-compiler/react-compiler": "error",
   },
@@ -62,5 +63,15 @@ export default tseslint.config(
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
-  eslintPluginPrettier
+  eslintPluginPrettier,
+  tseslint.config({
+    files: ["tests/e2e/**/*.{js,jsx,ts,tsx,cjs}"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "no-empty": "off",
+      "no-undef": "off",
+      "no-console": "off",
+    },
+  })
 );
