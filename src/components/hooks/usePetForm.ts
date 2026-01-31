@@ -30,8 +30,9 @@ export const usePetForm = ({ mode = "create", petId, initialData, onSuccess }: U
 
   const form = useForm<PetFormViewModel>({
     defaultValues,
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
+    criteriaMode: "all",
   });
 
   const { control, reset, setError } = form;
