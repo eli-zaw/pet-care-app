@@ -7,8 +7,26 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  lint:
+    name: Lint code
+    runs-on: macos-latest
+    env:
+      NODE_ENV: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Node environment
+        uses: ./.github/actions/node-bootstrap
+        with:
+          node-version: 22.14.0
+
+      - name: Run linter
+        run: npm run lint
+
   test:
     name: Run unit tests
+    needs: lint
     runs-on: macos-latest
     env:
       NODE_ENV: test
@@ -63,7 +81,7 @@ jobs:
           node-version: 22.14.0
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: Create .env.testing for E2E
         run: |
