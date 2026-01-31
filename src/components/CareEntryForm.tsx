@@ -5,14 +5,7 @@ import { pl } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { CategoryPicker } from "@/components/CategoryPicker";
@@ -23,9 +16,7 @@ import type {
   CareEntryFormErrors,
   CareEntryFormViewModel,
   CreateCareEntryCommand,
-  CreateCareEntryResponseDto,
   UpdateCareEntryCommand,
-  UpdateCareEntryResponseDto,
 } from "@/types";
 
 interface CareEntryFormProps {
@@ -63,10 +54,10 @@ export function CareEntryForm({
 
   // Stan formularza
   const [formData, setFormData] = useState<CareEntryFormViewModel>(getInitialFormData);
-  
+
   // Stan początkowy do porównania (tylko w trybie edit)
   const [initialFormData] = useState<CareEntryFormViewModel>(getInitialFormData);
-  
+
   const [errors, setErrors] = useState<CareEntryFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -79,11 +70,10 @@ export function CareEntryForm({
   // Computed value: czy dane się zmieniły (tylko w trybie edit)
   const isUnchanged = useMemo(() => {
     if (mode !== "edit") return false;
-    
+
     return (
       formData.category === initialFormData.category &&
-      formData.entryDate.toISOString().split("T")[0] === 
-        initialFormData.entryDate.toISOString().split("T")[0] &&
+      formData.entryDate.toISOString().split("T")[0] === initialFormData.entryDate.toISOString().split("T")[0] &&
       formData.note.trim() === initialFormData.note.trim()
     );
   }, [mode, formData, initialFormData]);
@@ -141,10 +131,7 @@ export function CareEntryForm({
   };
 
   // Obsługa błędów API
-  const handleApiError = (
-    status: number,
-    data: { error?: string; message?: string }
-  ) => {
+  const handleApiError = (status: number, data: { error?: string; message?: string }) => {
     switch (status) {
       case 400:
         // Błąd walidacji
@@ -160,27 +147,25 @@ export function CareEntryForm({
           window.location.href = "/";
         }, 1000);
         break;
-      case 403:
+      case 403: {
         // Brak dostępu
-        const accessMessage = mode === "edit" 
-          ? "Brak dostępu do tego wpisu"
-          : "Brak dostępu do tego zwierzęcia";
+        const accessMessage = mode === "edit" ? "Brak dostępu do tego wpisu" : "Brak dostępu do tego zwierzęcia";
         toast.error(accessMessage);
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 1000);
         break;
-      case 404:
+      }
+      case 404: {
         // Nie znaleziono
-        const notFoundMessage = mode === "edit"
-          ? "Wpis nie znaleziony"
-          : "Zwierzę nie znalezione";
+        const notFoundMessage = mode === "edit" ? "Wpis nie znaleziony" : "Zwierzę nie znalezione";
         toast.error(notFoundMessage);
         setTimeout(() => {
           const redirectUrl = mode === "edit" ? `/pets/${petId}` : "/dashboard";
           window.location.href = redirectUrl;
         }, 1000);
         break;
+      }
       case 500:
         // Błąd serwera
         toast.error("Coś poszło nie tak. Spróbuj ponownie.");
@@ -249,7 +234,7 @@ export function CareEntryForm({
           return;
         }
 
-        const result: CreateCareEntryResponseDto = await response.json();
+        await response.json();
 
         // Sukces
         toast.success("Wpis został dodany");
@@ -263,7 +248,6 @@ export function CareEntryForm({
       } else {
         // Tryb EDIT: PATCH /api/pets/:petId/care-entries/:entryId
         if (!entryId) {
-          console.error("CareEntryForm: entryId is required in edit mode");
           toast.error("Wystąpił błąd");
           setIsSubmitting(false);
           return;
@@ -294,7 +278,7 @@ export function CareEntryForm({
           return;
         }
 
-        const result: UpdateCareEntryResponseDto = await response.json();
+        await response.json();
 
         // Sukces
         toast.success("Wpis został zaktualizowany");
@@ -308,7 +292,6 @@ export function CareEntryForm({
       }
     } catch (error) {
       // Błąd sieci
-      console.error("Network error in CareEntryForm:", error);
       if (error instanceof TypeError) {
         toast.error("Brak połączenia. Sprawdź internet.");
       } else {
@@ -329,11 +312,9 @@ export function CareEntryForm({
 
   // Teksty zależne od trybu
   const headerTitle = mode === "edit" ? "Edytuj wpis" : `Dodaj wpis dla ${petName}`;
-  const headerDescription = mode === "edit"
-    ? "Zaktualizuj kategorię, datę lub notatkę"
-    : "Wybierz kategorię i datę, opcjonalnie dodaj notatkę";
+  const headerDescription =
+    mode === "edit" ? "Zaktualizuj kategorię, datę lub notatkę" : "Wybierz kategorię i datę, opcjonalnie dodaj notatkę";
   const submitButtonText = mode === "edit" ? "Zapisz zmiany" : "Zapisz";
-  const successMessage = mode === "edit" ? "Wpis został zaktualizowany" : "Wpis został dodany";
 
   // Sprawdzenie czy przycisk submit powinien być disabled
   const isSubmitDisabled = !isValid || isSubmitting || (mode === "edit" && isUnchanged);
@@ -348,21 +329,15 @@ export function CareEntryForm({
         <CardContent className="space-y-6">
           {/* Błąd ogólny */}
           {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {errors.general}
-            </div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{errors.general}</div>
           )}
 
           {/* Pole: Kategoria */}
           <div className="space-y-2">
-            <label className="text-sm font-medium leading-none">
+            <p className="text-sm font-medium leading-none">
               Kategoria <span className="text-destructive">*</span>
-            </label>
-            <CategoryPicker
-              value={formData.category}
-              onChange={handleCategoryChange}
-              error={errors.category}
-            />
+            </p>
+            <CategoryPicker value={formData.category} onChange={handleCategoryChange} error={errors.category} />
           </div>
 
           {/* Pole: Data */}
@@ -398,9 +373,7 @@ export function CareEntryForm({
                 />
               </PopoverContent>
             </Popover>
-            {errors.entryDate && (
-              <p className="text-sm text-destructive">{errors.entryDate}</p>
-            )}
+            {errors.entryDate && <p className="text-sm text-destructive">{errors.entryDate}</p>}
           </div>
 
           {/* Pole: Notatka */}
@@ -421,20 +394,13 @@ export function CareEntryForm({
             <div className="flex justify-between items-center text-xs">
               <span
                 id="note-counter"
-                className={cn(
-                  "text-muted-foreground",
-                  isNoteWarning && "text-destructive font-medium"
-                )}
+                className={cn("text-muted-foreground", isNoteWarning && "text-destructive font-medium")}
               >
                 {noteLength}/1000
               </span>
-              {isNoteWarning && (
-                <span className="text-destructive">Zbliżasz się do limitu</span>
-              )}
+              {isNoteWarning && <span className="text-destructive">Zbliżasz się do limitu</span>}
             </div>
-            {errors.note && (
-              <p className="text-sm text-destructive">{errors.note}</p>
-            )}
+            {errors.note && <p className="text-sm text-destructive">{errors.note}</p>}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -447,11 +413,7 @@ export function CareEntryForm({
           >
             Anuluj
           </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitDisabled}
-            className="min-h-[44px] sm:min-h-0"
-          >
+          <Button type="submit" disabled={isSubmitDisabled} className="min-h-[44px] sm:min-h-0">
             {isSubmitting ? "Zapisywanie..." : submitButtonText}
           </Button>
         </CardFooter>

@@ -10,13 +10,7 @@ interface CareEntryCardProps {
   onDelete: () => void;
 }
 
-export function CareEntryCard({
-  petId,
-  entry,
-  isExpanded,
-  onToggleExpand,
-  onDelete,
-}: CareEntryCardProps) {
+export function CareEntryCard({ petId, entry, isExpanded, onToggleExpand, onDelete }: CareEntryCardProps) {
   const displayNote = isExpanded && entry.noteFull ? entry.noteFull : entry.notePreview;
 
   const handleEdit = () => {
@@ -34,20 +28,14 @@ export function CareEntryCard({
         <div className="flex-1 min-w-0">
           {/* Header: kategoria i data */}
           <div className="flex items-center justify-between gap-2 mb-2">
-            <h3 className="text-sm font-semibold text-foreground">
-              {entry.categoryDisplay}
-            </h3>
-            <time className="text-xs text-muted-foreground shrink-0">
-              {entry.dateFormatted}
-            </time>
+            <h3 className="text-sm font-semibold text-foreground">{entry.categoryDisplay}</h3>
+            <time className="text-xs text-muted-foreground shrink-0">{entry.dateFormatted}</time>
           </div>
 
           {/* Notatka */}
           {displayNote && (
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
-                {displayNote}
-              </p>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">{displayNote}</p>
 
               {/* Link rozwiń/zwiń */}
               {entry.hasMore && (

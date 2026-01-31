@@ -1,5 +1,5 @@
-import { type Locator, type Page, expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { type Locator, type Page, expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
 export class PetFormPage extends BasePage {
   // Form container
@@ -59,17 +59,41 @@ export class PetFormPage extends BasePage {
   }
 
   async fillName(name: string): Promise<void> {
-    await this.nameInput.clear();
+    // Clear the input completely using triple-click to select all, then type
+    await this.nameInput.click({ clickCount: 3 });
     await this.nameInput.type(name, { delay: 50 });
+
+    // Blur to trigger validation
+    await this.nameInput.blur();
+
+    // Wait a bit for React Hook Form to process the validation
+    await this.page.waitForTimeout(100);
   }
 
-  async selectSpecies(species: 'dog' | 'cat' | 'other'): Promise<void> {
+  async selectSpecies(species: "dog" | "cat" | "other"): Promise<void> {
+    const speciesLabels: Record<"dog" | "cat" | "other", string> = {
+      dog: "Pies",
+      cat: "Kot",
+      other: "Inne",
+    };
     await this.speciesTrigger.click();
     await this.page.locator(`[data-testid="pet-form-species-option-${species}"]`).click();
+    await expect(this.speciesTrigger).toHaveText(new RegExp(speciesLabels[species], "i"));
+
+    // Wait a bit for React Hook Form to process the validation
+    await this.page.waitForTimeout(100);
   }
 
   async submitForm(): Promise<void> {
+    await expect(this.submitButton).toBeEnabled({ timeout: 10000 });
+    const isCreate = this.page.url().includes("/pets/new");
+    const expectedMethod = isCreate ? "POST" : "PATCH";
+    const waitForResponse = this.page.waitForResponse((response) => {
+      return response.url().includes("/api/pets") && response.request().method() === expectedMethod;
+    });
+
     await this.submitButton.click();
+    await waitForResponse;
   }
 
   async cancelForm(): Promise<void> {

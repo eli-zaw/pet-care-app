@@ -8,22 +8,15 @@ interface PetCardProps {
 
 export function PetCard({ pet, onOpen }: PetCardProps) {
   return (
-    <article
+    <button
       onClick={() => onOpen(pet.id)}
       className={cn(
-        "group relative rounded-lg border bg-card p-6 shadow-sm transition-all cursor-pointer",
+        "group relative w-full rounded-lg border bg-card p-6 text-left shadow-sm transition-all",
         "hover:shadow-md hover:border-primary/50",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "min-h-[44px]" // Touch target
       )}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen(pet.id);
-        }
-      }}
+      type="button"
       aria-label={`Otwórz profil ${pet.name}`}
       data-testid={`pet-card-${pet.id}`}
     >
@@ -35,14 +28,22 @@ export function PetCard({ pet, onOpen }: PetCardProps) {
 
         {/* Pet Info */}
         <div className="flex-1 min-w-0" data-testid="pet-card-info">
-          <h3 className="font-semibold text-lg text-card-foreground truncate group-hover:text-primary transition-colors" data-testid="pet-card-name">
+          <h3
+            className="font-semibold text-lg text-card-foreground truncate group-hover:text-primary transition-colors"
+            data-testid="pet-card-name"
+          >
             {pet.name}
           </h3>
-          <p className="text-sm text-muted-foreground mt-1" data-testid="pet-card-entries">{pet.entriesLabel}</p>
+          <p className="text-sm text-muted-foreground mt-1" data-testid="pet-card-entries">
+            {pet.entriesLabel}
+          </p>
         </div>
 
         {/* Arrow Icon */}
-        <div className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" data-testid="pet-card-arrow">
+        <div
+          className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all"
+          data-testid="pet-card-arrow"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -59,6 +60,6 @@ export function PetCard({ pet, onOpen }: PetCardProps) {
           </svg>
         </div>
       </div>
-    </article>
+    </button>
   );
 }

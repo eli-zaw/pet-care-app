@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Import the function we want to test
 // Note: calculateCareStatus is not exported, so we need to test it through the component
@@ -22,7 +22,7 @@ const calculateCareStatus = (lastEntryDate: Date | null) => {
       status: "current" as const,
       emoji: "🟢",
       label: "Aktualne",
-      tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString('pl-PL')}`,
+      tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString("pl-PL")}`,
     };
   }
 
@@ -31,7 +31,7 @@ const calculateCareStatus = (lastEntryDate: Date | null) => {
       status: "attention" as const,
       emoji: "🟡",
       label: "Wymaga uwagi",
-      tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString('pl-PL')}`,
+      tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString("pl-PL")}`,
     };
   }
 
@@ -39,14 +39,14 @@ const calculateCareStatus = (lastEntryDate: Date | null) => {
     status: "outdated" as const,
     emoji: "🔴",
     label: "Nieaktualne",
-    tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString('pl-PL')}`,
+    tooltipText: `Ostatni wpis: ${lastEntryDate.toLocaleDateString("pl-PL")}`,
   };
 };
 
-describe('calculateCareStatus', () => {
+describe("calculateCareStatus", () => {
   beforeEach(() => {
     // Mock Date.now() for consistent testing
-    const mockNow = new Date('2024-01-15T12:00:00Z');
+    const mockNow = new Date("2024-01-15T12:00:00Z");
     vi.useFakeTimers();
     vi.setSystemTime(mockNow);
   });
@@ -55,7 +55,7 @@ describe('calculateCareStatus', () => {
     vi.useRealTimers();
   });
 
-  describe('when lastEntryDate is null', () => {
+  describe("when lastEntryDate is null", () => {
     it('should return outdated status with "Brak wpisów" tooltip', () => {
       // Arrange
       const lastEntryDate = null;
@@ -73,10 +73,10 @@ describe('calculateCareStatus', () => {
     });
   });
 
-  describe('when last entry is within 30 days', () => {
-    it('should return current status for entry from yesterday', () => {
+  describe("when last entry is within 30 days", () => {
+    it("should return current status for entry from yesterday", () => {
       // Arrange
-      const lastEntryDate = new Date('2024-01-14T12:00:00Z'); // 1 day ago
+      const lastEntryDate = new Date("2024-01-14T12:00:00Z"); // 1 day ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -90,9 +90,9 @@ describe('calculateCareStatus', () => {
       });
     });
 
-    it('should return current status for entry from exactly 30 days ago', () => {
+    it("should return current status for entry from exactly 30 days ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-12-16T12:00:00Z'); // Exactly 30 days ago
+      const lastEntryDate = new Date("2023-12-16T12:00:00Z"); // Exactly 30 days ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -106,9 +106,9 @@ describe('calculateCareStatus', () => {
       });
     });
 
-    it('should return current status for entry from today', () => {
+    it("should return current status for entry from today", () => {
       // Arrange
-      const lastEntryDate = new Date('2024-01-15T12:00:00Z'); // Same day
+      const lastEntryDate = new Date("2024-01-15T12:00:00Z"); // Same day
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -123,10 +123,10 @@ describe('calculateCareStatus', () => {
     });
   });
 
-  describe('when last entry is between 31-90 days ago', () => {
-    it('should return attention status for entry from 31 days ago', () => {
+  describe("when last entry is between 31-90 days ago", () => {
+    it("should return attention status for entry from 31 days ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-12-15T12:00:00Z'); // 31 days ago
+      const lastEntryDate = new Date("2023-12-15T12:00:00Z"); // 31 days ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -140,9 +140,9 @@ describe('calculateCareStatus', () => {
       });
     });
 
-    it('should return attention status for entry from exactly 90 days ago', () => {
+    it("should return attention status for entry from exactly 90 days ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-10-17T12:00:00Z'); // Exactly 90 days ago
+      const lastEntryDate = new Date("2023-10-17T12:00:00Z"); // Exactly 90 days ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -156,9 +156,9 @@ describe('calculateCareStatus', () => {
       });
     });
 
-    it('should return attention status for entry from 60 days ago', () => {
+    it("should return attention status for entry from 60 days ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-11-16T12:00:00Z'); // 60 days ago
+      const lastEntryDate = new Date("2023-11-16T12:00:00Z"); // 60 days ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -173,10 +173,10 @@ describe('calculateCareStatus', () => {
     });
   });
 
-  describe('when last entry is more than 90 days ago', () => {
-    it('should return outdated status for entry from 91 days ago', () => {
+  describe("when last entry is more than 90 days ago", () => {
+    it("should return outdated status for entry from 91 days ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-10-16T12:00:00Z'); // 91 days ago
+      const lastEntryDate = new Date("2023-10-16T12:00:00Z"); // 91 days ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -190,9 +190,9 @@ describe('calculateCareStatus', () => {
       });
     });
 
-    it('should return outdated status for entry from 1 year ago', () => {
+    it("should return outdated status for entry from 1 year ago", () => {
       // Arrange
-      const lastEntryDate = new Date('2023-01-15T12:00:00Z'); // 1 year ago
+      const lastEntryDate = new Date("2023-01-15T12:00:00Z"); // 1 year ago
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -207,10 +207,10 @@ describe('calculateCareStatus', () => {
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle future dates correctly', () => {
+  describe("edge cases", () => {
+    it("should handle future dates correctly", () => {
       // Arrange
-      const lastEntryDate = new Date('2024-01-16T12:00:00Z'); // Future date
+      const lastEntryDate = new Date("2024-01-16T12:00:00Z"); // Future date
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -219,9 +219,9 @@ describe('calculateCareStatus', () => {
       expect(result.status).toBe("current");
     });
 
-    it('should handle dates with time components correctly', () => {
+    it("should handle dates with time components correctly", () => {
       // Arrange
-      const lastEntryDate = new Date('2024-01-14T23:59:59Z'); // 1 day ago, almost 2 days
+      const lastEntryDate = new Date("2024-01-14T23:59:59Z"); // 1 day ago, almost 2 days
 
       // Act
       const result = calculateCareStatus(lastEntryDate);
@@ -230,11 +230,11 @@ describe('calculateCareStatus', () => {
       expect(result.status).toBe("current");
     });
 
-    it('should handle leap year dates correctly', () => {
+    it("should handle leap year dates correctly", () => {
       // Arrange - Test around Feb 29
-      const mockNow = new Date('2024-03-01T12:00:00Z'); // March 1, 2024
+      const mockNow = new Date("2024-03-01T12:00:00Z"); // March 1, 2024
       vi.setSystemTime(mockNow);
-      const lastEntryDate = new Date('2024-02-29T12:00:00Z'); // Feb 29, 2024 (leap year)
+      const lastEntryDate = new Date("2024-02-29T12:00:00Z"); // Feb 29, 2024 (leap year)
 
       // Act
       const result = calculateCareStatus(lastEntryDate);

@@ -4,7 +4,9 @@ import Layout from "../layouts/Layout.astro";
 
 // Server-side sprawdzenie sesji użytkownika
 const supabase = Astro.locals.supabase;
-const { data: { session } } = await supabase.auth.getSession();
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 
 // Jeśli użytkownik zalogowany, przekieruj do dashboardu
 if (session?.user) {

@@ -15,7 +15,6 @@ if (!petId || !entryId) {
 // Pobranie danych zwierzęcia (dla breadcrumbs)
 let petData: GetPetResponseDto | null = null;
 let entryData: CareEntryDto | null = null;
-let error: string | null = null;
 
 try {
   // Pobierz dane zwierzęcia
@@ -58,8 +57,7 @@ try {
   }
 
   entryData = await entryResponse.json();
-} catch (err) {
-  console.error("Error fetching data in edit care entry page:", err);
+} catch {
   return Astro.redirect(`/pets/${petId}`);
 }
 
@@ -77,9 +75,7 @@ const pageTitle = `Edytuj wpis - ${petData.name} - Paw Notes`;
       <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
         <ol class="flex items-center gap-2">
           <li>
-            <a href="/dashboard" class="hover:text-foreground transition-colors">
-              Pulpit
-            </a>
+            <a href="/dashboard" class="hover:text-foreground transition-colors"> Pulpit </a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
@@ -88,9 +84,7 @@ const pageTitle = `Edytuj wpis - ${petData.name} - Paw Notes`;
             </a>
           </li>
           <li aria-hidden="true">/</li>
-          <li aria-current="page" class="text-foreground">
-            Edytuj wpis
-          </li>
+          <li aria-current="page" class="text-foreground">Edytuj wpis</li>
         </ol>
       </nav>
 

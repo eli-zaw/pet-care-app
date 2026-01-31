@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-import { createSupabaseServerInstance } from '../../../db/supabase.client';
-import { loginSchema } from '../../../lib/schemas/auth';
+import type { APIRoute } from "astro";
+import { createSupabaseServerInstance } from "../../../db/supabase.client";
+import { loginSchema } from "../../../lib/schemas/auth";
 
 export const prerender = false;
 
@@ -11,11 +11,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Walidacja przez Zod
     const validationResult = loginSchema.safeParse(body);
     if (!validationResult.success) {
-      return new Response(JSON.stringify({
-        error: validationResult.error.errors[0].message
-      }), {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({
+          error: validationResult.error.errors[0].message,
+        }),
+        {
+          status: 400,
+        }
+      );
     }
 
     const { email, password } = validationResult.data;
@@ -29,28 +32,37 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     if (error) {
       // Nie ujawniaj czy email istnieje - zawsze ten sam komunikat
-      return new Response(JSON.stringify({
-        error: "Nieprawidłowy email lub hasło"
-      }), {
-        status: 401,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Nieprawidłowy email lub hasło",
+        }),
+        {
+          status: 401,
+        }
+      );
     }
 
-    return new Response(JSON.stringify({
-      message: "Logowanie zakończone sukcesem",
-      user: {
-        id: data.user.id,
-        email: data.user.email,
+    return new Response(
+      JSON.stringify({
+        message: "Logowanie zakończone sukcesem",
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+        },
+      }),
+      {
+        status: 200,
       }
-    }), {
-      status: 200,
-    });
+    );
   } catch (error) {
-    console.error('Login API error:', error);
-    return new Response(JSON.stringify({
-      error: "Wystąpił błąd serwera"
-    }), {
-      status: 500,
-    });
+    console.error("Login API error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "Wystąpił błąd serwera",
+      }),
+      {
+        status: 500,
+      }
+    );
   }
 };

@@ -110,7 +110,6 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
       const petData: GetPetResponseDto = await response.json();
       return petData;
     } catch (err) {
-      console.error("Error fetching pet:", err);
       if (err instanceof TypeError) {
         toast.error("Brak połączenia. Sprawdź internet.");
       }
@@ -158,7 +157,6 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
           setPet((prev) => (prev ? { ...prev, entriesCount: data.pagination.total, lastEntryDate } : null));
         }
       } catch (err) {
-        console.error("Error fetching entries:", err);
         if (err instanceof TypeError) {
           toast.error("Brak połączenia. Sprawdź internet.");
         } else {
@@ -293,7 +291,6 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
         window.location.href = "/dashboard";
       }, 500);
     } catch (err) {
-      console.error("Error deleting pet:", err);
       if (err instanceof TypeError) {
         toast.error("Brak połączenia. Sprawdź internet.");
       } else {
@@ -356,7 +353,6 @@ export function usePetProfile(petId: string): UsePetProfileReturn {
           setPet((prev) => (prev ? { ...prev, entriesCount: prev.entriesCount + 1 } : null));
         }
 
-        console.error("Error deleting entry:", err);
         if (err instanceof TypeError) {
           toast.error("Brak połączenia. Sprawdź internet.");
         } else {

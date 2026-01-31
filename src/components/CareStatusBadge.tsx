@@ -1,11 +1,6 @@
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CareStatusBadgeProps {
   lastEntryDate: Date | null;

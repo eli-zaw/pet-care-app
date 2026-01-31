@@ -39,8 +39,7 @@ try {
   } else {
     petData = await response.json();
   }
-} catch (err) {
-  console.error("Error fetching pet data in edit page:", err);
+} catch {
   error = "Wystąpił błąd podczas ładowania danych";
 }
 
@@ -59,9 +58,7 @@ const pageTitle = `Edytuj ${petData.name} - Paw Notes`;
       <nav class="mb-6 text-sm text-muted-foreground" aria-label="Nawigacja okruszkowa">
         <ol class="flex items-center gap-2">
           <li>
-            <a href="/dashboard" class="hover:text-foreground transition-colors">
-              Pulpit
-            </a>
+            <a href="/dashboard" class="hover:text-foreground transition-colors"> Pulpit </a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
@@ -70,19 +67,12 @@ const pageTitle = `Edytuj ${petData.name} - Paw Notes`;
             </a>
           </li>
           <li aria-hidden="true">/</li>
-          <li aria-current="page" class="text-foreground">
-            Edytuj
-          </li>
+          <li aria-current="page" class="text-foreground">Edytuj</li>
         </ol>
       </nav>
 
       <!-- Form Component -->
-      <PetForm 
-        mode="edit" 
-        petId={petId} 
-        initialData={petData} 
-        client:load 
-      />
+      <PetForm mode="edit" petId={petId} initialData={petData} client:load />
     </div>
   </div>
 </Layout>

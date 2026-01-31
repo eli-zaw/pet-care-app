@@ -1,5 +1,5 @@
-import { type Locator, type Page, expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { type Locator, type Page, expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
 export class HomePage extends BasePage {
   readonly hero: Locator;
@@ -12,7 +12,7 @@ export class HomePage extends BasePage {
   }
 
   async load(): Promise<void> {
-    await this.navigate('/');
+    await this.navigate("/");
     await expect(this.hero).toBeVisible();
   }
 

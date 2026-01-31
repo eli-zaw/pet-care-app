@@ -1,13 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const emailSchema = z
-  .string()
-  .min(1, "Email jest wymagany")
-  .email("Nieprawidłowy format email");
+export const emailSchema = z.string().min(1, "Email jest wymagany").email("Nieprawidłowy format email");
 
-export const passwordSchema = z
-  .string()
-  .min(8, "Hasło musi mieć minimum 8 znaków");
+export const passwordSchema = z.string().min(8, "Hasło musi mieć minimum 8 znaków");
 
 export const registerSchema = z.object({
   email: emailSchema,
