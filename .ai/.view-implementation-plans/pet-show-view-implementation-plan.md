@@ -1,12 +1,15 @@
 # Plan implementacji widoku: Profil zwierzęcia
 
 ## 1. Przegląd
+
 Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpisów opieki oraz umożliwia szybkie dodawanie nowych wpisów i zarządzanie zwierzęciem (usuwanie). Widok wspiera onboarding (empty state dla nowych zwierząt) oraz paginację historii.
 
 ## 2. Routing widoku
+
 Ścieżka: `/pets/[petId]` (chroniona przez middleware; użytkownik niezalogowany przekierowywany do logowania). Po usunięciu zwierzęcia przekierowanie do `/dashboard`. FAB "Dodaj wpis" prowadzi do `/pets/[petId]/entries/new`.
 
 ## 3. Struktura komponentów
+
 - `PetProfilePage` (Astro page, dynamiczna)
 - `PetHeader` (React, client:load)
 - `CareStatusBadge` (React)
@@ -21,7 +24,9 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - `Toaster` (Sonner, globalny)
 
 ## 4. Szczegóły komponentów
+
 ### `PetProfilePage`
+
 - Opis komponentu: Strona Astro renderująca profil zwierzęcia z breadcrumbs.
 - Główne elementy: `Layout`, breadcrumbs „Pulpit > [Imię]", sekcje dla `PetHeader` i `CareHistoryList`.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -30,6 +35,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: brak.
 
 ### `PetHeader`
+
 - Opis komponentu: Nagłówek profilu z emoji gatunku, imieniem, gatunkiem, statusem opieki i przyciskiem "Usuń zwierzę".
 - Główne elementy:
   - `header`: emoji (species_emoji), h1 (name), badge (species_display), licznik wpisów
@@ -46,6 +52,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `petId`, `name`, `speciesEmoji`, `speciesDisplay`, `entriesCount`, `lastEntryDate`, `onDelete`.
 
 ### `CareStatusBadge`
+
 - Opis komponentu: Wskaźnik aktualności opieki na podstawie daty ostatniego wpisu.
 - Główne elementy:
   - `div` z emoji wskaźnika (🟢/🟡/🔴) i etykietą tekstową ("Aktualne"/"Wymaga uwagi"/"Nieaktualne")
@@ -56,11 +63,12 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Obsługiwana walidacja: obliczenie statusu na podstawie daty ostatniego wpisu:
   - ≤30 dni → 🟢 "Aktualne"
   - 31-90 dni → 🟡 "Wymaga uwagi"
-  - >90 dni lub brak wpisów → 🔴 "Nieaktualne"
+  - > 90 dni lub brak wpisów → 🔴 "Nieaktualne"
 - Typy: `CareStatusViewModel`.
 - Propsy: `lastEntryDate: Date | null`, `status: "current" | "attention" | "outdated"`.
 
 ### `CareHistoryList`
+
 - Opis komponentu: Lista wpisów opieki lub empty state. Obsługuje paginację i loading.
 - Główne elementy:
   - Jeśli `isEmpty`: `EmptyState` z CTA „Dodaj pierwszy wpis"
@@ -76,6 +84,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `petId`, `items`, `isLoading`, `isEmpty`, `pagination`, `onPageChange`, `onDeleteEntry`.
 
 ### `CareEntryCard`
+
 - Opis komponentu: Pojedyncza karta wpisu opieki.
 - Główne elementy:
   - `article`: emoji kategorii, nazwa kategorii, data (DD.MM.YYYY)
@@ -90,6 +99,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `entry`, `isExpanded`, `onToggleExpand`, `onDelete`.
 
 ### `FAB` (Floating Action Button)
+
 - Opis komponentu: Przycisk „Dodaj wpis" unoszący się nad treścią (fixed position).
 - Główne elementy: `Button` z ikoną Plus, pozycja bottom-right (desktop) / bottom-center (mobile).
 - Obsługiwane interakcje: kliknięcie -> nawigacja do `/pets/[petId]/entries/new`.
@@ -98,6 +108,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `petId`, `label` (opcjonalnie).
 
 ### `EmptyState`
+
 - Opis komponentu: Stan pusty dla zwierząt bez wpisów (reużywalny z Dashboard).
 - Główne elementy: `div`, tekst „Brak wpisów. Dodaj pierwszy!", CTA „Dodaj wpis".
 - Obsługiwane interakcje: kliknięcie CTA -> nawigacja do `/pets/[petId]/entries/new`.
@@ -106,6 +117,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `title`, `description`, `ctaLabel`, `onCta`.
 
 ### `PaginationControls`
+
 - Opis komponentu: Sterowanie paginacją (reużywalny z Dashboard).
 - Główne elementy:
   - Mobile: Button „Załaduj więcej" (pełna szerokość, min 44x44px)
@@ -120,6 +132,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `pagination`, `isLoading`, `onPageChange`.
 
 ### `DeletePetDialog`
+
 - Opis komponentu: Modal potwierdzenia usunięcia zwierzęcia.
 - Główne elementy:
   - Dialog (Shadcn/ui): nagłówek, opis, przyciski
@@ -134,6 +147,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `open`, `petId`, `petName`, `isDeleting`, `onConfirm`, `onCancel`.
 
 ### `DeleteEntryDialog`
+
 - Opis komponentu: Modal potwierdzenia usunięcia wpisu.
 - Główne elementy:
   - Dialog (Shadcn/ui): nagłówek, opis, przyciski
@@ -148,6 +162,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `open`, `petId`, `entryId`, `isDeleting`, `onConfirm`, `onCancel`.
 
 ### `SkeletonEntryCard`
+
 - Opis komponentu: Skeleton podczas ładowania wpisów.
 - Główne elementy: `div` z shimmer animation (emoji, tytuł, data, notatka).
 - Obsługiwane interakcje: brak.
@@ -156,6 +171,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Propsy: `count?: number` (liczba skeletonów).
 
 ### `Toaster` (Sonner)
+
 - Opis komponentu: Globalny system toastów (jak w innych widokach).
 - Obsługiwane zdarzenia:
   - `toast.success("Zwierzę zostało usunięte")` po DELETE pet
@@ -164,7 +180,9 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Konfiguracja: bottom-right (desktop), bottom-center (mobile), auto-hide 3s (sukces) / 5s (błąd).
 
 ## 5. Typy
+
 ### Typy DTO (istniejące)
+
 - `GetPetResponseDto`: `{ id, animal_code, name, species, species_display, species_emoji, created_at, updated_at }`
 - `CareHistoryDto`: dane wpisu z view `v_care_history` (id, pet_id, category, category_display, category_emoji, entry_date, entry_date_formatted, note, created_at, updated_at)
 - `CareEntriesListQuery`: `{ page?: number, limit?: number, category?: CareCategoryType, order?: "asc" | "desc" }`
@@ -172,6 +190,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - `PaginationDto`: `{ page, limit, total }`
 
 ### Typy ViewModel (nowe)
+
 - `PetHeaderViewModel`
   - `id: string`
   - `name: string`
@@ -203,6 +222,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - `pagination: PaginationViewModel`
 
 ## 6. Zarządzanie stanem
+
 - Stan główny: `petData`, `careEntries`, `pagination`, `isLoading`, `error`, `expandedEntryIds` (Set<string>).
 - Źródło danych:
   - GET `/api/pets/:petId` po stronie klienta (lub SSR w Astro)
@@ -221,7 +241,9 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - `PetProfilePage` inicjalizuje hook z `petId` z URL params.
 
 ## 7. Integracja API
+
 ### Endpoint 1: GET /api/pets/:petId
+
 - Opis: Pobieranie danych zwierzęcia.
 - Typ żądania: brak body (GET).
 - Typ odpowiedzi 200: `GetPetResponseDto`.
@@ -231,6 +253,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Mapowanie na `PetHeaderViewModel`
 
 ### Endpoint 2: GET /api/pets/:petId/care-entries
+
 - Opis: Pobieranie historii wpisów.
 - Query: `{ page, limit, order: "desc" }` (typ `CareEntriesListQuery`).
 - Typ odpowiedzi 200: `CareEntriesListResponseDto`.
@@ -241,6 +264,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Mapowanie na `CareEntryCardViewModel[]`
 
 ### Endpoint 3: DELETE /api/pets/:petId
+
 - Opis: Usunięcie zwierzęcia (soft delete).
 - Typ żądania: brak body (DELETE).
 - Typ odpowiedzi: 204 (no content).
@@ -251,6 +275,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Obsługa błędów: cofnięcie przekierowania + toast błędu
 
 ### Endpoint 4: DELETE /api/pets/:petId/care-entries/:entryId
+
 - Opis: Usunięcie wpisu (soft delete).
 - Typ żądania: brak body (DELETE).
 - Typ odpowiedzi: 204 (no content).
@@ -261,6 +286,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Obsługa błędów: przywrócenie wpisu + toast błędu
 
 ## 8. Interakcje użytkownika
+
 - Wejście na `/pets/[petId]`:
   - Ładowanie danych zwierzęcia i wpisów (skeleton).
   - Breadcrumbs: „Pulpit > [Imię]".
@@ -290,6 +316,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Przyciski akcji min 44x44px.
 
 ## 9. Warunki i walidacja
+
 - Parametr `petId`:
   - Musi być UUID (walidacja server-side w Astro).
   - Jeśli nieprawidłowy -> 400 lub 404.
@@ -313,6 +340,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
   - Wpisy pełna szerokość.
 
 ## 10. Obsługa błędów
+
 - 400 (invalid petId):
   - Redirect do dashboard + toast „Nieprawidłowy identyfikator zwierzęcia".
 - 401 (not authenticated):
@@ -333,6 +361,7 @@ Widok profilu zwierzęcia prezentuje dane pupila, chronologiczną historię wpis
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
+
 1. Dodaj typy `PetHeaderViewModel`, `CareEntryCardViewModel`, `CareHistoryListState`, `PetProfileViewModel`, `CareStatusViewModel` do `src/types.ts`.
 2. Utwórz custom hook `src/lib/hooks/usePetProfile.ts` z logiką pobierania danych, paginacji, usuwania i rozwijania wpisów.
 3. Utwórz komponenty React: `PetHeader`, `CareStatusBadge`, `CareHistoryList`, `CareEntryCard`, `FAB`, `DeletePetDialog`, `DeleteEntryDialog`, `SkeletonEntryCard`.

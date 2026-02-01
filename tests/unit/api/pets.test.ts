@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createPet } from "../../../src/lib/services/petService";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 function createChainMock() {
   const chain: Record<string, ReturnType<typeof vi.fn>> = {};
@@ -34,7 +35,7 @@ describe("createPet service", () => {
     it("should return validation error for invalid data", async () => {
       const invalidData = { name: "", species: "invalid" };
 
-      const result = await createPet(mockSupabase as any, "user-123", invalidData);
+      const result = await createPet(mockSupabase as unknown as SupabaseClient, "user-123", invalidData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -60,7 +61,7 @@ describe("createPet service", () => {
         error: null,
       });
 
-      const result = await createPet(mockSupabase as any, "user-123", validData);
+      const result = await createPet(mockSupabase as unknown as SupabaseClient, "user-123", validData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -91,11 +92,10 @@ describe("createPet service", () => {
       // Mock ownership insert
       petOwnersChain.insert.mockReturnValue({
         ...petOwnersChain,
-        then: (resolve: Function) =>
-          resolve({ error: null }),
+        then: (resolve: (value?: unknown) => unknown) => resolve({ error: null }),
       });
 
-      const result = await createPet(mockSupabase as any, "user-123", validData);
+      const result = await createPet(mockSupabase as unknown as SupabaseClient, "user-123", validData);
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -123,7 +123,7 @@ describe("createPet service", () => {
         error: { message: "Database connection failed", code: "PGRST000" },
       });
 
-      const result = await createPet(mockSupabase as any, "user-123", validData);
+      const result = await createPet(mockSupabase as unknown as SupabaseClient, "user-123", validData);
 
       expect(result.success).toBe(false);
       if (!result.success) {

@@ -1,12 +1,15 @@
 # Plan implementacji widoku: Dodaj wpis opieki
 
 ## 1. Przegląd
+
 Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod kątem szybkości (cel: <20 sekund, idealnie <15s). Kategoria i data są wymagane, notatka opcjonalna. Po zapisie przekierowanie do profilu zwierzęcia z nowym wpisem na górze historii.
 
 ## 2. Routing widoku
+
 Ścieżka: `/pets/[petId]/entries/new` (chroniona przez middleware; użytkownik niezalogowany przekierowywany do logowania). Po sukcesie przekierowanie do `/pets/[petId]` (profil zwierzęcia). Anulowanie prowadzi do `/pets/[petId]`.
 
 ## 3. Struktura komponentów
+
 - `AddCareEntryPage` (Astro page, dynamiczna)
 - `CareEntryForm` (React, client:load)
 - `CategoryPicker` (React, 6 przycisków z emoji)
@@ -16,7 +19,9 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - `Toaster` (Sonner, globalny)
 
 ## 4. Szczegóły komponentów
+
 ### `AddCareEntryPage`
+
 - Opis komponentu: Strona Astro renderująca formularz z breadcrumbs i kontekstem zwierzęcia.
 - Główne elementy: `Layout`, breadcrumbs „Pulpit > [Imię] > Dodaj wpis", `CareEntryForm`.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -25,6 +30,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Propsy: brak.
 
 ### `CareEntryForm`
+
 - Opis komponentu: Interaktywny formularz React z walidacją i komunikacją z API.
 - Główne elementy:
   - `form` z `onSubmit`
@@ -49,6 +55,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Propsy: `petId: string`, `petName: string` (do wyświetlenia w nagłówku).
 
 ### `CategoryPicker`
+
 - Opis komponentu: Siatka 6 przycisków kategorii z emoji. Jeden może być wybrany (single selection).
 - Główne elementy:
   - Grid 2x3 (mobile: 2 kolumny, desktop: 3 kolumny)
@@ -64,6 +71,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Propsy: `value: CareCategoryType | null`, `onChange: (category: CareCategoryType) => void`, `error?: string`.
 
 ### `DatePicker` (Shadcn/ui)
+
 - Opis komponentu: Kalendarz do wyboru daty wpisu. Domyślna wartość: dziś.
 - Główne elementy: Button (trigger) + Popover z Calendar.
 - Obsługiwane interakcje:
@@ -77,6 +85,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Propsy: `value: Date`, `onChange: (date: Date) => void`, `error?: string`.
 
 ### `Textarea` (Shadcn/ui)
+
 - Opis komponentu: Pole tekstowe dla opcjonalnej notatki z licznikiem znaków.
 - Główne elementy:
   - `textarea` z `maxLength={1000}`
@@ -93,11 +102,13 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Propsy: `value: string`, `onChange: (value: string) => void`, `maxLength: 1000`, `error?: string`.
 
 ### `Button` (Shadcn/ui)
+
 - Opis komponentu: Przyciski akcji (jak w innych widokach).
 - Warianty: „Anuluj" (outline), „Zapisz" (default, disabled gdy invalid/submitting).
 - Propsy: `type`, `variant`, `disabled`, `onClick`.
 
 ### `Toaster` (Sonner)
+
 - Opis komponentu: Globalny system toastów (jak w innych widokach).
 - Obsługiwane zdarzenia:
   - `toast.success("Wpis został dodany")` po 201
@@ -105,12 +116,15 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Konfiguracja: bottom-right (desktop), bottom-center (mobile), auto-hide 3s (sukces) / 5s (błąd).
 
 ## 5. Typy
+
 ### Typy DTO (istniejące)
+
 - `CreateCareEntryCommand`: `Pick<TablesInsert<"care_entries">, "category" | "entry_date" | "note">` → `{ category: CareCategoryType, entry_date: string, note?: string }`
 - `CreateCareEntryResponseDto`: `{ id, pet_id, category, category_display, category_emoji, entry_date, note, created_at }`
 - `CareCategoryType`: `"vet_visit" | "medication" | "grooming" | "food" | "health_event" | "note"`
 
 ### Typy ViewModel (nowe)
+
 - `CareEntryFormViewModel`:
   - `category: CareCategoryType | null`
   - `entryDate: Date` (domyślnie new Date())
@@ -126,9 +140,11 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
   - `emoji: string` (np. „🏥")
 
 ### Stałe (nowe)
+
 - `CARE_CATEGORY_OPTIONS: CareCategoryOption[]` → array z 6 opcjami (vet_visit, medication, grooming, food, health_event, note).
 
 ## 6. Zarządzanie stanem
+
 - Stan lokalny w `CareEntryForm` (useState, brak custom hook):
   - `formData: CareEntryFormViewModel` (initial: `{ category: null, entryDate: new Date(), note: "" }`)
   - `errors: CareEntryFormErrors` (initial: `{}`)
@@ -143,6 +159,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
   - `note`: `""` (pusta)
 
 ## 7. Integracja API
+
 - Endpoint: `POST /api/pets/:petId/care-entries`
 - Request:
   - Headers: `{ "Content-Type": "application/json" }`
@@ -163,6 +180,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
   - Toast sukcesu + przekierowanie do `/pets/[petId]`
 
 ## 8. Interakcje użytkownika
+
 - Wejście na `/pets/[petId]/entries/new`:
   - Ładowanie strony z breadcrumbs „Pulpit > [Imię] > Dodaj wpis".
   - Formularz z domyślnymi wartościami: kategoria nie wybrana, data dziś, notatka pusta.
@@ -200,6 +218,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
   - Font-size inputs min 16px (zapobiega zoomowaniu na iOS).
 
 ## 9. Warunki i walidacja
+
 - Pole „Kategoria":
   - Wymagane (jeden z 6 przycisków musi być wybrany).
   - Błąd: „Wybierz kategorię" (jeśli żaden nie wybrany przed submitem).
@@ -226,6 +245,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
   - DatePicker działa na touch devices.
 
 ## 10. Obsługa błędów
+
 - 400 (walidacja):
   - Mapowanie błędów z API na pola formularza.
   - Toast: „Sprawdź poprawność danych".
@@ -249,6 +269,7 @@ Widok formularza dodawania wpisu opieki dla zwierzęcia. Zoptymalizowany pod ką
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
+
 1. Dodaj typy `CareEntryFormViewModel`, `CareEntryFormErrors`, `CareCategoryOption`, `CARE_CATEGORY_OPTIONS` do `src/types.ts`.
 2. Utwórz komponent `src/components/CategoryPicker.tsx`: siatka 2x3 przycisków z emoji, single selection.
 3. Utwórz komponent `src/components/CareEntryForm.tsx` z pełną logiką formularza, walidacją i obsługą API.

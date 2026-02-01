@@ -1,22 +1,27 @@
 # API Endpoint Implementation Plan: PATCH /api/pets/:petId
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika. Pozwala na zmianę tylko imienia (`name`) — gatunek (`species`) jest immutable po utworzeniu. Wszystkie pola w body są opcjonalne (partial update). Zwraca zaktualizowane dane zwierzęcia. Trigger w bazie automatycznie aktualizuje `updated_at`.
 
 ## 2. Szczegóły żądania
+
 - Metoda HTTP: PATCH
 - Struktura URL: `/api/pets/:petId`
 - Parametry:
   - Wymagane: `petId` (UUID) — identyfikator zwierzęcia do aktualizacji
   - Opcjonalne: brak
 - Request Body (wszystkie pola opcjonalne):
+
   ```json
   { "name": "Luna Updated" }
   ```
+
   - `name` (string, 1-50 znaków po trim, opcjonalne)
   - **Uwaga**: `species` jest immutable — próba zmiany powinna zwrócić 400
 
 ## 3. Wykorzystywane typy
+
 - `UpdatePetCommand` (request body) — w praktyce tylko `{ name?: string }`
 - `PetDto` lub `GetPetResponseDto` (response 200) — pełny obiekt + display fields (species_display, species_emoji)
 - `PetSummaryDto` (opcjonalnie, z view v_pets_summary) — zawiera species_display i species_emoji
@@ -24,9 +29,19 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
 - Zod schema dla walidacji body i petId
 
 ## 4. Szczegóły odpowiedzi
+
 - 200 OK:
   ```json
-  { "id": "uuid", "animal_code": "AB12CD34", "name": "Luna Updated", "species": "cat", "species_display": "Kot", "species_emoji": "🐱", "created_at": "iso", "updated_at": "iso" }
+  {
+    "id": "uuid",
+    "animal_code": "AB12CD34",
+    "name": "Luna Updated",
+    "species": "cat",
+    "species_display": "Kot",
+    "species_emoji": "🐱",
+    "created_at": "iso",
+    "updated_at": "iso"
+  }
   ```
 - 400 Bad Request: nieprawidłowy UUID, walidacja name nieudana, próba zmiany species
 - 401 Unauthorized: brak sesji (przyszłość; MVP pomija)
@@ -36,6 +51,7 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
 - 500 Internal Server Error: błąd serwera
 
 ## 5. Przepływ danych
+
 1. Handler `PATCH /api/pets/:petId` pobiera `supabase` z `context.locals`.
 2. Walidacja `petId` przez Zod (format UUID).
 3. Walidacja body przez Zod (name opcjonalne, 1-50 znaków; species nie dozwolone).
@@ -49,6 +65,7 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
 11. Pobranie zaktualizowanego zwierzęcia z view `v_pets_summary` (lub z mapowaniem species → display/emoji) i zwrócenie jako `PetDto` + display fields (200 OK).
 
 ## 6. Względy bezpieczeństwa
+
 - Uwierzytelnienie przez Supabase Auth; w MVP używamy `DEFAULT_USER_ID`, docelowo wymagany zalogowany użytkownik (sprawdzenie sesji).
 - Autoryzacja realizowana przez query z JOIN na `pet_owners` — użytkownik może edytować tylko swoje zwierzęta.
 - Walidacja danych wejściowych Zod na API (UUID, name length, brak species).
@@ -58,6 +75,7 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
 - Trigger w bazie trimuje name i ustawia updated_at automatycznie.
 
 ## 7. Obsługa błędów
+
 - 400: nieprawidłowy `petId` (nie UUID), nieprawidłowy `name` (< 1 lub > 50 znaków), próba zmiany `species`.
 - 401: brak sesji użytkownika (przyszłość; MVP pomija ten błąd).
 - 403: zwierzę istnieje i jest aktywne, ale należy do innego użytkownika (forbidden).
@@ -69,6 +87,7 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
   - W przeciwnym razie `console.error` po stronie serwera.
 
 ## 8. Wydajność
+
 - Pojedynczy UPDATE (tylko jeśli name podane) + trigger dla updated_at.
 - Sprawdzenie ownership w tym samym query co weryfikacja istnienia (optymalizacja).
 - Sprawdzenie unikalności nazwy przed update (osobne query, tylko jeśli name się zmienia).
@@ -77,6 +96,7 @@ Endpoint aktualizuje dane zwierzęcia należącego do zalogowanego użytkownika.
 - Trigger automatycznie obsługuje updated_at — brak potrzeby ręcznego ustawiania.
 
 ## 9. Kroki implementacji
+
 1. Dodać handler `PATCH` w `src/pages/api/pets/[petId].ts` (lub rozszerzyć istniejący plik) z `export const prerender = false`.
 2. Zdefiniować Zod schema dla `petId` (UUID validation) i body (name optional 1-50 znaków, species forbidden).
 3. W handlerze pobrać `supabase` z `context.locals` i sprawdzić sesję użytkownika (MVP: DEFAULT_USER_ID).

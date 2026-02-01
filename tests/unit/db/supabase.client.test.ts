@@ -111,10 +111,12 @@ describe("createSupabaseServerInstance", () => {
       expect(customFetch).toBeDefined();
 
       // Call the custom fetch with a non-auth URL
-      await customFetch!("https://test.supabase.co/rest/v1/pets", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      if (customFetch) {
+        await customFetch("https://test.supabase.co/rest/v1/pets", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+      }
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [url, init] = mockFetch.mock.calls[0];
@@ -137,10 +139,12 @@ describe("createSupabaseServerInstance", () => {
       const customFetch = getCustomFetch();
       expect(customFetch).toBeDefined();
 
-      await customFetch!("https://test.supabase.co/auth/v1/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+      if (customFetch) {
+        await customFetch("https://test.supabase.co/auth/v1/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+      }
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [, init] = mockFetch.mock.calls[0];
@@ -162,13 +166,15 @@ describe("createSupabaseServerInstance", () => {
       const customFetch = getCustomFetch();
       expect(customFetch).toBeDefined();
 
-      await customFetch!("https://test.supabase.co/rest/v1/pets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Custom-Header": "custom-value",
-        },
-      });
+      if (customFetch) {
+        await customFetch("https://test.supabase.co/rest/v1/pets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Custom-Header": "custom-value",
+          },
+        });
+      }
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [, init] = mockFetch.mock.calls[0];

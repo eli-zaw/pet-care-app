@@ -1,9 +1,11 @@
 # API Endpoint Implementation Plan: GET /api/pets/:petId/care-entries
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego zwierzęcia. Wykorzystuje view `v_care_history` dla wzbogaconych danych (category_display, category_emoji, entry_date_formatted). Zwraca tylko aktywne wpisy (nieusunięte) dla aktywnych zwierząt. Wspiera filtrowanie po kategorii i sortowanie po dacie zdarzenia. Używany do wyświetlania historii opieki na stronie szczegółów zwierzęcia.
 
 ## 2. Szczegóły żądania
+
 - Metoda HTTP: GET
 - Struktura URL: `/api/pets/:petId/care-entries`
 - Parametry:
@@ -16,6 +18,7 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 - Request Body: brak (metoda GET)
 
 ## 3. Wykorzystywane typy
+
 - `CareEntriesListQuery` (query params)
 - `CareEntriesListResponseDto` (response 200) — alias dla `PaginatedResponse<CareHistoryDto>`
 - `CareHistoryDto` (pojedynczy element w items) — z view v_care_history
@@ -24,6 +27,7 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 - `CareCategoryType` (enum dla category filter)
 
 ## 4. Szczegóły odpowiedzi
+
 - 200 OK:
   ```json
   {
@@ -57,6 +61,7 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 - 500 Internal Server Error: błąd serwera
 
 ## 5. Przepływ danych
+
 1. Handler `GET /api/pets/:petId/care-entries` pobiera `supabase` z `context.locals`.
 2. Walidacja `petId` przez Zod (format UUID).
 3. Walidacja query params przez Zod (page >= 1, limit 1-100, category optional, order optional).
@@ -65,13 +70,14 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 6. Jeśli pet nie znaleziony lub usunięty → 404; jeśli należy do innego użytkownika → 403.
 7. Query do view `v_care_history` z filtrowaniem po `pet_id`, `is_deleted = false`, opcjonalnie `category`.
 8. Zastosowanie sortowania (ORDER BY entry_date [order], created_at [order]).
-9. Zastosowanie paginacji (offset = (page - 1) * limit, limit).
+9. Zastosowanie paginacji (offset = (page - 1) \* limit, limit).
 10. Osobne query dla total count (bez limit/offset, z tymi samymi filtrami).
 11. Przetworzenie note: jeśli note.length > 100 → note_preview = note.substring(0, 100), has_more = true.
 12. Mapowanie na `CareEntriesListResponseDto` z items i pagination metadata.
 13. Zwrócenie 200 z danymi.
 
 ## 6. Względy bezpieczeństwa
+
 - Uwierzytelnienie przez Supabase Auth; w MVP używamy `DEFAULT_USER_ID`, docelowo wymagany zalogowany użytkownik (sprawdzenie sesji).
 - Autoryzacja realizowana przez sprawdzenie ownership pet przez `pet_owners` — użytkownik widzi wpisy tylko swoich zwierząt.
 - Walidacja danych wejściowych Zod na API (UUID, page, limit, category, order w zakresach).
@@ -81,6 +87,7 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 - Zwracanie wzbogaconych danych z view (category_display, entry_date_formatted) bez wrażliwych informacji.
 
 ## 7. Obsługa błędów
+
 - 400: nieprawidłowe query params (page < 1, limit < 1 lub > 100, invalid category, invalid order) — walidacja Zod.
 - 401: brak sesji użytkownika (przyszłość; MVP pomija ten błąd).
 - 403: pet istnieje i jest aktywny, ale należy do innego użytkownika (forbidden).
@@ -91,6 +98,7 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
   - W przeciwnym razie `console.error` po stronie serwera.
 
 ## 8. Wydajność
+
 - Wykorzystanie view `v_care_history` zamiast wielu zapytań — pre-calculated data (category_display, entry_date_formatted).
 - Dwa zapytania: jedno dla items (z limit/offset/order), drugie dla total count.
 - Indeksy na `care_entries(pet_id, is_deleted, entry_date DESC)` wspierają szybki dostęp i sortowanie.
@@ -101,10 +109,11 @@ Endpoint zwraca paginowaną listę wpisów opieki (care entries) dla konkretnego
 - Note preview obliczany w aplikacji (nie w DB) — prosty substring.
 
 ## 9. Kroki implementacji
+
 1. Utworzyć endpoint w `src/pages/api/pets/[petId]/care-entries.ts` z `export const prerender = false` i handlerem `GET`.
 2. Zdefiniować Zod schema dla `petId` (UUID) i `CareEntriesListQuery` (page >= 1, limit 1-100, category optional enum, order optional "asc"|"desc").
 3. W handlerze pobrać `supabase` z `context.locals` i sprawdzić sesję użytkownika (MVP: DEFAULT_USER_ID).
-4. Walidować `petId` i query params; obliczyć offset = (page - 1) * limit, określić order direction.
+4. Walidować `petId` i query params; obliczyć offset = (page - 1) \* limit, określić order direction.
 5. Sprawdzić czy pet istnieje, jest aktywny i należy do użytkownika (query do pets z JOIN na pet_owners).
 6. Jeśli nie znaleziono → 404; jeśli należy do innego użytkownika → 403.
 7. Wykonać query do view `v_care_history` filtrując po `pet_id`, `is_deleted = false`, opcjonalnie `category`, z ORDER BY entry_date [order], created_at [order], limit i offset.

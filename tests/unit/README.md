@@ -43,26 +43,31 @@ tests/unit/
 ## Z czego składają się testy
 
 ### 1. API Routes (`tests/unit/api/pets.test.ts`)
+
 - **Walidacja wejścia**: nieprawidłowy JSON, błędne dane Zod
 - **Sprawdzanie duplikatów**: mock Supabase dla istniejących zwierząt
 - **Sukces**: poprawna odpowiedź z danymi zwierzęcia
 
 ### 2. Middleware (`tests/unit/middleware/index.test.ts`)
+
 - **Autentyfikacja**: przekierowania dla chronionych tras
 - **Sesja**: ustawienie `locals.user` i `locals.supabase` z tokenem
 - **Cookies**: wykrywanie i przetwarzanie ciasteczek Supabase
 
 ### 3. Database Client (`tests/unit/db/supabase.client.test.ts`)
+
 - **Konfiguracja**: walidacja env vars, wybór źródła config
 - **Custom fetch**: dodawanie Authorization header (bez auth endpoints)
 - **Cookies**: parsowanie headerów Cookie
 
 ### 4. Hooks (`tests/unit/hooks/usePetsList.test.tsx`)
+
 - **Fetch danych**: sukces/błąd z API
 - **Paginacja**: mobile (append) vs desktop (replace)
 - **Stan ładowania**: zapobieganie wielokrotnym requestom
 
 ### 5. Components (`tests/unit/components/PetsList.test.tsx`)
+
 - **Warunki renderowania**: skeleton, empty state, grid
 - **Interakcje**: kliknięcia w karty zwierząt
 - **Dostępność**: test IDs dla screen readerów

@@ -1,23 +1,28 @@
 # API Endpoint Implementation Plan: POST /api/pets/:petId/care-entries
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia należącego do zalogowanego użytkownika. Obsługuje 6 kategorii opieki (wizyty weterynaryjne, leki, pielęgnacja, karmienie, zdarzenia zdrowotne, notatki) z opcjonalnym polem tekstowym. Automatyczna walidacja właściciela zwierzęcia i soft-delete awareness.
 
 ## 2. Szczegóły żądania
+
 - Metoda HTTP: POST
 - Struktura URL: `/api/pets/:petId/care-entries`
 - Parametry:
   - Wymagane: `petId` (UUID w URL)
   - Opcjonalne: brak
 - Request Body:
+
   ```json
   { "category": "vet_visit", "entry_date": "2026-01-24", "note": "Szczepienie przeciw wściekliźnie" }
   ```
+
   - `category` (enum `care_category_type`: `vet_visit`, `medication`, `grooming`, `food`, `health_event`, `note`)
   - `entry_date` (DATE string format YYYY-MM-DD, przeszłość/przyszłość dozwolone)
   - `note` (string opcjonalny, max 1000 znaków)
 
 ## 3. Wykorzystywane typy
+
 - `CreateCareEntryCommand` (request body)
 - `CreateCareEntryResponseDto` (response 201) + display fields (category_display, category_emoji)
 - `CareEntryDto` (wewnętrzny model po zapisie; bez pól soft delete)
@@ -26,9 +31,19 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 - `PetOwnerDto` (do weryfikacji właściciela)
 
 ## 4. Szczegóły odpowiedzi
+
 - 201 Created:
   ```json
-  { "id": "uuid", "pet_id": "uuid", "category": "vet_visit", "category_display": "Wizyta u weterynarza", "category_emoji": "🏥", "entry_date": "2026-01-24", "note": "Szczepienie...", "created_at": "iso" }
+  {
+    "id": "uuid",
+    "pet_id": "uuid",
+    "category": "vet_visit",
+    "category_display": "Wizyta u weterynarza",
+    "category_emoji": "🏥",
+    "entry_date": "2026-01-24",
+    "note": "Szczepienie...",
+    "created_at": "iso"
+  }
   ```
 - 400 Bad Request: walidacja nieudana (nieprawidłowy UUID, category, date format, note > 1000 chars)
 - 401 Unauthorized: brak sesji
@@ -37,6 +52,7 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 - 500 Internal Server Error: błąd serwera
 
 ## 5. Przepływ danych
+
 1. Handler `POST /api/pets/:petId/care-entries` pobiera `supabase` z `context.locals` i `petId` z params.
 2. Walidacja `petId` (UUID format) i `CreateCareEntryCommand` przez Zod (category enum, date format, note length).
 3. Pobranie `user_id` z sesji Supabase; jeśli brak → 401.
@@ -49,6 +65,7 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 **Optymalizacja**: Kroki 4-5 można połączyć w jedno query z JOIN dla lepszej wydajności (2 queries → 1 query), kosztem mniej precyzyjnych komunikatów błędów (403 vs 404). Krok 7-8 można połączyć używając INSERT...RETURNING z view lub JOIN.
 
 ## 6. Względy bezpieczeństwa
+
 - Uwierzytelnienie przez Supabase Auth; wymagany zalogowany użytkownik.
 - Autoryzacja wielopoziomowa:
   - Weryfikacja ownership na poziomie aplikacji (pet_owners check)
@@ -60,6 +77,7 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
 - Rate limiting powinien być implementowany w middleware (60 req/min per user).
 
 ## 7. Obsługa błędów
+
 - 400: nieprawidłowy UUID, category, date format, note > 1000 chars (Zod).
 - 401: brak sesji użytkownika.
 - 403: użytkownik nie jest właścicielem zwierzęcia.
@@ -71,13 +89,15 @@ Endpoint tworzy nowy wpis opieki (care entry) dla określonego zwierzęcia nale�
   - W przyszłości: structured logging service zamiast console.error.
 
 ## 8. Wydajność
+
 - Weryfikacja ownership wymaga 2 queries (pets + pet_owners) lub 1 query z JOIN (optymalizacja).
 - Indeksy na `care_entries(pet_id, is_deleted, entry_date)`, `pet_owners(pet_id, user_id)` wspierają wydajność.
-- Używać `.single()` dla single-row queries i `.select()` z konkretnymi polami (nie SELECT *).
+- Używać `.single()` dla single-row queries i `.select()` z konkretnymi polami (nie SELECT \*).
 - POST endpoint nie powinien być cachowany; GET endpoints mogą używać krótkiego TTL.
 - Target response time: < 200ms.
 
 ## 9. Kroki implementacji
+
 1. Utworzyć struktur katalogów `src/pages/api/pets/[petId]/` i plik `care-entries.ts` z `export const prerender = false`.
 2. Zdefiniować Zod schemas: `PetIdSchema` (UUID validation) i `CreateCareEntrySchema` (category enum, date format, note max 1000).
 3. W handlerze `POST` pobrać `supabase` z `context.locals`, `petId` z `params`, i `user_id` z sesji.

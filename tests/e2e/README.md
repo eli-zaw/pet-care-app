@@ -5,32 +5,40 @@
 ### Klasy Page Object
 
 #### `BasePage`
+
 Podstawowa klasa dla wszystkich stron zawierająca wspólne metody:
+
 - `navigate(path)` - nawigacja do ścieżki
 - `locator(selector)` - wrapper dla `page.locator`
 
 #### `PetFormPage`
+
 Zarządza formularzem dodawania/edycji zwierząt:
+
 ```typescript
 const petForm = new PetFormPage(page);
-await petForm.fillName('Buddy');
-await petForm.selectSpecies('dog');
+await petForm.fillName("Buddy");
+await petForm.selectSpecies("dog");
 await petForm.submitForm();
 // 409 conflict sets name error, not general error
-await petForm.expectNameError('Zwierzę o tej nazwie już istnieje');
+await petForm.expectNameError("Zwierzę o tej nazwie już istnieje");
 ```
 
 #### `PetProfilePage`
+
 Zarządza stroną profilu zwierzęcia:
+
 ```typescript
 const petProfile = new PetProfilePage(page);
 await petProfile.clickEdit();
 await petProfile.clickDelete();
-await petProfile.expectPetName('Buddy');
+await petProfile.expectPetName("Buddy");
 ```
 
 #### `DeletePetDialogPage`
+
 Zarządza dialogiem potwierdzenia usunięcia:
+
 ```typescript
 const deleteDialog = new DeletePetDialogPage(page);
 await deleteDialog.confirmDeletion();
@@ -38,32 +46,38 @@ await deleteDialog.cancelDeletion();
 ```
 
 #### `PetsListPage`
+
 Zarządza listą zwierząt na dashboard:
+
 ```typescript
 const petsList = new PetsListPage(page);
 await petsList.clickAddPet();
-await petsList.clickPetCard('pet-id');
-await petsList.expectPetCardHidden('pet-id');
+await petsList.clickPetCard("pet-id");
+await petsList.expectPetCardHidden("pet-id");
 ```
 
 ## Scenariusze testowe
 
 ### PET-01: Dodanie duplikatu zwierzęcia
+
 - **Lokalizacja**: `pets/pet-form.spec.ts`
 - **Test**: `PET-01: Adding duplicate pet name shows conflict error`
 - **Opis**: Próba dodania zwierzęcia o tej samej nazwie co istniejące
 
 ### PET-02: Edycja imienia zwierzęcia
+
 - **Lokalizacja**: `pets/pet-form.spec.ts`
 - **Test**: `PET-02: Editing pet name updates profile header`
 - **Opis**: Zmiana imienia zwierzęcia i weryfikacja aktualizacji nagłówka
 
 ### PET-03: Próba zmiany gatunku w trybie edycji
+
 - **Lokalizacja**: `pets/pet-form.spec.ts`
 - **Test**: `PET-03: Species field is disabled in edit mode`
 - **Opis**: Weryfikacja że pole gatunku jest zablokowane w trybie edycji
 
 ### PET-04: Usunięcie zwierzęcia (Soft Delete)
+
 - **Lokalizacja**: `pets/pet-deletion.spec.ts`
 - **Testy**:
   - `PET-04: Soft delete removes pet from list but keeps in database`
@@ -77,12 +91,15 @@ await petsList.expectPetCardHidden('pet-id');
 ### Metoda 1: Ręczna (zalecana)
 
 **Krok 1 - Terminal 1: Uruchom serwer**
+
 ```bash
 npm run dev:e2e -- --port 4173
 ```
+
 Poczekaj aż zobaczysz: `Server running on http://localhost:4173`
 
 **Krok 2 - Terminal 2: Uruchom testy**
+
 ```bash
 # Wszystkie testy
 npm run test:e2e
@@ -101,6 +118,7 @@ npm run test:e2e:codegen
 ```
 
 ### Metoda 2: Tylko podstawowe testy UI (bez serwera)
+
 ```bash
 npm run test:e2e:manual
 ```
@@ -126,12 +144,14 @@ NODE_ENV=test
 **Następnie utwórz użytkownika testowego:**
 
 1. **Zarejestruj użytkownika przez aplikację:**
+
    ```bash
    # W przeglądarce przejdź do http://localhost:4173/register
    # Utwórz konto używając danych z .env.testing
    ```
 
 2. **Lub przez API rejestracji:**
+
    ```bash
    curl -X POST http://localhost:4173/api/auth/register \
      -H "Content-Type: application/json" \
@@ -146,6 +166,7 @@ NODE_ENV=test
 ### Debugowanie problemów z serwerem
 
 Jeśli serwer nie uruchamia się z powodu błędów `.env`:
+
 1. Sprawdź uprawnienia do pliku `.env`
 2. Albo usuń tymczasowo `.env` (backup first!)
 3. Albo użyj innej metody uruchamiania
@@ -162,12 +183,14 @@ Jeśli serwer nie uruchamia się z powodu błędów `.env`:
 ## Konwencje nazewnictwa
 
 ### Selektory `data-testid`
+
 - **Komponenty**: `component-name` (np. `pet-form`, `pet-header`)
 - **Elementy**: `component-element` (np. `pet-form-name-input`, `pet-header-edit-button`)
 - **Opcje**: `component-option-value` (np. `pet-form-species-option-dog`)
 - **Stany**: `component-state` (np. `pet-form-species-disabled-hint`)
 
 ### Metody Page Object
+
 - **Akcje**: `clickAction()`, `fillField()`, `selectOption()`
 - **Assercje**: `expectCondition()`, `expectVisible()`, `expectHidden()`
 - **Nawigacja**: `navigateTo()`, `goToPage()`

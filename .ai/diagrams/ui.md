@@ -26,7 +26,7 @@ flowchart TD
 
     subgraph "Warstwa Logiki i Serwera"
         M{{"Astro Middleware"}}
-        
+
         subgraph "API Endpoints (/api/auth/)"
             API_Reg["register.ts"]
             API_Log["login.ts"]
@@ -34,7 +34,7 @@ flowchart TD
             API_ResReq["reset-password.ts"]
             API_ResConf["confirm.ts"]
         end
-        
+
         S_Auth["Supabase Auth Service"]
         S_Client["supabase.client.ts"]
     end
@@ -75,7 +75,7 @@ flowchart TD
     M -- "Weryfikacja Sesji (Cookies)" --> P_Dash
     M -- "Weryfikacja Sesji (Cookies)" --> P_Index
     M -- "Przekierowanie (Redirect)" --> P_Login
-    
+
     %% Stylizacja
     classDef updated fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef new fill:#f1f8e9,stroke:#33691e,stroke-width:2px;

@@ -1,21 +1,26 @@
 # Plan implementacji widoku: Dodaj zwierzę
 
 ## 1. Przegląd
+
 Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego pupila (cel: <15 sekund). Po zapisie system przekierowuje do profilu nowo utworzonego zwierzęcia. Widok służy jako onboarding dla nowych użytkowników oraz standardowa funkcja dostępna z dashboardu.
 
 ## 2. Routing widoku
+
 Ścieżka: `/pets/new` (chroniona przez middleware; użytkownik niezalogowany przekierowywany do logowania). Po sukcesie przekierowanie do `/pets/{newPetId}`. Anulowanie prowadzi do `/dashboard`.
 
 ## 3. Struktura komponentów
+
 - `AddPetPage` (Astro page)
 - `PetForm` (React, client:load)
 - `Input` (Shadcn/ui)
-- `Select` (Shadcn/ui) 
+- `Select` (Shadcn/ui)
 - `Button` (Shadcn/ui)
 - `Toaster` (Sonner, globalny)
 
 ## 4. Szczegóły komponentów
+
 ### `AddPetPage`
+
 - Opis komponentu: Strona Astro renderująca formularz z breadcrumbs.
 - Główne elementy: `Layout`, breadcrumbs „Pulpit > Dodaj zwierzę", `PetForm`.
 - Obsługiwane interakcje: brak (statyczna strona).
@@ -24,8 +29,9 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
 - Propsy: brak.
 
 ### `PetForm`
+
 - Opis komponentu: Interaktywny formularz React z walidacją i komunikacją z API.
-- Główne elementy: 
+- Główne elementy:
   - `form` z `onSubmit`
   - Header: h1 „Dodaj swojego pupila", opis
   - Field: Label „Imię" + Input (autoFocus, maxLength 50)
@@ -45,33 +51,40 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
 - Propsy: brak (self-contained).
 
 ### `Input` (Shadcn/ui)
+
 - Opis komponentu: Pole tekstowe dla imienia.
 - Propsy: `value`, `onChange`, `onBlur`, `ref`, `autoFocus`, `maxLength`, `aria-invalid`, `aria-describedby`.
 
 ### `Select` (Shadcn/ui)
+
 - Opis komponentu: Dropdown do wyboru gatunku.
 - Główne elementy: SelectTrigger, SelectContent, SelectItem (3 opcje).
 - Propsy: `value`, `onValueChange`, `aria-invalid`.
 
 ### `Button` (Shadcn/ui)
+
 - Opis komponentu: Przyciski akcji.
 - Warianty: „Anuluj" (outline), „Zapisz" (default, disabled gdy invalid/submitting).
 - Propsy: `type`, `variant`, `disabled`, `onClick`.
 
 ### `Toaster` (Sonner)
+
 - Opis komponentu: Globalny system toastów.
-- Obsługiwane zdarzenia: 
+- Obsługiwane zdarzenia:
   - `toast.success("Zwierzę zostało dodane")` po 201
   - `toast.error(message)` po błędach (400/409/500)
 - Konfiguracja: bottom-right (desktop), bottom-center (mobile), auto-hide 3s (sukces) / 5s (błąd).
 
 ## 5. Typy
+
 ### Typy DTO (istniejące)
+
 - `CreatePetCommand`: `{ name: string, species: SpeciesType }`
 - `CreatePetResponseDto`: `{ id, animal_code, name, species, created_at }`
 - `SpeciesType`: `"dog" | "cat" | "other"`
 
 ### Typy ViewModel (nowe)
+
 - `PetFormViewModel`
   - `name: string`
   - `species: SpeciesType | ""`
@@ -85,9 +98,11 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
   - `emoji: string`
 
 ### Stałe (nowe)
+
 - `SPECIES_OPTIONS: SpeciesOption[]` -> array z 3 opcjami (dog/cat/other).
 
 ## 6. Zarządzanie stanem
+
 - Stan lokalny w `PetForm` (useState, brak custom hook):
   - `formData: PetFormViewModel` (initial: `{ name: "", species: "" }`)
   - `errors: PetFormErrors` (initial: `{}`)
@@ -102,6 +117,7 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
 - Autofokus: `useEffect` ustawia fokus na Input przy montowaniu.
 
 ## 7. Integracja API
+
 - Endpoint: `POST /api/pets`
 - Request:
   - Headers: `{ "Content-Type": "application/json" }`
@@ -120,6 +136,7 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
   - Toast sukcesu + przekierowanie do `/pets/{id}`
 
 ## 8. Interakcje użytkownika
+
 - Wejście na `/pets/new`:
   - Ładowanie strony z autofokusem na pole „Imię".
   - Breadcrumbs: „Pulpit > Dodaj zwierzę".
@@ -142,6 +159,7 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
   - Input font-size min 16px (zapobiega zoomowaniu na iOS).
 
 ## 9. Warunki i walidacja
+
 - Pole „Imię":
   - Wymagane (nie może być puste po trim).
   - Długość: 1-50 znaków po trim.
@@ -164,6 +182,7 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
   - Input/Select komfortowe do użycia palcem.
 
 ## 10. Obsługa błędów
+
 - 400 (walidacja):
   - Mapowanie błędów z API na pola formularza.
   - Toast: „Sprawdź poprawność danych".
@@ -185,6 +204,7 @@ Widok formularza dodawania zwierzęcia. Umożliwia szybkie wprowadzenie nowego p
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
+
 1. Dodaj typy `PetFormViewModel`, `PetFormErrors`, `SpeciesOption`, `SPECIES_OPTIONS` do `src/types.ts`.
 2. Utwórz komponent `src/components/PetForm.tsx` z pełną logiką formularza, walidacją i obsługą API.
 3. Utwórz stronę `src/pages/pets/new.astro` z layoutem, breadcrumbs i `<PetForm client:load />`.

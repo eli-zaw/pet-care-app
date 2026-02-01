@@ -20,19 +20,20 @@ Interfejs użytkownika zostanie podzielony na dwie główne strefy: publiczną (
 
 ### 2.1. Układy (Layouts)
 
--   **`src/layouts/Layout.astro` (modyfikacja istniejącego)**
-    -   **Opis:** Główny layout aplikacji, używany na wszystkich stronach.
-    -   **Funkcje:**
-        - Globalny nagłówek z logo (ikona łapki 🐾) i nazwą aplikacji
-        - Komponent `LogoutButton.tsx` w nagłówku dla zalogowanych użytkowników
-        - Logo prowadzi do `/dashboard` dla zalogowanych, `/` dla niezalogowanych
-        - Header widoczny na stronach dashboard, ukryty na stronach auth (`hideHeader={true}`)
-        - Landing page używa `hideHeader` dla czystszego wyglądu
-    -   **Renderowanie warunkowe:** Przycisk wylogowania widoczny tylko gdy `session?.user` istnieje
+- **`src/layouts/Layout.astro` (modyfikacja istniejącego)**
+  - **Opis:** Główny layout aplikacji, używany na wszystkich stronach.
+  - **Funkcje:**
+    - Globalny nagłówek z logo (ikona łapki 🐾) i nazwą aplikacji
+    - Komponent `LogoutButton.tsx` w nagłówku dla zalogowanych użytkowników
+    - Logo prowadzi do `/dashboard` dla zalogowanych, `/` dla niezalogowanych
+    - Header widoczny na stronach dashboard, ukryty na stronach auth (`hideHeader={true}`)
+    - Landing page używa `hideHeader` dla czystszego wyglądu
+  - **Renderowanie warunkowe:** Przycisk wylogowania widoczny tylko gdy `session?.user` istnieje
 
 ### 2.2. Strony (Pages)
 
 Szczegółowe plany implementacji widoków znajdują się w osobnych plikach:
+
 - **Rejestracja:** `.ai/register-view-implementation-plan.md`
 - **Logowanie:** `.ai/login-view-implementation-plan.md`
 - **Reset hasła (żądanie):** `.ai/reset-password-request-view-implementation-plan.md`
@@ -40,111 +41,112 @@ Szczegółowe plany implementacji widoków znajdują się w osobnych plikach:
 
 #### Przegląd stron:
 
--   **`src/pages/index.astro` (istniejąca)**
-    -   **Opis:** Landing page - publiczna strona główna
-    -   **Logika:** Server-side sprawdza sesję przez `supabase.auth.getSession()` i przekierowuje zalogowanych do `/dashboard`
-    -   **Zawartość:** Komponent `Hero.astro` z CTA do rejestracji i logowania
+- **`src/pages/index.astro` (istniejąca)**
+  - **Opis:** Landing page - publiczna strona główna
+  - **Logika:** Server-side sprawdza sesję przez `supabase.auth.getSession()` i przekierowuje zalogowanych do `/dashboard`
+  - **Zawartość:** Komponent `Hero.astro` z CTA do rejestracji i logowania
 
--   **`src/pages/register.astro` (nowa)**
-    -   **Ścieżka:** `/register`
-    -   **Dostęp:** Publiczny (tylko dla niezalogowanych)
-    -   **Zawartość:** `RegisterForm.tsx` (`client:load`), link do `/login`
-    -   **Server-side:** Sprawdzenie sesji, przekierowanie zalogowanych do `/dashboard`
-    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
+- **`src/pages/register.astro` (nowa)**
+  - **Ścieżka:** `/register`
+  - **Dostęp:** Publiczny (tylko dla niezalogowanych)
+  - **Zawartość:** `RegisterForm.tsx` (`client:load`), link do `/login`
+  - **Server-side:** Sprawdzenie sesji, przekierowanie zalogowanych do `/dashboard`
+  - **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
--   **`src/pages/login.astro` (nowa)**
-    -   **Ścieżka:** `/login`
-    -   **Dostęp:** Publiczny (tylko dla niezalogowanych)
-    -   **Zawartość:** `LoginForm.tsx` (`client:load`), link do `/register` i `/reset-password`
-    -   **Server-side:** Sprawdzenie sesji, obsługa parametru `?redirect` (UX enhancement: umożliwia powrót do strony, z której użytkownik został przekierowany do logowania)
-    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
+- **`src/pages/login.astro` (nowa)**
+  - **Ścieżka:** `/login`
+  - **Dostęp:** Publiczny (tylko dla niezalogowanych)
+  - **Zawartość:** `LoginForm.tsx` (`client:load`), link do `/register` i `/reset-password`
+  - **Server-side:** Sprawdzenie sesji, obsługa parametru `?redirect` (UX enhancement: umożliwia powrót do strony, z której użytkownik został przekierowany do logowania)
+  - **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
--   **`src/pages/reset-password.astro` (nowa)**
-    -   **Ścieżka:** `/reset-password`
-    -   **Dostęp:** Publiczny
-    -   **Zawartość:** `ResetPasswordRequestForm.tsx` (`client:load`)
-    -   **Server-side:** Dla niezalogowanych przekierowanie do `/dashboard` opcjonalne
-    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
+- **`src/pages/reset-password.astro` (nowa)**
+  - **Ścieżka:** `/reset-password`
+  - **Dostęp:** Publiczny
+  - **Zawartość:** `ResetPasswordRequestForm.tsx` (`client:load`)
+  - **Server-side:** Dla niezalogowanych przekierowanie do `/dashboard` opcjonalne
+  - **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
--   **`src/pages/reset-password/confirm.astro` (nowa)**
-    -   **Ścieżka:** `/reset-password/confirm`
-    -   **Dostęp:** Publiczny (wymaga tokenu z URL)
-    -   **Zawartość:** `ResetPasswordConfirmForm.tsx` (`client:load`), otrzymuje `accessToken` jako prop
-    -   **Server-side:** Ekstrakcja `access_token` i `type=recovery` z URL, walidacja tokenu, przekierowanie przy błędzie
-    -   **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
+- **`src/pages/reset-password/confirm.astro` (nowa)**
+  - **Ścieżka:** `/reset-password/confirm`
+  - **Dostęp:** Publiczny (wymaga tokenu z URL)
+  - **Zawartość:** `ResetPasswordConfirmForm.tsx` (`client:load`), otrzymuje `accessToken` jako prop
+  - **Server-side:** Ekstrakcja `access_token` i `type=recovery` z URL, walidacja tokenu, przekierowanie przy błędzie
+  - **Layout:** `Layout.astro` z ukrytym headerem (`hideHeader={true}`), jasne tło aplikacji
 
--   **`src/pages/dashboard.astro` (istniejąca)**
-    -   **Ścieżka:** `/dashboard`
-    -   **Ochrona:** Middleware zapewnia dostęp tylko dla zalogowanych
-    -   **Zawartość:** Dashboard użytkownika z listą zwierząt
+- **`src/pages/dashboard.astro` (istniejąca)**
+  - **Ścieżka:** `/dashboard`
+  - **Ochrona:** Middleware zapewnia dostęp tylko dla zalogowanych
+  - **Zawartość:** Dashboard użytkownika z listą zwierząt
 
--   **`src/pages/pets/*` (istniejące)**
-    -   **Ochrona:** Middleware zapewnia dostęp tylko dla zalogowanych
-    -   **Zawartość:** Zarządzanie zwierzętami i wpisami opieki
+- **`src/pages/pets/*` (istniejące)**
+  - **Ochrona:** Middleware zapewnia dostęp tylko dla zalogowanych
+  - **Zawartość:** Zarządzanie zwierzętami i wpisami opieki
 
 ### 2.3. Komponenty Auth (React)
 
 Komponenty formularzy w `src/components/auth/`. Szczegóły implementacji w odpowiednich planach widoków.
 
--   **`src/components/auth/RegisterForm.tsx`**
-    -   **Pola:** `email`, `password`, `confirmPassword`
-    -   **Walidacja:** Format email (regex), hasło min 8 znaków, potwierdzenie hasła zgodne z hasłem
-    -   **Logika:** POST `/api/auth/register` → toast sukcesu → redirect `/dashboard`
-    -   **Elementy UI:** Shadcn/ui (Card, Input, Button, Label), inline error messages
-    -   **Stan:** `useState` dla email, password, confirmPassword, isSubmitting, errors
+- **`src/components/auth/RegisterForm.tsx`**
+  - **Pola:** `email`, `password`, `confirmPassword`
+  - **Walidacja:** Format email (regex), hasło min 8 znaków, potwierdzenie hasła zgodne z hasłem
+  - **Logika:** POST `/api/auth/register` → toast sukcesu → redirect `/dashboard`
+  - **Elementy UI:** Shadcn/ui (Card, Input, Button, Label), inline error messages
+  - **Stan:** `useState` dla email, password, confirmPassword, isSubmitting, errors
 
--   **`src/components/auth/LoginForm.tsx`**
-    -   **Props:** `redirectUrl?: string` (domyślnie `/dashboard`)
-    -   **Pola:** `email`, `password`
-    -   **Walidacja:** Format email, hasło wymagane (bez minimalnej długości)
-    -   **Logika:** POST `/api/auth/login` → redirect do `redirectUrl`
-    -   **Elementy UI:** Link "Zapomniałeś hasła?" → `/reset-password`, link do rejestracji
-    -   **Bezpieczeństwo:** Zawsze "Nieprawidłowy email lub hasło" (nie ujawnia czy email istnieje)
+- **`src/components/auth/LoginForm.tsx`**
+  - **Props:** `redirectUrl?: string` (domyślnie `/dashboard`)
+  - **Pola:** `email`, `password`
+  - **Walidacja:** Format email, hasło wymagane (bez minimalnej długości)
+  - **Logika:** POST `/api/auth/login` → redirect do `redirectUrl`
+  - **Elementy UI:** Link "Zapomniałeś hasła?" → `/reset-password`, link do rejestracji
+  - **Bezpieczeństwo:** Zawsze "Nieprawidłowy email lub hasło" (nie ujawnia czy email istnieje)
 
--   **`src/components/auth/ResetPasswordRequestForm.tsx`**
-    -   **Pola:** `email`
-    -   **Walidacja:** Format email
-    -   **Logika:** POST `/api/auth/reset-password` → wyświetlenie komunikatu sukcesu (zawsze, nawet jeśli email nie istnieje)
-    -   **Elementy UI:** Dwa stany: formularz i komunikat sukcesu
-    -   **Bezpieczeństwo:** Nie ujawnia czy email istnieje w bazie
+- **`src/components/auth/ResetPasswordRequestForm.tsx`**
+  - **Pola:** `email`
+  - **Walidacja:** Format email
+  - **Logika:** POST `/api/auth/reset-password` → wyświetlenie komunikatu sukcesu (zawsze, nawet jeśli email nie istnieje)
+  - **Elementy UI:** Dwa stany: formularz i komunikat sukcesu
+  - **Bezpieczeństwo:** Nie ujawnia czy email istnieje w bazie
 
--   **`src/components/auth/ResetPasswordConfirmForm.tsx`**
-    -   **Props:** `accessToken: string`
-    -   **Pola:** `password`, `confirmPassword`
-    -   **Walidacja:** Hasło min 8 znaków, zgodność haseł
-    -   **Logika:** POST `/api/auth/reset-password/confirm` → toast sukcesu → redirect `/login`
-    -   **Obsługa błędów:** Token wygasły → komunikat + link do `/reset-password`
+- **`src/components/auth/ResetPasswordConfirmForm.tsx`**
+  - **Props:** `accessToken: string`
+  - **Pola:** `password`, `confirmPassword`
+  - **Walidacja:** Hasło min 8 znaków, zgodność haseł
+  - **Logika:** POST `/api/auth/reset-password/confirm` → toast sukcesu → redirect `/login`
+  - **Obsługa błędów:** Token wygasły → komunikat + link do `/reset-password`
 
--   **`src/components/auth/LogoutButton.tsx`**
-    -   **Logika:** POST `/api/auth/logout` → redirect `/`
-    -   **UI:** Ikona LogOut (lucide-react), responsywny (ikona na mobile, ikona+tekst na desktop)
-    -   **Touch target:** Min 44x44px na mobile
+- **`src/components/auth/LogoutButton.tsx`**
+  - **Logika:** POST `/api/auth/logout` → redirect `/`
+  - **UI:** Ikona LogOut (lucide-react), responsywny (ikona na mobile, ikona+tekst na desktop)
+  - **Touch target:** Min 44x44px na mobile
 
 ### 2.4. Walidacja i Obsługa Błędów
 
--   **Client-side:**
-    -   Walidacja on blur dla każdego pola
-    -   Wyświetlanie błędów inline pod polami
-    -   `aria-invalid` i `aria-describedby` dla accessibility
-    -   Disabled state podczas submitu
+- **Client-side:**
+  - Walidacja on blur dla każdego pola
+  - Wyświetlanie błędów inline pod polami
+  - `aria-invalid` i `aria-describedby` dla accessibility
+  - Disabled state podczas submitu
 
--   **Server-side:**
-    -   Zod schemas w API endpoints
-    -   Szczegółowe komunikaty błędów
-    -   Kody HTTP: 400 (walidacja), 401 (unauthorized), 409 (conflict), 500 (server error)
+- **Server-side:**
+  - Zod schemas w API endpoints
+  - Szczegółowe komunikaty błędów
+  - Kody HTTP: 400 (walidacja), 401 (unauthorized), 409 (conflict), 500 (server error)
 
--   **Komunikaty błędów:**
-    - Email: "Email jest wymagany", "Nieprawidłowy format email"
-    - Hasło: "Hasło jest wymagane", "Hasło musi mieć minimum 8 znaków"
-    - Potwierdzenie: "Hasła nie są identyczne"
-    - Rejestracja 409: "Ten email jest już zarejestrowany"
-    - Logowanie 401: "Nieprawidłowy email lub hasło"
+- **Komunikaty błędów:**
+  - Email: "Email jest wymagany", "Nieprawidłowy format email"
+  - Hasło: "Hasło jest wymagane", "Hasło musi mieć minimum 8 znaków"
+  - Potwierdzenie: "Hasła nie są identyczne"
+  - Rejestracja 409: "Ten email jest już zarejestrowany"
+  - Logowanie 401: "Nieprawidłowy email lub hasło"
 
 ## 3. Logika Backendowa
 
 ### 3.1. Astro Middleware (`src/middleware/index.ts`)
 
 **Odpowiedzialności:**
+
 1. Inicjalizacja Supabase client w `context.locals.supabase`
 2. Pobranie sesji użytkownika przez `supabase.auth.getSession()`
 3. Ochrona chronionych tras (wszystkie zaczynające się od `/dashboard` i `/pets`)
@@ -153,52 +155,54 @@ Komponenty formularzy w `src/components/auth/`. Szczegóły implementacji w odpo
 6. Dodanie `user` do `context.locals` dla dostępu w stronach Astro
 
 **Chronione trasy:**
+
 - `/dashboard`
 - `/pets/*`
 
 **Auth-only trasy (tylko dla niezalogowanych):**
+
 - `/login`
 - `/register`
 
 **Publiczne trasy:**
+
 - `/` (landing page)
 - `/reset-password`
 - `/reset-password/confirm`
 - `/api/*` (wszystkie API endpoints)
 
 **Implementacja:**
-```typescript
-import { defineMiddleware } from 'astro:middleware';
 
-const protectedRoutes = ['/dashboard', '/pets'];
-const authOnlyRoutes = ['/login', '/register'];
+```typescript
+import { defineMiddleware } from "astro:middleware";
+
+const protectedRoutes = ["/dashboard", "/pets"];
+const authOnlyRoutes = ["/login", "/register"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.supabase = supabaseClient;
-  
-  const { data: { session } } = await context.locals.supabase.auth.getSession();
-  
+
+  const {
+    data: { session },
+  } = await context.locals.supabase.auth.getSession();
+
   // Ochrona chronionych tras
-  const isProtectedRoute = protectedRoutes.some(route =>
-    context.url.pathname.startsWith(route)
-  );
-  
+  const isProtectedRoute = protectedRoutes.some((route) => context.url.pathname.startsWith(route));
+
   if (isProtectedRoute && !session?.user) {
     const redirectUrl = `/login?redirect=${encodeURIComponent(context.url.pathname)}`;
     return context.redirect(redirectUrl);
   }
-  
+
   // Przekierowanie zalogowanych z auth-only routes
-  const isAuthOnlyRoute = authOnlyRoutes.some(route =>
-    context.url.pathname.startsWith(route)
-  );
-  
+  const isAuthOnlyRoute = authOnlyRoutes.some((route) => context.url.pathname.startsWith(route));
+
   if (isAuthOnlyRoute && session?.user) {
-    return context.redirect('/dashboard');
+    return context.redirect("/dashboard");
   }
-  
+
   context.locals.user = session?.user || null;
-  
+
   return next();
 });
 ```
@@ -210,11 +214,13 @@ Wszystkie endpointy w `src/pages/api/auth/`:
 #### `POST /api/auth/register` (`register.ts`)
 
 **Request body:**
+
 ```typescript
 { email: string, password: string }
 ```
 
 **Walidacja (Zod):**
+
 ```typescript
 const registerSchema = z.object({
   email: z.string().email("Nieprawidłowy format email"),
@@ -223,12 +229,14 @@ const registerSchema = z.object({
 ```
 
 **Logika:**
+
 1. Parse i walidacja body przez Zod
 2. `supabase.auth.signUp({ email, password })`
 3. Automatyczne utworzenie sesji (Supabase zarządza cookies)
 4. Response 201 Created z danymi użytkownika
 
 **Response 201:**
+
 ```json
 {
   "message": "Rejestracja zakończona sukcesem",
@@ -245,11 +253,13 @@ const registerSchema = z.object({
 #### `POST /api/auth/login` (`login.ts`)
 
 **Request body:**
+
 ```typescript
 { email: string, password: string }
 ```
 
 **Walidacja (Zod):**
+
 ```typescript
 const loginSchema = z.object({
   email: z.string().email("Nieprawidłowy format email"),
@@ -258,12 +268,14 @@ const loginSchema = z.object({
 ```
 
 **Logika:**
+
 1. Parse i walidacja body
 2. `supabase.auth.signInWithPassword({ email, password })`
 3. Supabase automatycznie ustawia cookies sesji
 4. Response 200 OK
 
 **Response 200:**
+
 ```json
 {
   "message": "Logowanie zakończone sukcesem",
@@ -281,11 +293,13 @@ const loginSchema = z.object({
 **Request body:** brak
 
 **Logika:**
+
 1. `supabase.auth.signOut()`
 2. Supabase automatycznie czyści cookies
 3. Response 200 OK
 
 **Response 200:**
+
 ```json
 { "message": "Wylogowanie zakończone sukcesem" }
 ```
@@ -295,11 +309,15 @@ const loginSchema = z.object({
 #### `POST /api/auth/reset-password` (`reset-password.ts`)
 
 **Request body:**
+
 ```typescript
-{ email: string }
+{
+  email: string;
+}
 ```
 
 **Walidacja (Zod):**
+
 ```typescript
 const resetPasswordSchema = z.object({
   email: z.string().email("Nieprawidłowy format email"),
@@ -307,12 +325,14 @@ const resetPasswordSchema = z.object({
 ```
 
 **Logika:**
+
 1. Parse i walidacja body
 2. `supabase.auth.resetPasswordForEmail(email, { redirectTo: '/reset-password/confirm' })`
 3. Zawsze zwraca 200 OK (bezpieczeństwo - nie ujawniamy czy email istnieje)
 4. Supabase wysyła email z linkiem (tylko jeśli user istnieje)
 
 **Response 200 (zawsze):**
+
 ```json
 { "message": "Jeśli konto istnieje, wysłaliśmy link resetujący na podany adres email" }
 ```
@@ -322,11 +342,13 @@ const resetPasswordSchema = z.object({
 #### `POST /api/auth/reset-password/confirm` (`reset-password/confirm.ts`)
 
 **Request body:**
+
 ```typescript
 { accessToken: string, newPassword: string }
 ```
 
 **Walidacja (Zod):**
+
 ```typescript
 const resetPasswordConfirmSchema = z.object({
   accessToken: z.string().min(1, "Token jest wymagany"),
@@ -335,6 +357,7 @@ const resetPasswordConfirmSchema = z.object({
 ```
 
 **Logika:**
+
 1. Parse i walidacja body
 2. `supabase.auth.getUser(accessToken)` - weryfikacja tokenu
 3. Jeśli token nieprawidłowy → 400 Bad Request
@@ -342,6 +365,7 @@ const resetPasswordConfirmSchema = z.object({
 5. Response 200 OK
 
 **Response 200:**
+
 ```json
 { "message": "Hasło zostało zmienione" }
 ```
@@ -384,10 +408,11 @@ src/
 
 ### 4.1. Konfiguracja
 
--   **Pakiet:** `@supabase/supabase-js` (wersja dla JavaScript/TypeScript)
--   **Klient:** `src/db/supabase.client.ts`
+- **Pakiet:** `@supabase/supabase-js` (wersja dla JavaScript/TypeScript)
+- **Klient:** `src/db/supabase.client.ts`
 
 **Zmienne środowiskowe:**
+
 ```env
 # Supabase
 SUPABASE_URL=https://your-project.supabase.co
@@ -395,8 +420,9 @@ SUPABASE_ANON_KEY=your_anon_key
 ```
 
 **Konfiguracja klienta:**
+
 ```typescript
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
@@ -413,61 +439,76 @@ export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
 ### 4.2. Konfiguracja Supabase Dashboard
 
 **Authentication:**
--   **Email Provider:** Włączony
--   **Email Confirmation:** Wyłączony dla MVP (opcjonalnie można włączyć w przyszłości)
+
+- **Email Provider:** Włączony
+- **Email Confirmation:** Wyłączony dla MVP (opcjonalnie można włączyć w przyszłości)
 
 **URL Configuration:**
--   **Site URL:** `http://localhost:3000` (dev) / `https://your-domain.com` (prod)
--   **Redirect URLs:** 
-    - `http://localhost:3000/reset-password/confirm`
-    - `https://your-domain.com/reset-password/confirm`
+
+- **Site URL:** `http://localhost:3000` (dev) / `https://your-domain.com` (prod)
+- **Redirect URLs:**
+  - `http://localhost:3000/reset-password/confirm`
+  - `https://your-domain.com/reset-password/confirm`
 
 **Email Templates:**
--   **Password Reset:** Customowy template z linkiem `{{ .ConfirmationURL }}`
--   **Subject:** "Resetowanie hasła - Paw Notes"
+
+- **Password Reset:** Customowy template z linkiem `{{ .ConfirmationURL }}`
+- **Subject:** "Resetowanie hasła - Paw Notes"
 
 ### 4.3. Zarządzanie sesjami
 
 **Mechanizm:**
+
 - JWT tokens w cookies (server-side) i localStorage (client-side)
 - Access token - ważny 1 godzinę
 - Refresh token - ważny 30 dni
 - Automatyczne odświeżanie przez Supabase client
 
 **Cookies:**
+
 ```
 sb-<project-ref>-auth-token
 sb-<project-ref>-auth-token-code-verifier
 ```
 
 **Atrybuty cookies:**
+
 - `httpOnly: true` (zabezpieczenie przed XSS)
 - `secure: true` (tylko HTTPS w prod)
 - `sameSite: lax` (zabezpieczenie przed CSRF)
 - `path: /`
 
 **Session validation:**
+
 ```typescript
 // W middleware
-const { data: { session } } = await supabase.auth.getSession();
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 
 // W API endpoints
-const { data: { user }, error } = await supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser();
 ```
 
 ### 4.4. Struktura bazy danych
 
 **Tabela `auth.users` (zarządzana przez Supabase):**
+
 - Automatycznie tworzona i zarządzana przez Supabase Auth
 - Nie modyfikujemy bezpośrednio
 - Pola: `id`, `email`, `encrypted_password`, `created_at`, etc.
 
 **Tabela `public.profiles` (istniejąca w aplikacji):**
+
 - Powiązana z `auth.users` przez `user_id`
 - Trigger automatycznie tworzy profil po rejestracji
 - Pola: `id`, `user_id`, `email`, `created_at`, `updated_at`
 
 **SQL Trigger dla automatycznego tworzenia profilu:**
+
 ```sql
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
@@ -488,19 +529,20 @@ CREATE TRIGGER on_auth_user_created
 
 ### 5.1. Matryca Dostępu do Tras
 
-| Trasa | Niezalogowany | Zalogowany | Opis |
-|-------|---------------|------------|------|
-| `/` | ✅ Dostęp | Przekierowanie do `/dashboard` | Landing page |
-| `/login` | ✅ Dostęp | Przekierowanie do `/dashboard` | Formularz logowania |
-| `/register` | ✅ Dostęp | Przekierowanie do `/dashboard` | Formularz rejestracji |
-| `/reset-password` | ✅ Dostęp | ✅ Dostęp | Formularz resetu hasła |
-| `/reset-password/confirm` | ✅ Dostęp | ✅ Dostęp | Formularz zmiany hasła |
-| `/dashboard` | Przekierowanie do `/login` | ✅ Dostęp | Dashboard użytkownika |
-| `/pets/*` | Przekierowanie do `/login` | ✅ Dostęp | Zarządzanie zwierzętami |
+| Trasa                     | Niezalogowany              | Zalogowany                     | Opis                    |
+| ------------------------- | -------------------------- | ------------------------------ | ----------------------- |
+| `/`                       | ✅ Dostęp                  | Przekierowanie do `/dashboard` | Landing page            |
+| `/login`                  | ✅ Dostęp                  | Przekierowanie do `/dashboard` | Formularz logowania     |
+| `/register`               | ✅ Dostęp                  | Przekierowanie do `/dashboard` | Formularz rejestracji   |
+| `/reset-password`         | ✅ Dostęp                  | ✅ Dostęp                      | Formularz resetu hasła  |
+| `/reset-password/confirm` | ✅ Dostęp                  | ✅ Dostęp                      | Formularz zmiany hasła  |
+| `/dashboard`              | Przekierowanie do `/login` | ✅ Dostęp                      | Dashboard użytkownika   |
+| `/pets/*`                 | Przekierowanie do `/login` | ✅ Dostęp                      | Zarządzanie zwierzętami |
 
 ### 5.2. Przepływy Użytkownika
 
 **Przepływ rejestracji (US-001):**
+
 1. Użytkownik → `/register`
 2. Server-side sprawdza sesję, niezalogowany widzi formularz
 3. Wypełnia `RegisterForm.tsx` (email, password, confirmPassword)
@@ -511,6 +553,7 @@ CREATE TRIGGER on_auth_user_created
 8. Response 201 → toast "Witaj w Paw Notes" → redirect `/dashboard`
 
 **Przepływ logowania (US-002):**
+
 1. Użytkownik → `/login` (lub przekierowanie z chronionej trasy)
 2. Server-side sprawdza sesję, ekstrakcja parametru `?redirect`
 3. Wypełnia `LoginForm.tsx` (email, password)
@@ -521,6 +564,7 @@ CREATE TRIGGER on_auth_user_created
 8. Response 200 → redirect do `redirectUrl` (domyślnie `/dashboard`)
 
 **Przepływ wylogowania (US-003):**
+
 1. Zalogowany użytkownik klika `LogoutButton.tsx` w headerze
 2. Client-side → POST `/api/auth/logout`
 3. API wywołuje `supabase.auth.signOut()`
@@ -530,7 +574,8 @@ CREATE TRIGGER on_auth_user_created
 
 **Przepływ resetu hasła (US-017):**
 
-*Część 1: Żądanie resetu*
+_Część 1: Żądanie resetu_
+
 1. Użytkownik → `/reset-password`
 2. Wypełnia `ResetPasswordRequestForm.tsx` (email)
 3. Submit → POST `/api/auth/reset-password`
@@ -538,17 +583,10 @@ CREATE TRIGGER on_auth_user_created
 5. Response 200 (zawsze) → komunikat sukcesu
 6. Jeśli email istnieje, Supabase wysyła email z linkiem
 
-*Część 2: Ustawienie nowego hasła*
-7. Użytkownik klika link w emailu → `/reset-password/confirm?access_token=XXX&type=recovery`
-8. Server-side ekstrakcja tokenu, walidacja przez `supabase.auth.getUser(token)`
-9. Jeśli token nieprawidłowy → redirect `/reset-password?error=invalid_token`
-10. Jeśli OK → render `ResetPasswordConfirmForm.tsx` (password, confirmPassword)
-11. Client-side walidacja (długość, zgodność)
-12. Submit → POST `/api/auth/reset-password/confirm`
-13. API wywołuje `supabase.auth.updateUser({ password })`
-14. Response 200 → toast "Hasło zostało zmienione" → redirect `/login`
+_Część 2: Ustawienie nowego hasła_ 7. Użytkownik klika link w emailu → `/reset-password/confirm?access_token=XXX&type=recovery` 8. Server-side ekstrakcja tokenu, walidacja przez `supabase.auth.getUser(token)` 9. Jeśli token nieprawidłowy → redirect `/reset-password?error=invalid_token` 10. Jeśli OK → render `ResetPasswordConfirmForm.tsx` (password, confirmPassword) 11. Client-side walidacja (długość, zgodność) 12. Submit → POST `/api/auth/reset-password/confirm` 13. API wywołuje `supabase.auth.updateUser({ password })` 14. Response 200 → toast "Hasło zostało zmienione" → redirect `/login`
 
 **Przepływ middleware (przy każdym żądaniu):**
+
 1. Request → middleware
 2. Inicjalizacja `context.locals.supabase`
 3. Pobranie sesji `supabase.auth.getSession()`
@@ -563,27 +601,32 @@ CREATE TRIGGER on_auth_user_created
 ### ✅ Implementowane w MVP
 
 **XSS (Cross-Site Scripting):**
+
 - React automatycznie escapuje content
 - Cookies z `httpOnly: true`
 - Zod sanityzacja inputów
 - Brak `dangerouslySetInnerHTML`
 
 **CSRF (Cross-Site Request Forgery):**
+
 - Cookies z `sameSite: lax`
 - Supabase JWT verification
 - Origin validation w API
 
 **SQL Injection:**
+
 - Supabase Auth używa prepared statements
 - Supabase client chroni przed SQL injection
 - Brak bezpośredniego dostępu do SQL
 
 **Enumeration:**
+
 - Reset hasła zawsze zwraca sukces
 - Logowanie nie ujawnia czy email istnieje ("Nieprawidłowy email lub hasło")
 - Rejestracja 409 tylko gdy email istnieje (akceptowalne dla UX)
 
 **Session Management:**
+
 - HTTPOnly cookies niedostępne dla JavaScript
 - Automatyczne odświeżanie tokenów
 - 1h access token, 30 dni refresh token
@@ -602,16 +645,11 @@ CREATE TRIGGER on_auth_user_created
 **Lokalizacja:** `src/lib/schemas/auth.ts` (do utworzenia)
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
-export const emailSchema = z
-  .string()
-  .min(1, "Email jest wymagany")
-  .email("Nieprawidłowy format email");
+export const emailSchema = z.string().min(1, "Email jest wymagany").email("Nieprawidłowy format email");
 
-export const passwordSchema = z
-  .string()
-  .min(8, "Hasło musi mieć minimum 8 znaków");
+export const passwordSchema = z.string().min(8, "Hasło musi mieć minimum 8 znaków");
 
 export const registerSchema = z.object({
   email: emailSchema,
@@ -638,6 +676,7 @@ export const resetPasswordConfirmSchema = z.object({
 ### 8.1. Scenariusze testowe MVP
 
 **Rejestracja (US-001):**
+
 - [ ] Formularz renderuje się poprawnie
 - [ ] Walidacja email (format, wymagane)
 - [ ] Walidacja hasła (długość min 8, wymagane)
@@ -650,6 +689,7 @@ export const resetPasswordConfirmSchema = z.object({
 - [ ] Responsywność (mobile/desktop)
 
 **Logowanie (US-002):**
+
 - [ ] Formularz renderuje się
 - [ ] Walidacja email i hasła
 - [ ] Nieprawidłowe dane → 401 + komunikat
@@ -660,6 +700,7 @@ export const resetPasswordConfirmSchema = z.object({
 - [ ] Responsywność
 
 **Wylogowanie (US-003):**
+
 - [ ] Przycisk widoczny w headerze (zalogowani)
 - [ ] Kliknięcie wylogowuje
 - [ ] Przekierowanie do `/`
@@ -667,6 +708,7 @@ export const resetPasswordConfirmSchema = z.object({
 - [ ] Responsywność (mobile: ikona, desktop: ikona+tekst)
 
 **Reset hasła (US-017):**
+
 - [ ] Formularz żądania renderuje się
 - [ ] Walidacja email
 - [ ] Submit → komunikat sukcesu (zawsze)
@@ -681,6 +723,7 @@ export const resetPasswordConfirmSchema = z.object({
 - [ ] Token wygasły → error message + link
 
 **Middleware:**
+
 - [ ] Niezalogowany → `/dashboard` → redirect `/login?redirect=/dashboard`
 - [ ] Zalogowany → `/login` → redirect `/dashboard`
 - [ ] Zalogowany → `/register` → redirect `/dashboard`
@@ -690,6 +733,7 @@ export const resetPasswordConfirmSchema = z.object({
 ### 8.2. Manual Testing Checklist
 
 **Accessibility:**
+
 - [ ] `Label` dla wszystkich pól
 - [ ] `aria-invalid` dla pól z błędami
 - [ ] `aria-describedby` dla error messages
@@ -698,6 +742,7 @@ export const resetPasswordConfirmSchema = z.object({
 - [ ] Touch targets min 44x44px (mobile)
 
 **Responsywność:**
+
 - [ ] Mobile (<768px): pełna szerokość, przyciski pełnej szerokości
 - [ ] Desktop (≥768px): max-w-md centered, normalne przyciski
 - [ ] Gradient background wyświetla się poprawnie
@@ -706,30 +751,38 @@ export const resetPasswordConfirmSchema = z.object({
 ## 9. Rozwiązywanie Problemów
 
 ### Problem: "User already registered" przy każdej rejestracji
+
 **Przyczyna:** Email już istnieje w bazie Supabase Auth.  
 **Rozwiązanie:** Użyj innego emaila lub usuń użytkownika w Supabase Dashboard (Authentication → Users).
 
 ### Problem: Sesja nie jest widoczna po zalogowaniu
+
 **Przyczyna:** Cookies nie są ustawiane lub middleware nie odczytuje poprawnie.  
-**Rozwiązanie:** 
+**Rozwiązanie:**
+
 - Sprawdź w DevTools → Application → Cookies czy `sb-<project>-auth-token` istnieje
 - Sprawdź czy middleware wywołuje `getSession()` poprawnie
 - Upewnij się że Supabase client ma `persistSession: true`
 
 ### Problem: Infinite redirect loop
+
 **Przyczyna:** Middleware i strony mają konflikty w logice przekierowań.  
-**Rozwiązanie:** 
+**Rozwiązanie:**
+
 - Upewnij się że landing page `/` nie jest w `protectedRoutes`
 - Sprawdź że `/login` i `/register` są w `authOnlyRoutes`
 - Sprawdź czy middleware nie przekierowuje API endpoints
 
 ### Problem: Token wygasły przy resecie hasła
+
 **Przyczyna:** Token z emaila jest ważny tylko 1 godzinę.  
 **Rozwiązanie:** Link musi być użyty w ciągu godziny. Po wygaśnięciu należy wysłać nowy request.
 
 ### Problem: Email resetujący nie wysyłany
+
 **Przyczyna:** Konfiguracja email w Supabase Dashboard lub błędny redirect URL.  
-**Rozwiązanie:** 
+**Rozwiązanie:**
+
 - Sprawdź Auth → Email Templates w Supabase Dashboard
 - Sprawdź Auth → URL Configuration → Redirect URLs
 - W development Supabase używa własnego SMTP (rate limited)
@@ -738,16 +791,17 @@ export const resetPasswordConfirmSchema = z.object({
 
 ### Pokrycie User Stories
 
-| User Story | Status | Implementacja |
-|------------|--------|---------------|
-| US-001: Rejestracja użytkownika | ✅ MVP | `register.astro` + `RegisterForm.tsx` + API |
-| US-002: Logowanie użytkownika | ✅ MVP | `login.astro` + `LoginForm.tsx` + API |
-| US-003: Wylogowanie użytkownika | ✅ MVP | `LogoutButton.tsx` + API |
-| US-017: Resetowanie hasła | ✅ MVP | `reset-password.astro` + `reset-password/confirm.astro` + API |
+| User Story                      | Status | Implementacja                                                 |
+| ------------------------------- | ------ | ------------------------------------------------------------- |
+| US-001: Rejestracja użytkownika | ✅ MVP | `register.astro` + `RegisterForm.tsx` + API                   |
+| US-002: Logowanie użytkownika   | ✅ MVP | `login.astro` + `LoginForm.tsx` + API                         |
+| US-003: Wylogowanie użytkownika | ✅ MVP | `LogoutButton.tsx` + API                                      |
+| US-017: Resetowanie hasła       | ✅ MVP | `reset-password.astro` + `reset-password/confirm.astro` + API |
 
 ### Wymagania Funkcjonalne (FR)
 
 **FR-018: Resetowanie hasła** - ✅ Kompletna implementacja:
+
 - Link resetujący wysyłany na email
 - Ważność linku: 1 godzina
 - Nowe hasło minimum 8 znaków
@@ -818,6 +872,7 @@ export const resetPasswordConfirmSchema = z.object({
 Specyfikacja obejmuje kompletny system autentykacji dla Paw Notes MVP, wykorzystujący Supabase Auth jako dostawcę autentykacji.
 
 **Kluczowe elementy:**
+
 1. **Cztery główne flow:** Rejestracja, logowanie, wylogowanie, reset hasła
 2. **Adaptacyjny header:** Nagłówek widoczny na stronach dashboard, ukryty na stronach auth
 3. **Jasna kolorystyka:** Wszystkie strony używają jasnego motywu kolorystycznego aplikacji
@@ -830,6 +885,7 @@ Specyfikacja obejmuje kompletny system autentykacji dla Paw Notes MVP, wykorzyst
 10. **Accessibility:** WCAG AA compliance
 
 **Szczegółowe plany implementacji widoków:**
+
 - `.ai/register-view-implementation-plan.md`
 - `.ai/login-view-implementation-plan.md`
 - `.ai/reset-password-request-view-implementation-plan.md`

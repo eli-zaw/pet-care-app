@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock astro:middleware (virtual module not available in vitest)
 vi.mock("astro:middleware", () => ({
-  defineMiddleware: (fn: Function) => fn,
+  defineMiddleware: <T>(fn: T): T => fn,
 }));
 
 // Mock Supabase client

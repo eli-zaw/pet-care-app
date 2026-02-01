@@ -21,50 +21,61 @@ const userEmail = Astro.locals.user?.email || null;
   </head>
   <body>
     <!-- Skip to main content link for accessibility -->
-    {!hideHeader && (
-      <a
-        href="#main-content"
-        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-primary-foreground px-4 py-2 rounded-md z-50"
-      >
-        Przejdź do treści głównej
-      </a>
-    )}
+    {
+      !hideHeader && (
+        <a
+          href="#main-content"
+          class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-primary-foreground px-4 py-2 rounded-md z-50"
+        >
+          Przejdź do treści głównej
+        </a>
+      )
+    }
 
-    <!-- Global Header -->
-    {!hideHeader && (
-      <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
-        <div class="container mx-auto flex h-16 items-center justify-between px-4">
-          <!-- Logo and App Name -->
-          <a href={isAuthenticated ? "/dashboard" : "/"} class="flex items-center gap-2 hover:opacity-80 transition-opacity" aria-label="Paw Notes - strona główna">
-            {isAuthenticated ? (
-              <img
-                src="/logo_1.png"
-                alt="Paw Notes logo"
-                class="h-[100px] w-auto max-h-[100px] sm:h-[80px] sm:max-h-[80px]"
-              />
-            ) : (
-              <div class="text-2xl" aria-hidden="true">
-                🐾
-              </div>
-            )}
-          </a>
+    {
+      !hideHeader && (
+        <header
+          class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          role="banner"
+        >
+          <div class="container mx-auto flex h-16 items-center justify-between px-4">
+            <a
+              href={isAuthenticated ? "/dashboard" : "/"}
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              aria-label="Paw Notes - strona główna"
+            >
+              {isAuthenticated ? (
+                <img
+                  src="/logo_1.png"
+                  alt="Paw Notes logo"
+                  class="h-[100px] w-auto max-h-[100px] sm:h-[80px] sm:max-h-[80px]"
+                />
+              ) : (
+                <div class="text-2xl" aria-hidden="true">
+                  🐾
+                </div>
+              )}
+            </a>
 
-          <!-- Navigation / Actions -->
-          <nav class="flex items-center gap-2" role="navigation" aria-label="Nawigacja użytkownika">
-            {isAuthenticated && (
-              <>
-                {userEmail && (
-                  <span class="text-sm text-muted-foreground hidden md:inline" aria-label={`Zalogowany jako ${userEmail}`}>
-                    {userEmail}
-                  </span>
-                )}
-                <LogoutButton client:load />
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-    )}
+            <nav class="flex items-center gap-2" role="navigation" aria-label="Nawigacja użytkownika">
+              {isAuthenticated && (
+                <>
+                  {userEmail && (
+                    <span
+                      class="text-sm text-muted-foreground hidden md:inline"
+                      aria-label={`Zalogowany jako ${userEmail}`}
+                    >
+                      {userEmail}
+                    </span>
+                  )}
+                  <LogoutButton client:load />
+                </>
+              )}
+            </nav>
+          </div>
+        </header>
+      )
+    }
 
     <!-- Page Content -->
     <main id="main-content" role="main">

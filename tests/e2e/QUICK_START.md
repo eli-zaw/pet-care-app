@@ -5,6 +5,7 @@
 ### ✅ Automatyczny cleanup po testach
 
 Testy używają **jednego użytkownika testowego**:
+
 - **Setup**: Loguje się i zapisuje sesję
 - **Testy**: Dodają zwierzęta według potrzeb (mogą używać istniejących)
 - **Teardown**: Czyści WSZYSTKIE zwierzęta PO testach → czysty stan
@@ -29,6 +30,7 @@ E2E_PASSWORD=your-password
 ```
 
 **To wszystko!** Jeden plik dla obu procesów:
+
 - ✅ Astro ładuje `SUPABASE_URL` i `SUPABASE_KEY`
 - ✅ Playwright ładuje `E2E_USERNAME` i `E2E_PASSWORD`
 
@@ -39,6 +41,7 @@ E2E_PASSWORD=your-password
 Jeśli używasz produkcyjnej bazy - użytkownik już istnieje! ✅
 
 Jeśli lokalny Supabase:
+
 ```bash
 npx supabase start
 # Utwórz użytkownika przez dashboard lub dodaj go w seed.sql
@@ -47,6 +50,7 @@ npx supabase start
 ## 🎯 Uruchomienie
 
 ### Terminal 1 - Serwer
+
 ```bash
 npm run dev:e2e -- --port 4173
 # Uruchamia: astro dev --mode testing
@@ -54,6 +58,7 @@ npm run dev:e2e -- --port 4173
 ```
 
 ### Terminal 2 - Testy
+
 ```bash
 npm run test:e2e
 # Uruchamia: node tests/e2e/index.cjs
@@ -67,7 +72,7 @@ npm run test:e2e
 
 ```
 1. Setup (auth.setup.ts)
-   ├─ Login jako E2E_USERNAME 
+   ├─ Login jako E2E_USERNAME
    ├─ Zapisz sesję → auth-session.json
    └─ ✅ Ready for tests!
 
@@ -94,13 +99,13 @@ Running 13 tests using 1 worker
   ✓ [setup] authenticate and save session (3s)
     🔐 Test user: eliza.zawisza@gmail.com
     ✅ Ready to run tests
-  
-  ✓ [unauthenticated] tests (4 tests) 
-  
+
+  ✓ [unauthenticated] tests (4 tests)
+
   ✓ [authenticated] tests (8 tests)
     - Tests create pets as needed
     - All tests pass with clean state
-  
+
   ✓ [teardown] cleanup test data (2s)
     🧹 Cleaning up 7 pet(s)
     ✅ Dashboard is empty for next run
@@ -130,6 +135,7 @@ npm run test:e2e -- --debug pets/pet-workflow.spec.ts
 ## 🐛 Troubleshooting
 
 ### Problem: "Nieprawidłowy email lub hasło"
+
 ```bash
 # Sprawdź:
 # 1. Czy .env.testing ma poprawne E2E_USERNAME i E2E_PASSWORD
@@ -140,6 +146,7 @@ npm run test:e2e -- --debug pets/pet-workflow.spec.ts
 ### ⚠️ Migracja z dwóch plików
 
 Jeśli masz stary setup z `.env.test` i `.env.testing`:
+
 ```bash
 # 1. Skopiuj wszystkie zmienne do .env.testing
 cat .env.test >> .env.testing
@@ -153,6 +160,7 @@ cat .env.testing
 ```
 
 ### Problem: "Zwierzęta pozostają po testach"
+
 ```bash
 # Sprawdź czy teardown się wykonał:
 npm run test:e2e -- --project=teardown
@@ -163,6 +171,7 @@ npm run test:e2e -- --project=teardown
 ```
 
 ### Problem: "Testy nie znajdują zwierząt które utworzyły"
+
 ```bash
 # Sprawdź .env.testing - jeden plik dla wszystkiego
 cat .env.testing
@@ -181,7 +190,7 @@ cat .env.testing
 ✅ **Automatyczny cleanup** - po testach (teardown)  
 ✅ **Szybszy setup** - tylko login, bez czyszczenia  
 ✅ **Izolacja między uruchomieniami** - teardown czyści wszystko  
-✅ **Brak śmieci** - baza czysta po każdym uruchomieniu  
+✅ **Brak śmieci** - baza czysta po każdym uruchomieniu
 
 ---
 
@@ -214,6 +223,7 @@ Terminal 2: npm run test:e2e
 ```
 
 **Korzyści:**
+
 - ✅ Jeden plik konfiguracyjny
 - ✅ Brak duplikacji
 - ✅ Łatwiejsze utrzymanie

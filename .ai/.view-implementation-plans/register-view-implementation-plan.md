@@ -1,22 +1,27 @@
 # Plan implementacji widoku: Rejestracja
 
 ## 1. Przegląd
+
 Widok rejestracji umożliwia nowym użytkownikom utworzenie konta w aplikacji Pet Care Companion. Po pomyślnej rejestracji użytkownik jest automatycznie logowany i przekierowywany do dashboardu.
 
 ## 2. Routing widoku
+
 Ścieżka: `/register` (publiczny, tylko dla niezalogowanych)
 
 Logika przekierowania:
+
 - Użytkownik niezalogowany: wyświetla formularz rejestracji
 - Użytkownik zalogowany: automatyczne przekierowanie do `/dashboard`
 
 ## 3. Struktura komponentów
+
 - `RegisterPage` (Astro page - `register.astro`)
 - `RegisterForm` (React component - `client:load`)
 
 ## 4. Szczegóły komponentów
 
 ### `RegisterPage` (register.astro)
+
 - Opis komponentu: Strona Astro renderująca formularz rejestracji z server-side sprawdzeniem sesji.
 - Główne elementy: `Layout` z `hideHeader={true}`, gradient background, `RegisterForm` component.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -25,26 +30,32 @@ Logika przekierowania:
 - Propsy: brak (top-level page).
 
 **Struktura:**
+
 ```astro
 ---
 import Layout from "@/layouts/Layout.astro";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
 // Server-side: sprawdzenie sesji
-const { data: { session } } = await Astro.locals.supabase.auth.getSession();
+const {
+  data: { session },
+} = await Astro.locals.supabase.auth.getSession();
 if (session?.user) {
   return Astro.redirect("/dashboard");
 }
 ---
 
 <Layout title="Rejestracja - Pet Care Companion" hideHeader>
-  <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900">
+  <div
+    class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900"
+  >
     <RegisterForm client:load />
   </div>
 </Layout>
 ```
 
 ### `RegisterForm` (RegisterForm.tsx)
+
 - Opis komponentu: Formularz rejestracji z walidacją client-side, komunikacją z API i obsługą błędów.
 - Główne elementy:
   - `Card` (Shadcn/ui): kontener formularza
@@ -64,6 +75,7 @@ if (session?.user) {
 - Propsy: brak
 
 **Interfejs stanu:**
+
 ```typescript
 interface RegisterFormState {
   email: string;
@@ -78,15 +90,19 @@ interface RegisterFormState {
 ```
 
 **Kluczowe funkcje:**
+
 - `validateEmail(email: string): string | undefined`
 - `validatePassword(password: string): string | undefined`
 - `handleSubmit(e: FormEvent): Promise<void>`
 
 ## 5. Typy
+
 Typy definiowane lokalnie w komponencie (brak globalnych typów wymaganych).
 
 ## 6. Zarządzanie stanem
+
 Stan lokalny w komponencie `RegisterForm`:
+
 - `formState: RegisterFormState` - zawiera email, password, isSubmitting, errors
 - `useState` dla zarządzania stanem formularza
 - Brak custom hooks (prosta forma)
@@ -94,7 +110,9 @@ Stan lokalny w komponencie `RegisterForm`:
 ## 7. Integracja API
 
 ### Endpoint: POST /api/auth/register
+
 **Request:**
+
 ```typescript
 {
   email: string;
@@ -103,6 +121,7 @@ Stan lokalny w komponencie `RegisterForm`:
 ```
 
 **Response 201 Created:**
+
 ```json
 {
   "message": "Rejestracja zakończona sukcesem",
@@ -114,6 +133,7 @@ Stan lokalny w komponencie `RegisterForm`:
 ```
 
 **Response 409 Conflict:**
+
 ```json
 {
   "message": "Ten email jest już zarejestrowany"
@@ -121,6 +141,7 @@ Stan lokalny w komponencie `RegisterForm`:
 ```
 
 **Response 400 Bad Request:**
+
 ```json
 {
   "message": "Błąd walidacji",
@@ -129,6 +150,7 @@ Stan lokalny w komponencie `RegisterForm`:
 ```
 
 **Akcje frontendowe:**
+
 - Wywołanie `fetch("/api/auth/register", { method: "POST", ... })`
 - Obsługa odpowiedzi 201: toast sukcesu + redirect `/dashboard`
 - Obsługa błędów: wyświetlenie toasta i error message
@@ -136,47 +158,56 @@ Stan lokalny w komponencie `RegisterForm`:
 ## 8. Interakcje użytkownika
 
 ### Wejście na `/register` jako niezalogowany
+
 - System wyświetla formularz rejestracji
 - Pola: email, hasło
 - Przycisk "Zarejestruj się"
 - Link "Masz już konto? Zaloguj się"
 
 ### Wejście na `/register` jako zalogowany
+
 - System sprawdza sesję server-side
 - Automatyczne przekierowanie do `/dashboard`
 
 ### Wypełnianie formularza
+
 - Wprowadzenie email → walidacja on blur
 - Wprowadzenie hasła → walidacja on blur
 - Błędy wyświetlane inline pod polami
 - Przycisk disabled gdy `isSubmitting`
 
 ### Submit formularza
+
 - Walidacja client-side
 - Jeśli błędy → wyświetlenie error messages, brak wywołania API
 - Jeśli OK → POST /api/auth/register
 - Podczas submitu: przycisk disabled, tekst "Rejestracja..."
 
 ### Sukces rejestracji
+
 - Toast sukcesu: "Witaj w Pet Care Companion" (zielony, 3s)
 - Automatyczne przekierowanie do `/dashboard`
 - Użytkownik zalogowany (sesja utworzona przez API)
 
 ### Błąd rejestracji
+
 - Toast błędu z komunikatem
 - Error message pod formularzem lub przy polu email (409)
 - Przycisk aktywny ponownie
 
 ### Kliknięcie "Masz już konto? Zaloguj się"
+
 - Nawigacja do `/login`
 
 ### Responsywność
+
 - Desktop (≥768px): Card max-w-md, centered, normalne przyciski
 - Mobile (<768px): Card pełna szerokość z paddingiem, przyciski pełna szerokość min 44x44px, stack layout
 
 ## 9. Warunki i walidacja
 
 ### Walidacja email
+
 - Wymagany: nie może być pusty
 - Format: musi zawierać @ i domenę
 - Regex: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
@@ -184,6 +215,7 @@ Stan lokalny w komponencie `RegisterForm`:
 - Error message: "Email jest wymagany" lub "Nieprawidłowy format email"
 
 ### Walidacja hasła
+
 - Wymagane: nie może być puste
 - Długość: minimum 8 znaków
 - Walidacja on blur
@@ -191,11 +223,13 @@ Stan lokalny w komponencie `RegisterForm`:
 - Hint pod polem: "Minimum 8 znaków"
 
 ### Walidacja przed submitem
+
 - Sprawdzenie obu pól
 - Jeśli błędy → ustawienie w state, brak wywołania API
 - Wyświetlenie wszystkich error messages
 
 ### Accessibility
+
 - `Label` dla każdego pola (email, password)
 - `aria-invalid` dla pól z błędami
 - `aria-describedby` dla powiązania błędów z polami
@@ -205,27 +239,32 @@ Stan lokalny w komponencie `RegisterForm`:
 ## 10. Obsługa błędów
 
 ### 400 Bad Request (Błąd walidacji)
+
 - Toast: "Błąd walidacji"
 - Wyświetlenie szczegółowych błędów przy polach
 - Przycisk aktywny ponownie
 
 ### 409 Conflict (Email już istnieje)
+
 - Toast: "Ten email jest już zarejestrowany"
 - Error message przy polu email
 - Przycisk aktywny ponownie
 - Fokus na polu email
 
 ### 500 Internal Server Error
+
 - Toast: "Wystąpił błąd podczas rejestracji"
 - Error message ogólny pod formularzem
 - Przycisk aktywny ponownie
 
 ### Błąd sieci
+
 - Toast: "Brak połączenia. Sprawdź internet."
 - Error message ogólny
 - Przycisk aktywny ponownie
 
 ### Edge cases
+
 - Użytkownik próbuje zarejestrować się na już istniejący email → 409 + odpowiedni komunikat
 - Użytkownik wpisuje nieprawidłowy format email → client-side validation catch
 - Użytkownik wpisuje za krótkie hasło → client-side validation catch

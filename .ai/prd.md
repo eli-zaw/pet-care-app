@@ -24,69 +24,88 @@ Właściciele zwierząt domowych, szczególnie tych wymagających regularnej opi
 
 4. Czasochłonność: Skomplikowane systemy zarządzania wymagają zbyt dużo czasu na wprowadzenie pojedynczej informacji.
 
-
 ## 3. Wymagania funkcjonalne
 
 ### FR-001: Rejestracja użytkownika
+
 System umożliwia rejestrację nowego użytkownika przez formularz email + hasło. Email musi być unikalny w systemie. Hasło musi mieć minimum 8 znaków. Konto jest aktywne natychmiast po rejestracji (bez weryfikacji email). Po rejestracji system automatycznie loguje użytkownika i przekierowuje do dashboardu.
 
 ### FR-002: Logowanie użytkownika
+
 System umożliwia logowanie przez email i hasło. Sesja użytkownika jest zarządzana przez Supabase Auth. Nieprawidłowe dane logowania wyświetlają komunikat błędu. Po prawidłowym logowaniu system przekierowuje do dashboardu.
 
 ### FR-003: Wylogowanie
+
 System umożliwia wylogowanie użytkownika. Przycisk "Wyloguj" jest dostępny w nawigacji. Po wylogowaniu system przekierowuje do landing page. Sesja użytkownika jest unieważniana.
 
 ### FR-004: Dodawanie zwierzęcia
+
 System umożliwia dodanie nowego zwierzęcia przez formularz. Pola wymagane: imię (1-50 znaków), gatunek (dropdown: Pies, Kot, Inne). System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Zwierzę zostało dodane" i przekierowuje do profilu zwierzęcia. System przypisuje zwierzę do zalogowanego użytkownika.
 
 ### FR-005: Lista zwierząt na dashboardzie
+
 System wyświetla wszystkie zwierzęta użytkownika na dashboardzie. Każde zwierzę wyświetlane jako karta zawierająca: emoji gatunku, imię, liczba wpisów. System sortuje zwierzęta alfabetycznie po imieniu. Dashboard zawiera przycisk "Dodaj zwierzę". Kliknięcie w kartę zwierzęcia prowadzi do jego profilu.
 
 ### FR-006: Profil zwierzęcia
+
 System wyświetla dane zwierzęcia (emoji + imię + gatunek). System wyświetla przycisk "Usuń zwierzę". System wyświetla przycisk "Dodaj wpis" (prominent). System wyświetla historię wszystkich wpisów opieki. System wyświetla licznik wpisów.
 
 ### FR-007: Usuwanie zwierzęcia
+
 System wyświetla modal potwierdzenia: "Czy na pewno usunąć [Imię]? To usunie również wszystkie wpisy". Po potwierdzeniu system wykonuje usunięcie (wraz z wpisami przez CASCADE). System wyświetla toast "Zwierzę zostało usunięte" i przekierowuje do dashboardu.
 
 ### FR-008: Dodawanie wpisu opieki
+
 System umożliwia dodanie wpisu przez formularz (cel: <20 sekund). Pola wymagane: kategoria (6 przycisków z emoji: Wizyta u weterynarza, Leki i suplementy, Groomer/fryzjer, Karma, Zdarzenie zdrowotne, Notatka), data (date picker, domyślnie: dziś, możliwość wyboru przeszłości i przyszłości). Pole opcjonalne: notatka (textarea, max 1000 znaków). System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Wpis został dodany". Wpis pojawia się natychmiast w historii.
 
 ### FR-009: Historia wpisów zwierzęcia
+
 System wyświetla wszystkie wpisy opieki dla danego zwierzęcia. Sortowanie: najnowsze na górze (reverse chronological). Każdy wpis wyświetla: emoji kategorii, nazwa kategorii, data, fragment notatki (pierwsze 100 znaków lub pełna jeśli krótsza). Kliknięcie w wpis: rozwinięcie pokazujące pełną notatkę. System wyświetla komunikat "Brak wpisów" dla zwierząt bez historii.
 
 ### FR-010: Usuwanie wpisu
+
 System wyświetla przycisk "Usuń" przy każdym wpisie. System wyświetla modal potwierdzenia: "Czy na pewno usunąć ten wpis?". Po potwierdzeniu system wykonuje usunięcie. System wyświetla toast "Wpis został usunięty". Wpis znika z listy natychmiast.
 
 ### FR-011: Landing page
+
 System wyświetla landing page dla użytkowników niezalogowanych na głównym URL. Hero section zawiera: nagłówek "Zadbaj o swojego pupila z Paw Notes", krótki opis, CTA "Rozpocznij za darmo". System przekierowuje zalogowanych użytkowników do dashboardu automatycznie.
 
 ### FR-012: Toast notifications
+
 System wyświetla toast notifications dla operacji (sukces, błąd). Toast sukcesu (zielony): auto-hide po 3 sekundach. Toast błędu (czerwony): auto-hide po 5 sekundach. Toasty są dismissable. Pozycja: bottom-right (desktop), bottom-center (mobile). System używa Sonner/Toast z Shadcn/ui.
 
 ### FR-013: Responsywność
+
 System stosuje mobile-first design. Breakpoint: 768px (mobile/desktop). Wszystkie widoki są w pełni funkcjonalne na wszystkich urządzeniach. Przyciski i interaktywne elementy mają minimum 44x44px touch target na mobile. System automatycznie dostosowuje layout do rozmiaru ekranu.
 
 ### FR-014: Error handling
+
 System wyświetla przyjazne komunikaty błędów dla użytkownika poprzez toast notifications. System loguje szczegółowe błędy do konsoli (development). System zapobiega wyświetlaniu technicznych detali błędów użytkownikowi końcowemu.
 
 ### FR-015: Edycja zwierzęcia
+
 System umożliwia edycję danych zwierzęcia. Edytowalny jest tylko imię zwierzęcia (1-50 znaków). Gatunek jest niemutowalny po utworzeniu. System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Zmiany zostały zapisane". Przycisk/link "Edytuj" jest dostępny w profilu zwierzęcia.
 
 ### FR-016: Edycja wpisu opieki
+
 System umożliwia edycję wpisu opieki. Edytowalne pola: kategoria, data, notatka (te same zasady walidacji jak przy tworzeniu). System waliduje dane przed zapisem. Po zapisie system wyświetla toast "Wpis został zaktualizowany". Wpis pojawia się w odpowiednim miejscu chronologicznym po zmianie daty. Przycisk/link "Edytuj" jest dostępny przy każdym wpisie.
 
 ### FR-017: Status opieki zwierzęcia
+
 System oblicza i wyświetla status opieki zwierzęcia na podstawie daty ostatniego wpisu w profilu zwierzęcia. Status prezentowany jako wskaźnik aktualności opieki z emoji: 🟢 (≤30 dni), 🟡 (31-90 dni), 🔴 (>90 dni lub brak wpisów). Status aktualizuje się automatycznie po dodaniu lub usunięciu wpisu. System wyświetla tooltip z informacją o dacie ostatniego wpisu przy najechaniu na status (desktop) lub przy kliknięciu (mobile).
 
 ### FR-018: Resetowanie hasła
+
 System umożliwia użytkownikowi zresetowanie zapomnianego hasła przez email. Użytkownik wprowadza email w formularzu resetowania. System wysyła email z linkiem resetującym (ważny 1 godzinę). Link prowadzi do formularza ustawienia nowego hasła. Nowe hasło musi mieć minimum 8 znaków. Po pomyślnej zmianie hasła system wyświetla toast "Hasło zostało zmienione" i przekierowuje do logowania. System używa Supabase Auth do obsługi procesu resetowania hasła.
 
 ---
 
 ## 4. Granice produktu
+
 POZA ZAKRESEM (możliwe w przyszłych wersjach):
 
 Autentykacja i konto:
+
 - Email verification (weryfikacja przez link)
 - Zmiana hasła w ustawieniach
 - Edycja danych użytkownika (imię, nazwisko)
@@ -94,6 +113,7 @@ Autentykacja i konto:
 - Social login (Google, Apple)
 
 Zwierzęta:
+
 - Zdjęcia zwierząt (upload do Supabase Storage)
 - Rozszerzone dane: rasa, waga, data urodzenia, numer chipa, notatki dodatkowe
 - Avatary generowane (obecnie tylko emoji gatunku)
@@ -101,6 +121,7 @@ Zwierzęta:
 - Limit liczby zwierząt (obecnie nielimitowane)
 
 Wpisy:
+
 - Dodatkowe pola: tytuł, koszt
 - Filtrowanie po kategorii
 - Wyszukiwanie w tytułach/notatkach
@@ -110,6 +131,7 @@ Wpisy:
 - Export danych
 
 UI/UX:
+
 - PWA manifest i service worker
 - Offline mode
 - Push notifications
@@ -120,6 +142,7 @@ UI/UX:
 - Analytics tracking
 
 Inne:
+
 - Przypomnienia o wizytach/lekach
 - Kalendarz wydarzeń
 - Statystyki i wykresy
@@ -137,6 +160,7 @@ Chcę zarejestrować się w aplikacji używając emaila i hasła
 Aby móc zacząć dokumentować opiekę nad moimi zwierzętami
 
 Kryteria akceptacji:
+
 - Formularz rejestracji wymaga emaila i hasła (min 8 znaków)
 - System waliduje unikalność emaila
 - System waliduje format emaila (musi zawierać @)
@@ -157,6 +181,7 @@ Chcę zalogować się używając emaila i hasła
 Aby uzyskać dostęp do moich danych
 
 Kryteria akceptacji:
+
 - Formularz logowania wymaga emaila i hasła
 - System waliduje format emaila
 - Prawidłowe dane logują użytkownika i przekierowują do dashboardu
@@ -175,11 +200,12 @@ Chcę wylogować się z aplikacji
 Aby zakończyć sesję i zabezpieczyć dostęp do mojego konta
 
 Kryteria akceptacji:
+
 - Przycisk "Wyloguj" jest dostępny w nawigacji (top bar)
 - Kliknięcie wylogowuje użytkownika natychmiast (bez confirm)
 - System przekierowuje do landing page
 - Sesja użytkownika jest unieważniona
-- Próba dostępu do chronionych widoków (/dashboard, /pets/*) przekierowuje do logowania
+- Próba dostępu do chronionych widoków (/dashboard, /pets/\*) przekierowuje do logowania
 
 ---
 
@@ -190,6 +216,7 @@ Chcę dodać moje pierwsze zwierzę
 Aby rozpocząć dokumentowanie opieki
 
 Kryteria akceptacji:
+
 - Dashboard wyświetla empty state "Dodaj swojego pierwszego pupila" z przyciskiem CTA
 - Kliknięcie otwiera formularz dodawania zwierzęcia (modal lub osobna strona)
 - Formularz wymaga: imię (1-50 znaków) i gatunek (dropdown: Pies, Kot, Inne)
@@ -210,6 +237,7 @@ Chcę zobaczyć listę wszystkich moich zwierząt na dashboardzie
 Aby szybko wybrać zwierzę, które mnie interesuje
 
 Kryteria akceptacji:
+
 - Dashboard wyświetla wszystkie zwierzęta jako karty/listę
 - Każda karta zawiera: emoji gatunku (🐕 pies, 🐱 kot, 🐾 inne), imię, liczba wpisów (np. "5 wpisów" lub "Brak wpisów")
 - Zwierzęta są sortowane alfabetycznie po imieniu
@@ -228,6 +256,7 @@ Chcę usunąć zwierzę z aplikacji
 Aby oczyścić listę (np. po śmierci zwierzęcia lub oddaniu do adopcji)
 
 Kryteria akceptacji:
+
 - Przycisk "Usuń zwierzę" jest dostępny w profilu zwierzęcia
 - Kliknięcie wyświetla modal potwierdzenia: "Czy na pewno usunąć [Imię]? To usunie również wszystkie wpisy"
 - Modal zawiera przyciski: "Anuluj" i "Usuń" (czerwony)
@@ -238,7 +267,6 @@ Kryteria akceptacji:
 - Dane są usunięte permanentnie (brak możliwości odzyskania w MVP)
 - Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
-
 ---
 
 ### US-007: Szybkie dodanie wpisu
@@ -248,6 +276,7 @@ Chcę dodać wpis w mniej niż 20 sekund
 Aby szybko zapisać zdarzenie
 
 Kryteria akceptacji:
+
 - Przycisk "Dodaj wpis" jest prominent w profilu zwierzęcia (sticky lub na górze)
 - Kliknięcie otwiera formularz dodawania wpisu (modal lub osobna strona)
 - Formularz zawiera:
@@ -262,7 +291,6 @@ Kryteria akceptacji:
 - Dodanie wpisu zajmuje maksymalnie 20 sekund (cel: <15s)
 - Funkcjonalność dostępna po zalogowaniu do systemu (US-002)
 
-
 ---
 
 ### US-008: Przeglądanie historii wpisów zwierzęcia
@@ -272,6 +300,7 @@ Chcę zobaczyć wszystkie wpisy dla mojego zwierzęcia posortowane chronologiczn
 Aby prześledzić historię opieki w czasie
 
 Kryteria akceptacji:
+
 - Profil zwierzęcia wyświetla sekcję "Historia" z listą wszystkich wpisów
 - Wpisy są sortowane od najnowszych na górze (reverse chronological)
 - Każdy wpis wyświetla:
@@ -296,6 +325,7 @@ Chcę usunąć błędny wpis z historii
 Aby utrzymać listę aktualną
 
 Kryteria akceptacji:
+
 - Przycisk "Usuń" (ikona kosza) jest widoczny przy każdym wpisie
 - Kliknięcie wyświetla modal potwierdzenia: "Czy na pewno usunąć ten wpis?"
 - Modal zawiera przyciski: "Anuluj" i "Usuń" (czerwony)
@@ -315,6 +345,7 @@ Chcę używać aplikacji na smartfonie
 Aby dodawać wpisy na miejscu (np. u weterynarza, w sklepie z karmą)
 
 Kryteria akceptacji:
+
 - Wszystkie widoki są w pełni funkcjonalne na ekranach <768px
 - Formularze są łatwe do wypełnienia na touchscreen
 - Przyciski mają minimum 44x44px touch target
@@ -336,6 +367,7 @@ Chcę zobaczyć co oferuje aplikacja przed rejestracją
 Aby zdecydować czy chcę się zarejestrować
 
 Kryteria akceptacji:
+
 - Landing page wyświetla się dla użytkowników niezalogowanych na głównym URL (/)
 - Hero section zawiera:
   - Nagłówek: "Zadbaj o swojego pupila z Paw Notes"
@@ -356,6 +388,7 @@ Chcę dodać wpis z datą z przeszłości
 Aby uzupełnić historię mojego zwierzęcia
 
 Kryteria akceptacji:
+
 - Date picker pozwala wybrać dowolną datę z przeszłości (bez limitu)
 - System nie pokazuje ostrzeżenia dla dat przeszłych
 - Wpis jest dodawany do historii w odpowiednim miejscu chronologicznym (sortowanie po dacie, nie po created_at)
@@ -372,6 +405,7 @@ Chcę dodać wpis podając tylko kategorię i datę
 Aby zapisać minimum informacji gdy nie mam czasu na szczegóły
 
 Kryteria akceptacji:
+
 - Pole "Notatka" jest opcjonalne (można zostawić puste)
 - Przycisk "Zapisz" jest aktywny gdy tylko kategoria i data są wybrane
 - Wpis bez notatki wyświetla się w historii jako: emoji + kategoria + data (bez fragmentu notatki)
@@ -389,6 +423,7 @@ Chcę edytować imię mojego zwierzęcia
 Aby poprawić literówkę lub zmienić nazwę pupila
 
 Kryteria akceptacji:
+
 - Przycisk/link "Edytuj" jest dostępny w profilu zwierzęcia
 - Kliknięcie otwiera formularz edycji zwierzęcia (modal lub osobna strona)
 - Formularz zawiera pole imię (prefillowane obecnym imieniem)
@@ -410,6 +445,7 @@ Chcę edytować wpis w historii zwierzęcia
 Aby poprawić błędy lub uzupełnić brakujące informacje
 
 Kryteria akceptacji:
+
 - Przycisk/link "Edytuj" jest dostępny przy każdym wpisie
 - Kliknięcie otwiera formularz edycji wpisu (modal lub osobna strona)
 - Formularz zawiera wszystkie pola prefillowane obecnymi danymi: kategoria, data, notatka
@@ -433,6 +469,7 @@ Chcę widzieć status aktualności opieki nad moim zwierzęciem
 Aby szybko ocenić czy regularnie dokumentuję opiekę
 
 Kryteria akceptacji:
+
 - Status opieki wyświetlany w profilu zwierzęcia przy nagłówku (obok imienia lub licznika wpisów)
 - Status prezentowany jako emoji wskaźnika z etykietą tekstową:
   - 🟢 "Aktualne" - ostatni wpis ≤30 dni temu
@@ -455,6 +492,7 @@ Chcę móc zresetować hasło przez email
 Aby odzyskać dostęp do mojego konta
 
 Kryteria akceptacji:
+
 - Link "Zapomniałeś hasła?" jest dostępny na stronie logowania
 - Kliknięcie prowadzi do formularza resetowania hasła
 - Formularz wymaga adresu email (walidacja formatu)
@@ -479,6 +517,7 @@ Kryteria akceptacji:
 ### 6.1 Metryka podstawowa (Must Have)
 
 ŚREDNI CZAS DODANIA WPISU
+
 - Definicja: Średni czas od otwarcia formularza do zapisania wpisu
 - Cel: <20 sekund
 - Pomiar: Ręczne testowanie z 5 użytkownikami (timing z sekundomierzem)
@@ -486,18 +525,21 @@ Kryteria akceptacji:
 - Akceptacja: Minimum 80% wpisów musi być dodanych w <20 sekund
 
 REGISTRATION TO FIRST PET
+
 - Definicja: Czas od zakończenia rejestracji do dodania pierwszego zwierzęcia
 - Cel: <2 minuty
 - Pomiar: Ręczne testowanie z użytkownikami
 - Znaczenie: Mierzy jak intuicyjny jest onboarding
 
 REGISTRATION TO FIRST ENTRY
+
 - Definicja: Czas od zakończenia rejestracji do dodania pierwszego wpisu
 - Cel: <5 minut
 - Pomiar: Ręczne testowanie z użytkownikami
 - Znaczenie: Mierzy jak szybko użytkownik osiąga value
 
 MOBILE USABILITY
+
 - Definicja: Czy wszystkie funkcje działają płynnie na mobile
 - Cel: Wszystkie 19 user stories działają bez problemów na mobile
 - Pomiar: Manualne testy na prawdziwym telefonie (iOS/Android)

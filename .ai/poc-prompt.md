@@ -3,6 +3,7 @@
 Zbuduj minimalną aplikację webową do zapisywania historii opieki nad zwierzętami.
 
 ## Tech Stack
+
 - Astro 5 + React 19 + TypeScript
 - Tailwind CSS 4
 - Supabase (PostgreSQL + Auth)
@@ -10,11 +11,13 @@ Zbuduj minimalną aplikację webową do zapisywania historii opieki nad zwierzę
 ## Funkcjonalność (TYLKO TO)
 
 ### 1. Strona główna (`/`)
+
 - Lista wszystkich zwierząt (imię + emoji gatunku)
 - Przycisk "Dodaj zwierzę" → `/add-pet`
 - Kliknięcie w zwierzę → `/pet/[id]`
 
 ### 2. Dodawanie zwierzęcia (`/add-pet`)
+
 - Formularz:
   - Imię (input text, wymagane)
   - Gatunek (select: Pies 🐕, Kot 🐱, Inne 🐾, wymagane)
@@ -22,6 +25,7 @@ Zbuduj minimalną aplikację webową do zapisywania historii opieki nad zwierzę
 - Po zapisie: redirect do `/pet/[id]`
 
 ### 3. Profil zwierzęcia (`/pet/[id]`)
+
 - Header: emoji gatunku + imię zwierzęcia
 - Formularz dodawania wpisu:
   - Kategoria (6 przycisków z emoji, wymagane):
@@ -70,6 +74,7 @@ ALTER TABLE care_entries DISABLE ROW LEVEL SECURITY;
 ```
 
 ## Uproszczenia dla PoC
+
 - Hardcoded user_id = 'demo-user' (bez prawdziwego auth)
 - Brak usuwania/edycji danych
 - Podstawowy styling (Tailwind utility classes)
@@ -77,8 +82,9 @@ ALTER TABLE care_entries DISABLE ROW LEVEL SECURITY;
 - Brak walidacji (poza required w HTML)
 
 ## Seed Data (przykładowe)
+
 ```sql
-INSERT INTO pets (user_id, name, species) VALUES 
+INSERT INTO pets (user_id, name, species) VALUES
   ('demo-user', 'Burek', 'dog'),
   ('demo-user', 'Mruczek', 'cat');
 
@@ -88,12 +94,14 @@ INSERT INTO care_entries (pet_id, category, date, notes) VALUES
 ```
 
 ## Environment
+
 ```
 PUBLIC_SUPABASE_URL=your_project_url
 PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-## Sukces = 
+## Sukces =
+
 ✅ Dodanie zwierzęcia działa
 ✅ Lista zwierząt wyświetla się
 ✅ Dodanie wpisu dla zwierzęcia działa  

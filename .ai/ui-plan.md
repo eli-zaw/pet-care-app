@@ -4,11 +4,12 @@
 
 Paw Notes to scentralizowany dziennik opieki nad zwierzętami, który zastępuje rozproszone notatki i pamięć właściciela. Aplikacja umożliwia szybkie zapisywanie wszystkich istotnych zdarzeń związanych z opieką nad pupilem (wizyty weterynarza, leki, groomer, zdarzenia zdrowotne) i łatwy dostęp do pełnej historii w jednym miejscu.
 
-Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** oraz **Lean MVP**, wykorzystując **Tailwind CSS 4** do budowy spójnego, nowoczesnego i wydajnego UI. Aplikacja spełnia rygorystyczne standardy **WCAG**. 
+Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** oraz **Lean MVP**, wykorzystując **Tailwind CSS 4** do budowy spójnego, nowoczesnego i wydajnego UI. Aplikacja spełnia rygorystyczne standardy **WCAG**.
 
 ## 2. Lista widoków
 
 ### Landing Page
+
 - **Ścieżka:** `/`
 - **Główny cel:** Prezentacja wartości produktu i konwersja na rejestrację.
 - **Kluczowe informacje:** Hero section, grafika lifestyle, CTA.
@@ -17,6 +18,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-011, US-011.
 
 ### Logowanie / Rejestracja
+
 - **Ścieżka:** `/login`, `/register`
 - **Główny cel:** Zarządzanie dostępem do aplikacji (obecnie mocki).
 - **Kluczowe informacje:** Formularze auth, walidacja haseł (min. 8 znaków).
@@ -25,6 +27,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-001, FR-002, US-001, US-002.
 
 ### Dashboard (Pulpit)
+
 - **Ścieżka:** `/dashboard`
 - **Główny cel:** Zarządzanie listą zwierząt użytkownika.
 - **Kluczowe informacje:** Karty zwierząt z licznikami wpisów.
@@ -33,6 +36,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-005, US-005, US-004 (onboarding).
 
 ### Dodaj zwierzę
+
 - **Ścieżka:** `/pets/new`
 - **Główny cel:** Szybkie wprowadzenie nowego pupila.
 - **Kluczowe informacje:** Imię, Gatunek (Pies/Kot/Inne).
@@ -41,6 +45,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-004, US-004.
 
 ### Profil zwierzęcia
+
 - **Ścieżka:** `/pets/[petId]`
 - **Główny cel:** Przegląd historii, szybkie dodawanie wpisów oraz zarządzanie danymi pupila.
 - **Kluczowe informacje:** Chronologiczna lista wpisów, licznik, dane pupila, status opieki, opcje edycji i usuwania.
@@ -49,6 +54,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-006, FR-007, FR-009, FR-010, FR-017, US-006, US-008, US-009, US-012, US-016.
 
 ### Edytuj zwierzę
+
 - **Ścieżka:** `/pets/[petId]/edit`
 - **Główny cel:** Aktualizacja danych zwierzęcia (tylko imię).
 - **Kluczowe informacje:** Formularz z imieniem, zablokowane pole gatunku.
@@ -57,6 +63,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-004 (edycja), US-004 (edycja).
 
 ### Edytuj wpis opieki
+
 - **Ścieżka:** `/pets/[petId]/entries/[entryId]/edit`
 - **Główny cel:** Korekta istniejącego wpisu w historii.
 - **Kluczowe informacje:** Kategoria, data, notatka (pola wypełnione danymi).
@@ -65,6 +72,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-008 (edycja), US-007 (edycja).
 
 ### Dodaj wpis opieki
+
 - **Ścieżka:** `/pets/[petId]/entries/new`
 - **Główny cel:** Rejestracja zdarzenia w <20 sekund.
 - **Kluczowe informacje:** 6 kategorii, data, notatka (opcjonalna).
@@ -73,6 +81,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-008, US-007, US-013.
 
 ### Strona błędu 403
+
 - **Ścieżka:** `/403`
 - **Główny cel:** Informować o braku uprawnień i naprowadzić użytkownika na bezpieczny ekran.
 - **Kluczowe informacje:** Krótkie wyjaśnienie problemu, przycisk "Wróć do dashboard" oraz opcjonalny łącznik do pomocy/sekcji kontaktowej.
@@ -81,6 +90,7 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 - **Mapowanie wymagań:** FR-014 (obsługa błędów auth), US-014.
 
 ### Strona błędu 404
+
 - **Ścieżka:** `/404`
 - **Główny cel:** Powiadomić użytkownika o nieistniejącej stronie i zaproponować dalsze akcje.
 - **Kluczowe informacje:** Numer błędu, przyjazny komunikat, opcje powrotu do pulpitu i/lub wyszukiwarki oraz ilustracja wspierająca ton komunikatu.
@@ -99,10 +109,10 @@ Architektura interfejsu użytkownika opiera się na podejściu **mobile-first** 
 
 ## 5. Układ i struktura nawigacji
 
--   **Sticky Header:** Logo (Home) + Przycisk Wyloguj. Zawsze dostępny.
--   **Breadcrumbs (WCAG):** Struktura `Pulpit > [Imię] > [Akcja]`. Skracane na mobile (`... > [Akcja]`). Wykorzystuje `aria-label="Breadcrumb"`.
--   **FAB (Floating Action Button):** Na profilu zwierzęcia, ułatwia dostęp do dodawania wpisu przy długich listach.
--   **Paginacja:** Przycisk "Wczytaj więcej" na dole listy historii (limit 20).
+- **Sticky Header:** Logo (Home) + Przycisk Wyloguj. Zawsze dostępny.
+- **Breadcrumbs (WCAG):** Struktura `Pulpit > [Imię] > [Akcja]`. Skracane na mobile (`... > [Akcja]`). Wykorzystuje `aria-label="Breadcrumb"`.
+- **FAB (Floating Action Button):** Na profilu zwierzęcia, ułatwia dostęp do dodawania wpisu przy długich listach.
+- **Paginacja:** Przycisk "Wczytaj więcej" na dole listy historii (limit 20).
 
 ## 6. Kluczowe komponenty
 

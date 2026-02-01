@@ -1,12 +1,15 @@
 # Plan implementacji widoku: Edytuj zwierzę
 
 ## 1. Przegląd
+
 Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (gatunek jest immutable po utworzeniu). Formularz prefillowany danymi zwierzęcia. Po zapisie użytkownik pozostaje/wraca do profilu zwierzęcia z zaktualizowanymi danymi.
 
 ## 2. Routing widoku
+
 Ścieżka: `/pets/[petId]/edit` (chroniona przez middleware; użytkownik niezalogowany przekierowywany do logowania). Po sukcesie przekierowanie do `/pets/[petId]`. Anulowanie prowadzi do `/pets/[petId]`.
 
 ## 3. Struktura komponentów
+
 - `EditPetPage` (Astro page, dynamiczna)
 - `PetForm` (React, client:load, tryb edit)
 - `Input` (Shadcn/ui)
@@ -15,7 +18,9 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - `Toaster` (Sonner, globalny)
 
 ## 4. Szczegóły komponentów
+
 ### `EditPetPage`
+
 - Opis komponentu: Strona Astro renderująca formularz edycji z breadcrumbs i prefillowanymi danymi.
 - Główne elementy: `Layout`, breadcrumbs „Pulpit > [Imię] > Edytuj", `PetForm` z propem `mode="edit"` i `initialData`.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -24,6 +29,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - Propsy: brak.
 
 ### `PetForm` (tryb edit)
+
 - Opis komponentu: Reużywalny formularz React z trybem edycji. Prefillowany danymi zwierzęcia. Gatunek disabled.
 - Główne elementy:
   - `form` z `onSubmit`
@@ -47,20 +53,24 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - Propsy: `mode: "create" | "edit"`, `petId?: string`, `initialData?: GetPetResponseDto`, `onSuccess?: (petId: string) => void`.
 
 ### `Input` (Shadcn/ui)
+
 - Opis komponentu: Pole tekstowe dla imienia (jak w create).
 - Propsy: `value`, `onChange`, `onBlur`, `ref`, `autoFocus`, `maxLength`, `aria-invalid`, `aria-describedby`.
 
 ### `Select` (Shadcn/ui)
+
 - Opis komponentu: Dropdown gatunku (disabled w trybie edit).
 - Główne elementy: SelectTrigger, SelectContent, SelectItem (3 opcje).
 - Propsy: `value`, `onValueChange`, `disabled: true` (w trybie edit), `aria-invalid`.
 
 ### `Button` (Shadcn/ui)
+
 - Opis komponentu: Przyciski akcji.
 - Warianty: „Anuluj" (outline), „Zapisz" (default, disabled gdy invalid/submitting/unchanged).
 - Propsy: `type`, `variant`, `disabled`, `onClick`.
 
 ### `Toaster` (Sonner)
+
 - Opis komponentu: Globalny system toastów (jak w innych widokach).
 - Obsługiwane zdarzenia:
   - `toast.success("Zmiany zostały zapisane")` po 200
@@ -68,12 +78,15 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - Konfiguracja: bottom-right (desktop), bottom-center (mobile), auto-hide 3s (sukces) / 5s (błąd).
 
 ## 5. Typy
+
 ### Typy DTO (istniejące)
+
 - `UpdatePetCommand`: `Partial<Pick<TablesUpdate<"pets">, "name" | "species">>` — w praktyce tylko `{ name?: string }`
 - `GetPetResponseDto`: `{ id, animal_code, name, species, species_display, species_emoji, created_at, updated_at }`
 - `SpeciesType`: `"dog" | "cat" | "other"`
 
 ### Typy ViewModel (reużywalne z pet-add)
+
 - `PetFormViewModel`:
   - `name: string`
   - `species: SpeciesType | ""`
@@ -87,9 +100,11 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - `emoji: string`
 
 ### Stałe (reużywalne)
+
 - `SPECIES_OPTIONS: SpeciesOption[]`
 
 ### Nowe propsy dla PetForm
+
 - `PetFormProps`:
   - `mode: "create" | "edit"`
   - `petId?: string` (wymagane w trybie edit)
@@ -97,6 +112,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - `onSuccess?: (petId: string) => void`
 
 ## 6. Zarządzanie stanem
+
 - Stan lokalny w `PetForm` (useState):
   - `formData: PetFormViewModel` (initial z `initialData` w trybie edit)
   - `initialName: string` (do porównania czy dane się zmieniły)
@@ -116,7 +132,9 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - Przekierowanie do `/pets/[petId]` zamiast `/pets/[newPetId]`
 
 ## 7. Integracja API
+
 ### Endpoint 1: GET /api/pets/:petId (dla prefillu)
+
 - Opis: Pobieranie danych zwierzęcia do wypełnienia formularza.
 - Wywoływane: Server-side w Astro page LUB client-side w useEffect.
 - Typ odpowiedzi 200: `GetPetResponseDto`.
@@ -124,6 +142,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - Akcje frontendowe: Mapowanie na `formData` (initialData).
 
 ### Endpoint 2: PATCH /api/pets/:petId
+
 - Opis: Aktualizacja imienia zwierzęcia.
 - Request:
   - Headers: `{ "Content-Type": "application/json" }`
@@ -144,6 +163,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - Toast sukcesu + przekierowanie do `/pets/[petId]`
 
 ## 8. Interakcje użytkownika
+
 - Wejście na `/pets/[petId]/edit`:
   - Ładowanie danych zwierzęcia (skeleton lub loader).
   - Breadcrumbs: „Pulpit > [Imię] > Edytuj".
@@ -171,6 +191,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - Input font-size min 16px (zapobiega zoomowaniu na iOS).
 
 ## 9. Warunki i walidacja
+
 - Pole „Imię":
   - Wymagane (nie może być puste po trim).
   - Długość: 1-50 znaków po trim.
@@ -197,6 +218,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
   - Input/Select komfortowe do użycia palcem.
 
 ## 10. Obsługa błędów
+
 - 400 (walidacja):
   - Mapowanie błędów z API na pola formularza.
   - Toast: „Sprawdź poprawność danych".
@@ -227,6 +249,7 @@ Widok formularza edycji danych zwierzęcia. Umożliwia zmianę tylko imienia (ga
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
+
 1. Rozszerz `PetForm.tsx` o wsparcie dla trybu edit: dodaj propsy `mode`, `petId`, `initialData`, `onSuccess`.
 2. W trybie edit: prefilluj `formData` z `initialData`, ustaw gatunek jako disabled, dodaj computed `isUnchanged`.
 3. Zmień submit handler w `PetForm`: jeśli `mode === "edit"` -> PATCH `/api/pets/:petId`, jeśli `mode === "create"` -> POST `/api/pets`.
