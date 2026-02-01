@@ -8,6 +8,7 @@ declare global {
     type Runtime = import("@astrojs/cloudflare").Runtime<{
       SUPABASE_URL: string;
       SUPABASE_KEY: string;
+      SUPABASE_SERVICE_ROLE_KEY: string;
       DEBUG_ERRORS?: string;
     }>;
 

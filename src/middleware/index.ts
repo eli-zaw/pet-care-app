@@ -13,6 +13,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const env: Record<string, string | undefined> = {
       SUPABASE_URL: runtimeEnv?.SUPABASE_URL,
       SUPABASE_KEY: runtimeEnv?.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: runtimeEnv?.SUPABASE_SERVICE_ROLE_KEY,
       DEBUG_ERRORS: runtimeEnv?.DEBUG_ERRORS,
     };
     locals.env = env;
