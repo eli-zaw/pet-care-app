@@ -11,7 +11,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     // Get environment variables from Cloudflare runtime or build-time
     // In Cloudflare Pages/Workers, env is available through locals.runtime.env
-    // @ts-ignore - Cloudflare runtime provides this
+    // @ts-expect-error - Cloudflare runtime provides this
     const env = locals.runtime?.env || context.cloudflare?.env || {};
     console.log("Environment context:", {
       hasRuntime: !!locals.runtime,

@@ -6,7 +6,7 @@ export const prerender = false;
 export const POST: APIRoute = async (context) => {
   try {
     const { cookies, request } = context;
-    // @ts-ignore - Cloudflare runtime
+    // @ts-expect-error - Cloudflare runtime
     const env = context.locals.runtime?.env || {};
     const supabase = createSupabaseServerInstance({
       cookies,

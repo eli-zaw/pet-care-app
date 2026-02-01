@@ -16,10 +16,10 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
   });
 }
 
-export const createSupabaseServerInstance = (context: { 
-  headers: Headers; 
+export const createSupabaseServerInstance = (context: {
+  headers: Headers;
   cookies: AstroCookies;
-  env?: Record<string, any>;
+  env?: Record<string, string | undefined>;
 }) => {
   // W Cloudflare runtime, zmienne są dostępne przez context.env
   // W local development, używamy import.meta.env
@@ -32,8 +32,8 @@ export const createSupabaseServerInstance = (context: {
     keyPresent: !!supabaseKey,
     keyLength: supabaseKey?.length || 0,
     hasEnvContext: !!context.env,
-    envKeys: context.env ? Object.keys(context.env).filter(k => k.startsWith('SUPABASE')) : [],
-    importMetaEnvKeys: Object.keys(import.meta.env).filter(k => k.startsWith('SUPABASE')),
+    envKeys: context.env ? Object.keys(context.env).filter((k) => k.startsWith("SUPABASE")) : [],
+    importMetaEnvKeys: Object.keys(import.meta.env).filter((k) => k.startsWith("SUPABASE")),
   });
 
   // Sprawdź czy mamy prawidłowe credentials
@@ -46,8 +46,8 @@ export const createSupabaseServerInstance = (context: {
     });
     throw new Error(
       "Supabase credentials not configured. " +
-      "For local development, add SUPABASE_URL and SUPABASE_KEY to .env file. " +
-      "For Cloudflare Pages, add them in Settings -> Environment variables."
+        "For local development, add SUPABASE_URL and SUPABASE_KEY to .env file. " +
+        "For Cloudflare Pages, add them in Settings -> Environment variables."
     );
   }
 

@@ -7,9 +7,9 @@ export const prerender = false;
 export const POST: APIRoute = async (context) => {
   try {
     const { request, cookies } = context;
-    // @ts-ignore - Cloudflare runtime
+    // @ts-expect-error - Cloudflare runtime
     const env = context.locals.runtime?.env || {};
-    
+
     // Debug: sprawdź zmienne środowiskowe
     console.log("Environment check:", {
       hasRuntimeEnv: !!env,

@@ -24,7 +24,7 @@ export const POST: APIRoute = async (context) => {
 
     const { accessToken, newPassword } = validationResult.data;
 
-    // @ts-ignore - Cloudflare runtime
+    // @ts-expect-error - Cloudflare runtime
     const env = context.locals.runtime?.env || {};
     const supabase = createSupabaseServerInstance({ cookies, headers: request.headers, env });
 
