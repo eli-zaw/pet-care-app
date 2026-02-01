@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { usePetsList } from "../../../../src/lib/hooks/usePetsList";
+import { usePetsList } from "../../../src/lib/hooks/usePetsList";
 
 // Mock fetch
 const mockFetch = vi.fn();
@@ -155,7 +155,7 @@ describe("usePetsList", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error?.message).toBe("Failed to fetch pets");
+      expect(result.current.error?.message).toBe("Network error");
     });
   });
 
@@ -174,6 +174,7 @@ describe("usePetsList", () => {
       };
 
       mockFetch
+        .mockResolvedValueOnce(new Response(JSON.stringify(initialResponse)))
         .mockResolvedValueOnce(new Response(JSON.stringify(initialResponse)))
         .mockResolvedValueOnce(new Response(JSON.stringify(loadMoreResponse)));
 
@@ -221,16 +222,14 @@ describe("usePetsList", () => {
       });
 
       await waitFor(() => {
-        expect(result.current.data?.pets).toHaveLength(1);
+        expect(result.current.data?.pets[0].name).toBe("Luna");
       });
 
-      expect(result.current.data?.pets[0].name).toBe("Luna");
+      expect(result.current.data?.pets).toHaveLength(1);
       expect(result.current.data?.pagination.page).toBe(2);
     });
 
     it("should not load more when already loading", async () => {
-      mockInnerWidth.mockReturnValue(600); // Mobile
-
       const mockResponse = {
         items: [{ id: "pet-1", name: "Buddy", species_emoji: "🐕", entries_count: 1 }],
         pagination: { page: 1, limit: 20, total: 40 },

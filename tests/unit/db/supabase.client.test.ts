@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createSupabaseServerInstance } from "../../../../src/db/supabase.client";
+import { createSupabaseServerInstance } from "../../../src/db/supabase.client";
+import { createServerClient } from "@supabase/ssr";
+
+// Mock @supabase/ssr to capture the custom fetch passed to createServerClient
+vi.mock("@supabase/ssr", () => ({
+  createServerClient: vi.fn(() => ({})),
+}));
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -21,8 +27,7 @@ describe("createSupabaseServerInstance", () => {
 
   describe("Environment validation", () => {
     it("should throw error when SUPABASE_URL is missing", () => {
-      // Mock missing env
-      vi.stubEnv("SUPABASE_URL", undefined);
+      vi.stubEnv("SUPABASE_URL", "");
       vi.stubEnv("SUPABASE_KEY", "test-key");
 
       expect(() => {
@@ -36,7 +41,7 @@ describe("createSupabaseServerInstance", () => {
 
     it("should throw error when SUPABASE_KEY is missing", () => {
       vi.stubEnv("SUPABASE_URL", "https://test.supabase.co");
-      vi.stubEnv("SUPABASE_KEY", undefined);
+      vi.stubEnv("SUPABASE_KEY", "");
 
       expect(() => {
         createSupabaseServerInstance({
@@ -67,7 +72,6 @@ describe("createSupabaseServerInstance", () => {
       });
 
       expect(client).toBeDefined();
-      // Verify it uses context env over import.meta.env
     });
 
     it("should fallback to import.meta.env when context env missing", () => {
@@ -87,6 +91,12 @@ describe("createSupabaseServerInstance", () => {
       vi.stubEnv("SUPABASE_KEY", "test-key");
     });
 
+    function getCustomFetch() {
+      const mockCreate = vi.mocked(createServerClient);
+      const lastCall = mockCreate.mock.calls[mockCreate.mock.calls.length - 1];
+      return lastCall[2]?.global?.fetch;
+    }
+
     it("should add Authorization header for non-auth requests", async () => {
       mockFetch.mockResolvedValue(new Response());
 
@@ -97,19 +107,21 @@ describe("createSupabaseServerInstance", () => {
         accessToken: "test-token-123",
       });
 
-      // Simulate a request to pets table (not auth endpoint)
-      await mockFetch("https://test.supabase.co/rest/v1/pets", {
+      const customFetch = getCustomFetch();
+      expect(customFetch).toBeDefined();
+
+      // Call the custom fetch with a non-auth URL
+      await customFetch!("https://test.supabase.co/rest/v1/pets", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      expect(mockFetch).toHaveBeenCalledWith("https://test.supabase.co/rest/v1/pets", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer test-token-123",
-        },
-      });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://test.supabase.co/rest/v1/pets");
+      const headers = new Headers(init.headers);
+      expect(headers.get("Authorization")).toBe("Bearer test-token-123");
+      expect(headers.get("Content-Type")).toBe("application/json");
     });
 
     it("should not add Authorization header for auth endpoints", async () => {
@@ -122,19 +134,19 @@ describe("createSupabaseServerInstance", () => {
         accessToken: "test-token-123",
       });
 
-      // Simulate auth request
-      await mockFetch("https://test.supabase.co/auth/v1/token", {
+      const customFetch = getCustomFetch();
+      expect(customFetch).toBeDefined();
+
+      await customFetch!("https://test.supabase.co/auth/v1/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
-      expect(mockFetch).toHaveBeenCalledWith("https://test.supabase.co/auth/v1/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // No Authorization header should be added
-        },
-      });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      const headers = new Headers(init.headers);
+      expect(headers.get("Authorization")).toBeNull();
+      expect(headers.get("Content-Type")).toBe("application/json");
     });
 
     it("should merge existing headers with Authorization", async () => {
@@ -147,7 +159,10 @@ describe("createSupabaseServerInstance", () => {
         accessToken: "test-token-123",
       });
 
-      await mockFetch("https://test.supabase.co/rest/v1/pets", {
+      const customFetch = getCustomFetch();
+      expect(customFetch).toBeDefined();
+
+      await customFetch!("https://test.supabase.co/rest/v1/pets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,14 +170,12 @@ describe("createSupabaseServerInstance", () => {
         },
       });
 
-      expect(mockFetch).toHaveBeenCalledWith("https://test.supabase.co/rest/v1/pets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Custom-Header": "custom-value",
-          Authorization: "Bearer test-token-123",
-        },
-      });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      const headers = new Headers(init.headers);
+      expect(headers.get("Authorization")).toBe("Bearer test-token-123");
+      expect(headers.get("Content-Type")).toBe("application/json");
+      expect(headers.get("X-Custom-Header")).toBe("custom-value");
     });
   });
 

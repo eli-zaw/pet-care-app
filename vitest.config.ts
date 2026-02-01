@@ -26,6 +26,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "astro:middleware": path.resolve(__dirname, "./tests/setup/mocks/astro-middleware.ts"),
     },
+  },
+  esbuild: {
+    target: "node18",
   },
 });

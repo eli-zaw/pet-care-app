@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PetsList } from "../../../../src/components/PetsList";
-import type { PetCardViewModel, EmptyStateViewModel } from "../../../../src/types";
+import { PetsList } from "../../../src/components/PetsList";
+import type { PetCardViewModel, EmptyStateViewModel } from "../../../src/types";
 
 // Mock child components
-vi.mock("../../../../src/components/PetCard", () => ({
+vi.mock("../../../src/components/PetCard", () => ({
   PetCard: ({ pet, onOpen }: { pet: { id: string; name: string }; onOpen: (id: string) => void }) => (
     <button data-testid={`pet-card-${pet.id}`} onClick={() => onOpen(pet.id)}>
       {pet.name}
@@ -12,11 +12,11 @@ vi.mock("../../../../src/components/PetCard", () => ({
   ),
 }));
 
-vi.mock("../../../../src/components/SkeletonPetCard", () => ({
+vi.mock("../../../src/components/SkeletonPetCard", () => ({
   SkeletonPetCard: ({ count }: { count: number }) => <div data-testid="skeleton-pet-card" data-count={count} />,
 }));
 
-vi.mock("../../../../src/components/EmptyState", () => ({
+vi.mock("../../../src/components/EmptyState", () => ({
   EmptyState: ({ viewModel, onCta }: { viewModel: { title: string }; onCta: () => void }) => (
     <button data-testid="empty-state" onClick={onCta}>
       {viewModel.title}

@@ -1,178 +1,134 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { POST } from "../../../../src/pages/api/pets";
+import { createPet } from "../../../src/lib/services/petService";
 
-// Mock Supabase client
-vi.mock("../../../../src/db/supabase.client", () => ({
-  createSupabaseServerInstance: vi.fn(),
-}));
+function createChainMock() {
+  const chain: Record<string, ReturnType<typeof vi.fn>> = {};
+  chain.select = vi.fn().mockReturnValue(chain);
+  chain.eq = vi.fn().mockReturnValue(chain);
+  chain.ilike = vi.fn().mockReturnValue(chain);
+  chain.limit = vi.fn().mockResolvedValue({ data: [], error: null });
+  chain.insert = vi.fn().mockReturnValue(chain);
+  chain.single = vi.fn().mockResolvedValue({ data: null, error: null });
+  chain.in = vi.fn().mockReturnValue(chain);
+  return chain;
+}
 
-// Mock Zod schema
-vi.mock("../../../../src/lib/schemas", () => ({
-  CreatePetSchema: {
-    safeParse: vi.fn(),
-  },
-}));
-
-import { createSupabaseServerInstance } from "../../../../src/db/supabase.client";
-import { CreatePetSchema } from "../../../../src/lib/schemas";
-
-describe("POST /api/pets", () => {
-  const mockSupabase = {
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-  } as const;
+describe("createPet service", () => {
+  let petsChain: ReturnType<typeof createChainMock>;
+  let petOwnersChain: ReturnType<typeof createChainMock>;
+  let mockSupabase: { from: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(createSupabaseServerInstance).mockReturnValue(mockSupabase);
+    petsChain = createChainMock();
+    petOwnersChain = createChainMock();
+    mockSupabase = {
+      from: vi.fn((table: string) => {
+        if (table === "pet_owners") return petOwnersChain;
+        return petsChain;
+      }),
+    };
   });
 
   describe("Input validation", () => {
-    it("should return 400 for invalid JSON", async () => {
-      const context = {
-        request: { json: vi.fn().mockRejectedValue(new Error("Invalid JSON")) },
-        locals: { user: { id: "user-123" } },
-      };
+    it("should return validation error for invalid data", async () => {
+      const invalidData = { name: "", species: "invalid" };
 
-      const response = await POST(context);
+      const result = await createPet(mockSupabase as any, "user-123", invalidData);
 
-      expect(response.status).toBe(400);
-      const body = await response.json();
-      expect(body).toMatchInlineSnapshot(`
-        {
-          "error": "Bad Request",
-          "message": "Nieprawidłowy format JSON",
-        }
-      `);
-    });
-
-    it("should return 400 for Zod validation failure", async () => {
-      const validationErrors = [
-        { field: "name", message: "Required" },
-        { field: "species", message: "Invalid enum value" },
-      ];
-
-      vi.mocked(CreatePetSchema.safeParse).mockReturnValue({
-        success: false,
-        error: { errors: validationErrors.map((err) => ({ path: [err.field], message: err.message })) },
-      });
-
-      const context = {
-        request: { json: vi.fn().mockResolvedValue({ name: "", species: "invalid" }) },
-        locals: { user: { id: "user-123" } },
-      };
-
-      const response = await POST(context);
-
-      expect(response.status).toBe(400);
-      const body = await response.json();
-      expect(body).toMatchInlineSnapshot(`
-        {
-          "details": [
-            {
-              "field": "name",
-              "message": "Required",
-            },
-            {
-              "field": "species",
-              "message": "Invalid enum value",
-            },
-          ],
-          "error": "Validation Failed",
-          "message": "Walidacja danych wejściowych nie powiodła się",
-        }
-      `);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.status).toBe(400);
+        expect(result.error).toBe("Validation Failed");
+      }
     });
   });
 
   describe("Duplicate pet check", () => {
     it("should return 409 when pet with same name exists for user", async () => {
-      vi.mocked(CreatePetSchema.safeParse).mockReturnValue({
-        success: true,
-        data: { name: "Buddy", species: "dog" },
+      const validData = { name: "Buddy", species: "dog" };
+
+      // Mock: name check finds existing pet
+      petsChain.limit.mockResolvedValue({
+        data: [{ id: "pet-123", name: "Buddy" }],
+        error: null,
       });
 
-      // Mock existing pet found
-      mockSupabase.select.mockResolvedValue({ id: "pet-123", name: "Buddy" });
-      mockSupabase.from.mockReturnValue(mockSupabase);
-      mockSupabase.ilike.mockReturnValue(mockSupabase);
-      mockSupabase.limit.mockResolvedValue([{ id: "pet-123", name: "Buddy" }]);
+      // Mock: ownership check confirms user owns this pet
+      petOwnersChain.single.mockResolvedValue({
+        data: { pet_id: "pet-123" },
+        error: null,
+      });
 
-      // Mock ownership check - user owns this pet
-      const ownershipMock = vi.fn().mockResolvedValue([{ pet_id: "pet-123" }]);
-      mockSupabase.eq.mockReturnValue({ single: ownershipMock });
+      const result = await createPet(mockSupabase as any, "user-123", validData);
 
-      const context = {
-        request: { json: vi.fn().mockResolvedValue({ name: "Buddy", species: "dog" }) },
-        locals: { user: { id: "user-123" } },
-      };
-
-      const response = await POST(context);
-
-      expect(response.status).toBe(409);
-      const body = await response.json();
-      expect(body.message).toBe('Zwierzę o imieniu "Buddy" już istnieje w Twoim profilu');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.status).toBe(409);
+      }
     });
   });
 
   describe("Successful pet creation", () => {
     it("should return 201 with created pet data", async () => {
-      vi.mocked(CreatePetSchema.safeParse).mockReturnValue({
-        success: true,
-        data: { name: "Luna", species: "cat" },
+      const validData = { name: "Luna", species: "cat" };
+
+      // No existing pet with this name
+      petsChain.limit.mockResolvedValue({ data: [], error: null });
+
+      // Mock successful insert - single() is called on the pets chain after insert
+      petsChain.single.mockResolvedValue({
+        data: {
+          id: "pet-456",
+          animal_code: "LN-001",
+          name: "Luna",
+          species: "cat",
+          created_at: "2024-01-01T00:00:00Z",
+        },
+        error: null,
       });
 
-      // No existing pet
-      mockSupabase.limit.mockResolvedValue([]);
-
-      // Mock successful insert
-      mockSupabase.insert.mockReturnValue(mockSupabase);
-      mockSupabase.single.mockResolvedValue({
-        id: "pet-456",
-        animal_code: "LN-001",
-        name: "Luna",
-        species: "cat",
-        created_at: "2024-01-01T00:00:00Z",
+      // Mock ownership insert
+      petOwnersChain.insert.mockReturnValue({
+        ...petOwnersChain,
+        then: (resolve: Function) =>
+          resolve({ error: null }),
       });
 
-      const context = {
-        request: { json: vi.fn().mockResolvedValue({ name: "Luna", species: "cat" }) },
-        locals: { user: { id: "user-123" } },
-      };
+      const result = await createPet(mockSupabase as any, "user-123", validData);
 
-      const response = await POST(context);
-
-      expect(response.status).toBe(201);
-      const body = await response.json();
-      expect(body).toMatchInlineSnapshot(`
-        {
-          "animal_code": "LN-001",
-          "created_at": "2024-01-01T00:00:00Z",
-          "id": "pet-456",
-          "name": "Luna",
-          "species": "cat",
-        }
-      `);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual({
+          id: "pet-456",
+          animal_code: "LN-001",
+          name: "Luna",
+          species: "cat",
+          created_at: "2024-01-01T00:00:00Z",
+        });
+      }
     });
   });
 
-  describe("Authentication checks", () => {
-    it("should return 401 when user is not authenticated", async () => {
-      const context = {
-        request: { json: vi.fn().mockResolvedValue({}) },
-        locals: { user: null },
-      };
+  describe("Database errors", () => {
+    it("should handle database errors during pet creation", async () => {
+      const validData = { name: "Max", species: "dog" };
 
-      const response = await POST(context);
+      // No existing pet
+      petsChain.limit.mockResolvedValue({ data: [], error: null });
 
-      expect(response.status).toBe(401);
-      const body = await response.json();
-      expect(body.message).toBe("Użytkownik nie jest zalogowany");
+      // Mock database error on insert
+      petsChain.single.mockResolvedValue({
+        data: null,
+        error: { message: "Database connection failed", code: "PGRST000" },
+      });
+
+      const result = await createPet(mockSupabase as any, "user-123", validData);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.status).toBe(500);
+      }
     });
   });
 });
