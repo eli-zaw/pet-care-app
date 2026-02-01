@@ -1,27 +1,33 @@
 # Plan implementacji widoku: Resetowanie hasła - potwierdzenie nowego hasła
 
 ## 1. Przegląd
+
 Widok potwierdzenia nowego hasła umożliwia użytkownikom, którzy kliknęli link resetujący z emaila, ustawienie nowego hasła. Po pomyślnej zmianie hasła użytkownik jest przekierowywany do strony logowania z komunikatem sukcesu.
 
 ## 2. Routing widoku
+
 Ścieżka: `/reset-password/confirm` (publiczny, wymaga tokenu)
 
 Parametry URL:
+
 - `?token={reset_token}` - token resetujący z emaila (wymagany)
 - `?type=recovery` - typ akcji (Supabase Auth)
 
 Logika:
+
 - Brak tokenu: wyświetlenie błędu i link do `/reset-password`
 - Token nieprawidłowy/wygasły: wyświetlenie błędu po submicie
 - Token prawidłowy: formularz nowego hasła
 
 ## 3. Struktura komponentów
+
 - `ResetPasswordConfirmPage` (Astro page - `reset-password/confirm.astro`)
 - `ResetPasswordConfirmForm` (React component - `client:load`)
 
 ## 4. Szczegóły komponentów
 
 ### `ResetPasswordConfirmPage` (reset-password/confirm.astro)
+
 - Opis komponentu: Strona Astro renderująca formularz potwierdzenia nowego hasła z server-side ekstrakcją tokenu.
 - Główne elementy: `Layout` z `hideHeader={true}`, gradient background, `ResetPasswordConfirmForm` component.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -30,6 +36,7 @@ Logika:
 - Propsy: brak (top-level page).
 
 **Struktura:**
+
 ```astro
 ---
 import Layout from "@/layouts/Layout.astro";
@@ -46,13 +53,16 @@ if (!token || type !== "recovery") {
 ---
 
 <Layout title="Nowe hasło - Pet Care Companion" hideHeader>
-  <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900">
+  <div
+    class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900"
+  >
     <ResetPasswordConfirmForm client:load token={token} />
   </div>
 </Layout>
 ```
 
 ### `ResetPasswordConfirmForm` (ResetPasswordConfirmForm.tsx)
+
 - Opis komponentu: Formularz ustawiania nowego hasła z walidacją, potwierdzeniem hasła i komunikacją z API.
 - Główne elementy:
   - `Card` (Shadcn/ui): kontener formularza
@@ -72,6 +82,7 @@ if (!token || type !== "recovery") {
 - Propsy: `token: string` (z Astro page)
 
 **Interfejs props:**
+
 ```typescript
 interface ResetPasswordConfirmFormProps {
   token: string;
@@ -79,6 +90,7 @@ interface ResetPasswordConfirmFormProps {
 ```
 
 **Interfejs stanu:**
+
 ```typescript
 interface ResetPasswordConfirmFormState {
   password: string;
@@ -93,17 +105,22 @@ interface ResetPasswordConfirmFormState {
 ```
 
 **Kluczowe funkcje:**
+
 - `validatePassword(password: string): string | undefined` - sprawdza długość
 - `validateConfirmPassword(password: string, confirmPassword: string): string | undefined` - sprawdza zgodność
 - `handleSubmit(e: FormEvent): Promise<void>`
 
 ## 5. Typy
+
 Typy definiowane lokalnie w komponencie:
+
 - `ResetPasswordConfirmFormProps`
 - `ResetPasswordConfirmFormState`
 
 ## 6. Zarządzanie stanem
+
 Stan lokalny w komponencie `ResetPasswordConfirmForm`:
+
 - `formState: ResetPasswordConfirmFormState` - zawiera password, confirmPassword, isSubmitting, errors
 - `useState` dla zarządzania stanem formularza
 - Props `token` przekazywany z Astro page
@@ -111,7 +128,9 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ## 7. Integracja API
 
 ### Endpoint: PATCH /api/auth/reset-password/confirm
+
 **Request:**
+
 ```typescript
 {
   token: string;
@@ -120,6 +139,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ```
 
 **Response 200 OK:**
+
 ```json
 {
   "message": "Hasło zostało zmienione"
@@ -127,6 +147,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ```
 
 **Response 400 Bad Request (walidacja):**
+
 ```json
 {
   "message": "Hasło musi mieć minimum 8 znaków"
@@ -134,6 +155,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ```
 
 **Response 400 Bad Request (token):**
+
 ```json
 {
   "message": "Link resetujący wygasł lub jest nieprawidłowy"
@@ -141,6 +163,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ```
 
 **Response 500 Internal Server Error:**
+
 ```json
 {
   "message": "Wystąpił błąd podczas zmiany hasła"
@@ -148,6 +171,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ```
 
 **Akcje frontendowe:**
+
 - Wywołanie `fetch("/api/auth/reset-password/confirm", { method: "PATCH", body: { token, password } })`
 - Obsługa odpowiedzi 200: toast "Hasło zostało zmienione" + redirect `/login`
 - Obsługa błędów: toast + error message
@@ -155,22 +179,26 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ## 8. Interakcje użytkownika
 
 ### Wejście na `/reset-password/confirm?token=xxx&type=recovery`
+
 - System wyświetla formularz nowego hasła
 - Pola: nowe hasło, potwierdzenie hasła
 - Hint: "Minimum 8 znaków"
 - Przycisk "Zmień hasło"
 
 ### Wejście na `/reset-password/confirm` (bez tokenu)
+
 - System sprawdza brak tokenu server-side
 - Automatyczne przekierowanie do `/reset-password`
 
 ### Wypełnianie formularza
+
 - Wprowadzenie nowego hasła → walidacja on blur (długość)
 - Wprowadzenie potwierdzenia hasła → walidacja on blur (zgodność)
 - Błędy wyświetlane inline pod polami
 - Przycisk disabled gdy `isSubmitting`
 
 ### Submit formularza
+
 - Walidacja client-side
 - Sprawdzenie długości hasła
 - Sprawdzenie zgodności haseł
@@ -179,12 +207,14 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 - Podczas submitu: przycisk disabled, tekst "Zmienianie hasła..."
 
 ### Sukces zmiany hasła
+
 - Toast: "Hasło zostało zmienione" (zielony, 3s)
 - Automatyczne przekierowanie do `/login`
 - Użytkownik musi się zalogować nowym hasłem
 - **Uwaga:** Po zmianie hasła wszystkie aktywne sesje użytkownika pozostają aktywne (uproszczenie dla MVP, zgodnie z US-017)
 
 ### Błąd zmiany hasła
+
 - Token wygasł/nieprawidłowy:
   - Toast: "Link resetujący wygasł lub jest nieprawidłowy"
   - Error message: "Link resetujący wygasł. Wróć do formularza i wyślij nowy link."
@@ -195,12 +225,14 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
   - Przycisk aktywny ponownie
 
 ### Responsywność
+
 - Desktop (≥768px): Card max-w-md, centered
 - Mobile (<768px): Card pełna szerokość, przyciski pełna szerokość min 44x44px
 
 ## 9. Warunki i walidacja
 
 ### Walidacja nowego hasła
+
 - Wymagane: nie może być puste
 - Długość: minimum 8 znaków
 - Walidacja on blur
@@ -208,12 +240,14 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 - Hint pod polem: "Minimum 8 znaków"
 
 ### Walidacja potwierdzenia hasła
+
 - Wymagane: nie może być puste
 - Zgodność: musi być identyczne z nowym hasłem
 - Walidacja on blur
 - Error message: "Potwierdzenie hasła jest wymagane" lub "Hasła nie są identyczne"
 
 ### Walidacja przed submitem
+
 - Sprawdzenie obu pól
 - Sprawdzenie długości nowego hasła
 - Sprawdzenie zgodności haseł
@@ -221,6 +255,7 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 - Wyświetlenie error messages
 
 ### Accessibility
+
 - `Label` dla każdego pola
 - `type="password"` dla obu inputów
 - `aria-invalid` dla pól z błędami
@@ -231,27 +266,32 @@ Stan lokalny w komponencie `ResetPasswordConfirmForm`:
 ## 10. Obsługa błędów
 
 ### 400 Bad Request (walidacja hasła)
+
 - Toast: "Hasło musi mieć minimum 8 znaków"
 - Error message przy polu hasła
 - Przycisk aktywny ponownie
 
 ### 400 Bad Request (token wygasły/nieprawidłowy)
+
 - Toast: "Link resetujący wygasł lub jest nieprawidłowy"
 - Error message: "Link resetujący wygasł. Wróć do formularza i wyślij nowy link."
 - Link "Wyślij nowy link" → `/reset-password`
 - Wyłączenie formularza (disabled)
 
 ### 500 Internal Server Error
+
 - Toast: "Wystąpił błąd podczas zmiany hasła"
 - Error message ogólny
 - Przycisk aktywny ponownie
 
 ### Błąd sieci
+
 - Toast: "Brak połączenia. Sprawdź internet."
 - Error message ogólny
 - Przycisk aktywny ponownie
 
 ### Edge cases
+
 - Token wygasł (>1h) → 400 + komunikat o wygaśnięciu
 - Token już wykorzystany → 400 + komunikat o wygaśnięciu
 - Użytkownik wpisuje za krótkie hasło → client-side validation catch

@@ -1,27 +1,35 @@
 import { defineConfig } from "vitest/config";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const rootDir = dirname(fileURLToPath(import.meta.url));
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": resolve(rootDir, "src"),
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./tests/setup/vitest.setup.ts"],
+    globals: true,
+    include: ["tests/unit/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["node_modules", "dist", "tests/e2e"],
+    coverage: {
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "dist/", "tests/", "**/*.d.ts", "**/*.config.*", "src/env.d.ts", "src/types.ts"],
+      thresholds: {
+        global: {
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70,
+        },
+      },
     },
   },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: "./tests/setup/vitest.setup.ts",
-    include: ["src/**/*.test.{ts,tsx}", "tests/unit/**/*.test.{ts,tsx}"],
-    coverage: {
-      provider: "v8",
-      enabled: true,
-      reporter: ["text", "json", "lcov"],
-      exclude: ["node_modules/", "tests/e2e/", "src/types.ts"],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "astro:middleware": path.resolve(__dirname, "./tests/setup/mocks/astro-middleware.ts"),
     },
-    watch: !process.env.CI,
-    threads: true,
+  },
+  esbuild: {
+    target: "node18",
   },
 });

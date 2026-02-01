@@ -25,7 +25,6 @@
 - **Forgotten events** - important health incidents that fade from memory over time
 - **Time-consuming systems** - complex management tools that take too long to use
 
-
 ## 🛠 Tech Stack
 
 ### Frontend
@@ -48,17 +47,14 @@
 ### DevOps & Deployment
 
 - **[GitHub Actions](https://github.com/features/actions)** - CI/CD pipelines
-- **[DigitalOcean](https://www.digitalocean.com/)** - Application hosting via Docker containers
+- **[Cloudflare Pages](https://pages.cloudflare.com/)** - Serverless application hosting with edge functions
 
 ### Testing
 
 - **[Vitest](https://vitest.dev/)** - Fast unit testing framework with native ESM support
 - **[Testing Library](https://testing-library.com/)** - User-centric testing utilities for React components
-- **[Happy-dom](https://github.com/capricorn86/happy-dom)** - Fast DOM environment for unit tests
-- **[Playwright](https://playwright.dev/)** - End-to-end testing across multiple browsers
-- **[MSW](https://mswjs.io/)** (Mock Service Worker) - API mocking for integration tests
-- **[axe-core](https://github.com/dequelabs/axe-core)** - Automated accessibility testing (WCAG compliance)
-- **[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)** - Performance testing and Core Web Vitals monitoring
+- **[jsdom](https://github.com/jsdom/jsdom)** - DOM environment for unit tests
+- **[Playwright](https://playwright.dev/)** - End-to-end testing with Chromium
 
 ## 🚀 Getting Started Locally
 
@@ -101,30 +97,7 @@ SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_KEY=your-anon-public-key
 ```
 
-**🚨 CRITICAL: For Cloudflare Pages deployment**
-
-The application requires environment variables to be configured in Cloudflare Pages:
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Select **Workers & Pages**
-3. Find your project (`pet-care-app`)
-4. Click **Settings** → **Environment variables**
-5. Add the following variables for **Production** (and **Preview** if needed):
-   - Variable name: `SUPABASE_URL`
-     - Value: Your Supabase project URL (e.g., `https://xxxxxxxxxxxxx.supabase.co`)
-   - Variable name: `SUPABASE_KEY`
-     - Value: Your Supabase anon/public key
-
-6. **Save** and **redeploy** your application
-
-Without these environment variables, the application will fail with: `Error: supabaseUrl is required.`
-
-## ☁️ Deploying to Cloudflare Pages
-
-1. **GH Actions → Cloudflare** – każda zmiana na `main/master` uruchamia pipeline, który buduje Astro i wypycha artefakty do Cloudflare Pages (statyczne files + Edge Functions).
-2. **Variables w Cloudflare** – w zakładce **Projects → Environment variables** dodaj `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE` oraz ewentualne dodatkowe sekrety. Preview deployments mogą używać zmiennych z sufiksem `.preview`.
-3. **Preview deployments** – dla każdego PR Cloudflare generuje środowisko `https://<branch>.pet-care-app.pages.dev`. Użyj go do testowania integracji, weryfikacji RLS i działania Supabase Auth.
-4. **Monitoring/rollback** – logi Cloudflare Functions dostępne w dashboardzie, a historia deployów umożliwia szybki rollback w razie błędów (np. 500 od Supabase).
+**For Cloudflare Pages deployment:** Add `SUPABASE_URL` and `SUPABASE_KEY` in Cloudflare Dashboard → Workers & Pages → Settings → Environment variables
 
 5. **Start development server**
 
@@ -136,21 +109,22 @@ The application will be available at `http://localhost:4321`
 
 ## 📜 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot-reload |
-| `npm run build` | Build production-ready application |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint to check code quality |
-| `npm run lint:fix` | Fix auto-fixable ESLint errors |
-| `npm run format` | Format code with Prettier |
-| `npm run test` | Run unit and integration tests with Vitest |
-| `npm run test:watch` | Run Vitest in watch mode for iterative feedback |
-| `npm run test:unit` | Alias for `npm run test` to emphasize unit testing focus |
-| `npm run test:e2e` | Run end-to-end tests with Playwright |
-| `npm run test:e2e:headed` | Run Playwright in headed mode for debugging |
-| `npm run test:e2e:codegen` | Launch Playwright Codegen to record flows |
-| `npm run astro` | Run Astro CLI commands directly |
+| Script                     | Description                                              |
+| -------------------------- | -------------------------------------------------------- |
+| `npm run dev`              | Start development server with hot-reload                 |
+| `npm run build`            | Build production-ready application                       |
+| `npm run preview`          | Preview production build locally                         |
+| `npm run lint`             | Run ESLint to check code quality                         |
+| `npm run lint:fix`         | Fix auto-fixable ESLint errors                           |
+| `npm run format`           | Format code with Prettier                                |
+| `npm run test`             | Run unit and integration tests with Vitest               |
+| `npm run test:watch`       | Run Vitest in watch mode for iterative feedback          |
+| `npm run test:unit`        | Alias for `npm run test` to emphasize unit testing focus |
+| `npm run test:e2e`         | Run end-to-end tests with Playwright                     |
+| `npm run test:e2e:headed`  | Run Playwright in headed mode for debugging              |
+| `npm run test:e2e:codegen` | Launch Playwright Codegen to record flows                |
+| `npm run astro`            | Run Astro CLI commands directly                          |
+
 ## 🧪 Testing
 
 - **Unit + integration** – `npm run test` initializes the Vitest suite with `jsdom`, shared setup files, and coverage reports. Use `npm run test:watch` during development and `npm run test:unit` when you need an explicit unit-test run that mirrors `npm run test`.
@@ -183,18 +157,23 @@ npm run preview     # Test production build
 ### ✅ MVP Features (In Scope)
 
 **Authentication & Account Management**
+
 - User registration (email + password)
 - Login/logout functionality
+- Password reset via email
 - Session management via Supabase Auth
 - No email verification in MVP (instant account activation)
 
 **Pet Management**
+
 - Add pet (name + species: Dog, Cat, Other)
 - View pets list on dashboard (sorted alphabetically)
 - Pet profile with care history
+- Edit pet details
 - Delete pet (with cascade deletion of all entries)
 
 **Care Entry Management**
+
 - Add care entry with 6 categories:
   - 🏥 Veterinary visit
   - 💊 Medications & supplements
@@ -205,6 +184,7 @@ npm run preview     # Test production build
 - Required fields: category + date
 - Optional: notes (max 1000 characters)
 - View chronological history (newest first)
+- Edit care entries
 - Delete care entries
 
 ## 📊 Project Status

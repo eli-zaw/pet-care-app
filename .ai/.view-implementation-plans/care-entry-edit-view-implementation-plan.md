@@ -1,12 +1,15 @@
 # Plan implementacji widoku: Edytuj wpis opieki
 
 ## 1. Przegląd
+
 Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notatki istniejącego wpisu. Formularz prefillowany danymi wpisu. Po zapisie użytkownik wraca do profilu zwierzęcia. Jeśli zmieniono datę, wpis pojawia się w odpowiednim miejscu chronologicznym w historii.
 
 ## 2. Routing widoku
+
 Ścieżka: `/pets/[petId]/entries/[entryId]/edit` (chroniona przez middleware; użytkownik niezalogowany przekierowywany do logowania). Po sukcesie przekierowanie do `/pets/[petId]`. Anulowanie prowadzi do `/pets/[petId]`.
 
 ## 3. Struktura komponentów
+
 - `EditCareEntryPage` (Astro page, dynamiczna)
 - `CareEntryForm` (React, client:load, tryb edit)
 - `CategoryPicker` (React, reużywalny)
@@ -16,7 +19,9 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - `Toaster` (Sonner, globalny)
 
 ## 4. Szczegóły komponentów
+
 ### `EditCareEntryPage`
+
 - Opis komponentu: Strona Astro renderująca formularz edycji z breadcrumbs i prefillowanymi danymi.
 - Główne elementy: `Layout`, breadcrumbs „Pulpit > [Imię] > Edytuj wpis", `CareEntryForm` z propem `mode="edit"` i `initialData`.
 - Obsługiwane interakcje: brak (statyczna strona Astro).
@@ -25,6 +30,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - Propsy: brak.
 
 ### `CareEntryForm` (tryb edit)
+
 - Opis komponentu: Reużywalny formularz React z trybem edycji. Prefillowany danymi wpisu. Wszystkie pola edytowalne.
 - Główne elementy:
   - `form` z `onSubmit`
@@ -52,22 +58,27 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - Propsy: `mode: "create" | "edit"`, `petId: string`, `entryId?: string`, `initialData?: CareEntryDto`, `onSuccess?: () => void`.
 
 ### `CategoryPicker` (reużywalny)
+
 - Opis komponentu: Siatka 6 przycisków kategorii (jak w create). Prefillowany w trybie edit.
 - Propsy: `value: CareCategoryType | null`, `onChange`, `error?`.
 
 ### `DatePicker` (Shadcn/ui)
+
 - Opis komponentu: Kalendarz (jak w create). Prefillowany w trybie edit.
 - Propsy: `value: Date`, `onChange`, `error?`.
 
 ### `Textarea` (Shadcn/ui)
+
 - Opis komponentu: Pole notatki z licznikiem (jak w create). Prefillowane w trybie edit.
 - Propsy: `value: string`, `onChange`, `maxLength: 1000`, `error?`.
 
 ### `Button` (Shadcn/ui)
+
 - Opis komponentu: Przyciski akcji (jak w innych widokach).
 - Warianty: „Anuluj" (outline), „Zapisz" (default, disabled gdy invalid/submitting/unchanged).
 
 ### `Toaster` (Sonner)
+
 - Opis komponentu: Globalny system toastów (jak w innych widokach).
 - Obsługiwane zdarzenia:
   - `toast.success("Wpis został zaktualizowany")` po 200
@@ -75,13 +86,16 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - Konfiguracja: bottom-right (desktop), bottom-center (mobile), auto-hide 3s (sukces) / 5s (błąd).
 
 ## 5. Typy
+
 ### Typy DTO (istniejące i nowe)
+
 - `UpdateCareEntryCommand`: `Partial<Pick<TablesUpdate<"care_entries">, "category" | "entry_date" | "note">>` → `{ category?, entry_date?, note? }`
 - `UpdateCareEntryResponseDto` (nowy): `Pick<CareEntryDto, "id" | "pet_id" | "category" | "entry_date" | "note" | "created_at" | "updated_at"> & { category_display, category_emoji }`
 - `CareEntryDto`: dane wpisu bez pól soft delete
 - `CareCategoryType`: enum (jak w create)
 
 ### Typy ViewModel (reużywalne z care-entry-add)
+
 - `CareEntryFormViewModel`:
   - `category: CareCategoryType | null`
   - `entryDate: Date`
@@ -94,6 +108,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - `CareCategoryOption`: (reużywalne)
 
 ### Nowe propsy dla CareEntryForm
+
 - `CareEntryFormProps`:
   - `mode: "create" | "edit"`
   - `petId: string`
@@ -102,6 +117,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
   - `onSuccess?: () => void`
 
 ## 6. Zarządzanie stanem
+
 - Stan lokalny w `CareEntryForm` (useState):
   - `formData: CareEntryFormViewModel` (initial z `initialData` w trybie edit)
   - `initialFormData: CareEntryFormViewModel` (do porównania czy dane się zmieniły)
@@ -119,7 +135,9 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
   - Sprawdzenie `isUnchanged` przed wysłaniem (optymalizacja UX)
 
 ## 7. Integracja API
+
 ### Endpoint 1: GET /api/pets/:petId/care-entries/:entryId (dla prefillu)
+
 - Opis: Pobieranie danych wpisu do wypełnienia formularza.
 - Wywoływane: Server-side w Astro page LUB client-side w useEffect.
 - Typ odpowiedzi 200: `CareEntryDto` (z category_display, category_emoji).
@@ -127,6 +145,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - Akcje frontendowe: Mapowanie na `formData` (initialData).
 
 ### Endpoint 2: PATCH /api/pets/:petId/care-entries/:entryId
+
 - Opis: Aktualizacja wpisu opieki.
 - Request:
   - Headers: `{ "Content-Type": "application/json" }`
@@ -148,6 +167,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
   - Toast sukcesu + przekierowanie do `/pets/[petId]`
 
 ## 8. Interakcje użytkownika
+
 - Wejście na `/pets/[petId]/entries/[entryId]/edit`:
   - Ładowanie danych wpisu (skeleton lub loader).
   - Breadcrumbs: „Pulpit > [Imię] > Edytuj wpis".
@@ -178,6 +198,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
   - Identyczna jak w create (przyciski min 44x44px, siatka 2 kolumny, font-size 16px).
 
 ## 9. Warunki i walidacja
+
 - Pole „Kategoria":
   - Wymagane (jak w create).
   - Błąd: „Wybierz kategorię".
@@ -207,6 +228,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
   - Identyczna jak w create (min 44x44px touch targets).
 
 ## 10. Obsługa błędów
+
 - 400 (walidacja):
   - Mapowanie błędów z API na pola formularza.
   - Toast: „Sprawdź poprawność danych".
@@ -233,6 +255,7 @@ Widok formularza edycji wpisu opieki. Umożliwia zmianę kategorii, daty i notat
 - Logowanie: `console.error` z kontekstem (development).
 
 ## 11. Kroki implementacji
+
 1. Dodaj typ `UpdateCareEntryResponseDto` do `src/types.ts` (jeśli jeszcze nie istnieje).
 2. Rozszerz `CareEntryForm.tsx` o wsparcie dla trybu edit: dodaj propsy `mode`, `entryId`, `initialData`, `onSuccess`.
 3. W trybie edit: prefilluj `formData` z `initialData`, dodaj computed `isUnchanged`, zmień endpoint na PATCH.

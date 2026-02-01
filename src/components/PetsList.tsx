@@ -24,7 +24,11 @@ export function PetsList({ items, isLoading, isEmpty, emptyState, onPetOpen, onA
 
   // Empty state
   if (isEmpty && !isLoading) {
-    return <EmptyState viewModel={emptyState} onCta={onAddPet} data-testid="pets-list-empty" />;
+    return (
+      <div data-testid="pets-list-empty">
+        <EmptyState viewModel={emptyState} onCta={onAddPet} />
+      </div>
+    );
   }
 
   return (

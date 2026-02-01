@@ -1,12 +1,9 @@
 {
-    "mcpServers": {
-        "10x-mvp-tracker-latest": {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@przeprogramowani/10x-mvp-tracker@latest"
-            ],
-            "transport": "stdio"
-        }
+  "mcpServers": {
+    "10x-mvp-tracker-latest": {
+      "command": "npx",
+      "args": ["-y", "@przeprogramowani/10x-mvp-tracker@latest"],
+      "transport": "stdio"
     }
+  }
 }

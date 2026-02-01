@@ -1,25 +1,29 @@
 # API Endpoint Implementation Plan: DELETE /api/pets/:petId/care-entries/:entryId
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `deleted_at = NOW()`). Fizyczne dane pozostają w bazie, ale są niewidoczne w API. Musi sprawdzić że pet należy do użytkownika oraz że entry należy do wskazanego pet. Zwraca 204 No Content bez body.
 
 ## 2. Szczegóły żądania
+
 - Metoda HTTP: DELETE
 - Struktura URL: `/api/pets/:petId/care-entries/:entryId`
 - Parametry:
-  - Wymagane: 
+  - Wymagane:
     - `petId` (UUID) — identyfikator zwierzęcia
     - `entryId` (UUID) — identyfikator wpisu opieki do usunięcia
   - Opcjonalne: brak
 - Request Body: brak (metoda DELETE)
 
 ## 3. Wykorzystywane typy
+
 - Brak Command type (DELETE nie ma body)
 - Brak Response DTO (204 No Content nie zwraca body)
 - `CareEntryRow` (do typowania wewnętrznego, jeśli potrzebne)
 - Zod schema dla walidacji UUID (petId, entryId)
 
 ## 4. Szczegóły odpowiedzi
+
 - 204 No Content: wpis usunięty pomyślnie (brak body)
 - 400 Bad Request: nieprawidłowy UUID (walidacja wejścia nieudana)
 - 401 Unauthorized: brak sesji (przyszłość; MVP pomija)
@@ -28,6 +32,7 @@ Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `delet
 - 500 Internal Server Error: błąd serwera
 
 ## 5. Przepływ danych
+
 1. Handler `DELETE /api/pets/:petId/care-entries/:entryId` pobiera `supabase` z `context.locals`.
 2. Walidacja `petId` i `entryId` przez Zod (format UUID).
 3. Pobranie `user_id` z sesji Supabase; jeśli brak → 401 (przyszłość; MVP używa DEFAULT_USER_ID).
@@ -40,6 +45,7 @@ Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `delet
 10. Zwrócenie 204 No Content (bez body).
 
 ## 6. Względy bezpieczeństwa
+
 - Uwierzytelnienie przez Supabase Auth; w MVP używamy `DEFAULT_USER_ID`, docelowo wymagany zalogowany użytkownik (sprawdzenie sesji).
 - Autoryzacja realizowana przez sprawdzenie ownership pet przez `pet_owners` — użytkownik może usunąć tylko wpisy swoich zwierząt.
 - Walidacja danych wejściowych Zod na API (UUID format dla petId i entryId).
@@ -48,6 +54,7 @@ Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `delet
 - Soft delete zamiast fizycznego usunięcia — dane pozostają w bazie dla audytu.
 
 ## 7. Obsługa błędów
+
 - 400: niepoprawny `petId` lub `entryId` (nie UUID) — walidacja Zod.
 - 401: brak sesji użytkownika (przyszłość; MVP pomija ten błąd).
 - 403: pet istnieje i jest aktywny, ale należy do innego użytkownika (forbidden).
@@ -58,6 +65,7 @@ Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `delet
   - W przeciwnym razie `console.error` po stronie serwera.
 
 ## 8. Wydajność
+
 - Pojedynczy UPDATE zamiast fizycznego DELETE — szybsze.
 - Dwa osobne sprawdzenia: pet ownership, potem entry validation.
 - Indeksy na `care_entries.id`, `care_entries.pet_id`, `care_entries.is_deleted` wspierają szybki dostęp.
@@ -65,6 +73,7 @@ Endpoint wykonuje soft delete wpisu opieki (ustawia `is_deleted = true` i `delet
 - Brak potrzeby zwracania danych — 204 No Content oszczędza bandwidth.
 
 ## 9. Kroki implementacji
+
 1. Dodać handler `DELETE` w `src/pages/api/pets/[petId]/care-entries/[entryId].ts` z `export const prerender = false`.
 2. Zdefiniować Zod schema dla `petId` i `entryId` (UUID validation).
 3. W handlerze pobrać `supabase` z `context.locals` i sprawdzić sesję użytkownika (MVP: DEFAULT_USER_ID).

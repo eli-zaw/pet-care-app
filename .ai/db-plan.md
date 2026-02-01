@@ -10,6 +10,7 @@
 ## 1. Typy wyliczeniowe (ENUMs)
 
 ### species_type
+
 Typ wyliczeniowy dla gatunków zwierząt.
 
 ```sql
@@ -17,6 +18,7 @@ CREATE TYPE species_type AS ENUM ('dog', 'cat', 'other');
 ```
 
 ### care_category_type
+
 Typ wyliczeniowy dla kategorii wpisów opieki.
 
 ```sql
@@ -38,26 +40,30 @@ CREATE TYPE care_category_type AS ENUM (
 
 Tabela przechowująca rozszerzone dane użytkowników. Tworzona automatycznie przez trigger po rejestracji w auth.users.
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| id | UUID | PRIMARY KEY | Klucz główny, zgodny z auth.users.id |
-| email | TEXT | NOT NULL | Email użytkownika (kopian z auth) |
-| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia profilu |
-| updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej aktualizacji |
+| Kolumna    | Typ         | Ograniczenia           | Opis                                 |
+| ---------- | ----------- | ---------------------- | ------------------------------------ |
+| id         | UUID        | PRIMARY KEY            | Klucz główny, zgodny z auth.users.id |
+| email      | TEXT        | NOT NULL               | Email użytkownika (kopian z auth)    |
+| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia profilu              |
+| updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej aktualizacji          |
 
 **Klucze obce:**
+
 - `id` REFERENCES `auth.users(id)` ON DELETE CASCADE
 
 **Indeksy:**
+
 - PRIMARY KEY na `id`
 - INDEX na `email` (dla szybkiego wyszukiwania)
 
 **RLS:**
+
 - Włączone (ENABLE ROW LEVEL SECURITY)
 - Policy SELECT: użytkownik widzi tylko swój profil (`auth.uid() = id`)
 - Policy UPDATE: użytkownik może aktualizować tylko swój profil (`auth.uid() = id`)
 
 **Uwagi:**
+
 - Tabela przygotowana pod przyszłe rozszerzenia (imię, nazwisko, preferencje)
 - W MVP zawiera minimum informacji
 
@@ -67,24 +73,26 @@ Tabela przechowująca rozszerzone dane użytkowników. Tworzona automatycznie pr
 
 Główna tabela przechowująca dane zwierząt.
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Klucz główny |
-| animal_code | TEXT | UNIQUE NOT NULL | 8-znakowy unikalny kod zwierzęcia |
-| name | TEXT | NOT NULL CHECK (LENGTH(TRIM(name)) BETWEEN 1 AND 50) | Imię zwierzęcia (1-50 znaków) |
-| species | species_type | NOT NULL | Gatunek (dog, cat, other) |
-| is_deleted | BOOLEAN | NOT NULL DEFAULT FALSE | Flaga Soft Delete |
-| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia |
-| updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej aktualizacji |
-| deleted_at | TIMESTAMPTZ | NULL | Data usunięcia (NULL jeśli aktywne) |
+| Kolumna     | Typ          | Ograniczenia                                         | Opis                                |
+| ----------- | ------------ | ---------------------------------------------------- | ----------------------------------- |
+| id          | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                | Klucz główny                        |
+| animal_code | TEXT         | UNIQUE NOT NULL                                      | 8-znakowy unikalny kod zwierzęcia   |
+| name        | TEXT         | NOT NULL CHECK (LENGTH(TRIM(name)) BETWEEN 1 AND 50) | Imię zwierzęcia (1-50 znaków)       |
+| species     | species_type | NOT NULL                                             | Gatunek (dog, cat, other)           |
+| is_deleted  | BOOLEAN      | NOT NULL DEFAULT FALSE                               | Flaga Soft Delete                   |
+| created_at  | TIMESTAMPTZ  | NOT NULL DEFAULT NOW()                               | Data utworzenia                     |
+| updated_at  | TIMESTAMPTZ  | NOT NULL DEFAULT NOW()                               | Data ostatniej aktualizacji         |
+| deleted_at  | TIMESTAMPTZ  | NULL                                                 | Data usunięcia (NULL jeśli aktywne) |
 
 **Indeksy:**
+
 - PRIMARY KEY na `id`
 - UNIQUE INDEX na `animal_code`
 - Partial UNIQUE INDEX na `LOWER(TRIM(name)), owner_id` WHERE `is_deleted = FALSE` (unikalność imienia per właściciel, tylko dla aktywnych)
 - INDEX na `(is_deleted, created_at)` (dla listy aktywnych zwierząt, sortowanie)
 
 **RLS:**
+
 - Włączone (ENABLE ROW LEVEL SECURITY)
 - Policy SELECT: użytkownik widzi tylko swoje zwierzęta przez pet_owners (`id IN (SELECT pet_id FROM pet_owners WHERE user_id = auth.uid())`)
 - Policy INSERT: użytkownik może dodać zwierzę (automatycznie przypisywane przez trigger)
@@ -92,12 +100,14 @@ Główna tabela przechowująca dane zwierząt.
 - Policy DELETE: użytkownik może usuwać tylko swoje zwierzęta (faktycznie: Soft Delete)
 
 **Triggery:**
+
 - `trigger_generate_animal_code` BEFORE INSERT: generuje unikalny 8-znakowy kod
 - `trigger_trim_pet_name` BEFORE INSERT/UPDATE: czyści imię (trim whitespace)
 - `trigger_set_updated_at` BEFORE UPDATE: aktualizuje updated_at
 - `trigger_soft_delete_pet` AFTER UPDATE: kaskadowe soft delete wpisów przy is_deleted = TRUE
 
 **Uwagi:**
+
 - W MVP brak pól: gender, breed, birth_date, weight, chip_number, avatar_url, metadata
 - Kolumny przygotowane do przyszłej rozbudowy
 
@@ -107,34 +117,39 @@ Główna tabela przechowująca dane zwierząt.
 
 Tabela pośrednia łącząca użytkowników ze zwierzętami. W MVP wymusza jednego właściciela, ale projektowo umożliwia współdzielenie w przyszłości.
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Klucz główny |
-| pet_id | UUID | NOT NULL | Referencja do zwierzęcia |
-| user_id | UUID | NOT NULL | Referencja do użytkownika (profiles) |
-| role | TEXT | NOT NULL DEFAULT 'owner' | Rola użytkownika (owner, co-owner, viewer) |
-| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data przypisania |
+| Kolumna    | Typ         | Ograniczenia                          | Opis                                       |
+| ---------- | ----------- | ------------------------------------- | ------------------------------------------ |
+| id         | UUID        | PRIMARY KEY DEFAULT gen_random_uuid() | Klucz główny                               |
+| pet_id     | UUID        | NOT NULL                              | Referencja do zwierzęcia                   |
+| user_id    | UUID        | NOT NULL                              | Referencja do użytkownika (profiles)       |
+| role       | TEXT        | NOT NULL DEFAULT 'owner'              | Rola użytkownika (owner, co-owner, viewer) |
+| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                | Data przypisania                           |
 
 **Klucze obce:**
+
 - `pet_id` REFERENCES `pets(id)` ON DELETE CASCADE
 - `user_id` REFERENCES `profiles(id)` ON DELETE CASCADE
 
 **Indeksy:**
+
 - PRIMARY KEY na `id`
 - UNIQUE INDEX na `(pet_id, user_id)` (jeden użytkownik może być przypisany do zwierzęcia tylko raz)
 - INDEX na `user_id` (dla szybkiego filtrowania zwierząt użytkownika)
 - INDEX na `pet_id` (dla weryfikacji właścicielstwa)
 
 **RLS:**
+
 - Włączone (ENABLE ROW LEVEL SECURITY)
 - Policy SELECT: użytkownik widzi tylko swoje relacje (`user_id = auth.uid()`)
 - Policy INSERT: automatyczne przez trigger (nie bezpośrednie INSERT)
 - Policy DELETE: tylko owner może usunąć relację
 
 **Triggery:**
+
 - `trigger_create_pet_owner` AFTER INSERT na pets: automatycznie tworzy relację z twórcą zwierzęcia
 
 **Uwagi:**
+
 - W MVP zawsze `role = 'owner'` i jeden właściciel per zwierzę
 - Kolumna `role` przygotowana pod przyszłe funkcje współdzielenia
 
@@ -144,28 +159,31 @@ Tabela pośrednia łącząca użytkowników ze zwierzętami. W MVP wymusza jedne
 
 Tabela przechowująca wpisy opieki nad zwierzętami.
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| id | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Klucz główny |
-| pet_id | UUID | NOT NULL | Referencja do zwierzęcia |
-| category | care_category_type | NOT NULL | Kategoria wpisu |
-| entry_date | DATE | NOT NULL | Data zdarzenia (możliwa przeszłość/przyszłość) |
-| note | TEXT | NULL CHECK (note IS NULL OR LENGTH(note) <= 1000) | Notatka opcjonalna (max 1000 znaków) |
-| is_deleted | BOOLEAN | NOT NULL DEFAULT FALSE | Flaga Soft Delete |
-| created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia wpisu |
-| updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej aktualizacji |
-| deleted_at | TIMESTAMPTZ | NULL | Data usunięcia (NULL jeśli aktywny) |
+| Kolumna    | Typ                | Ograniczenia                                      | Opis                                           |
+| ---------- | ------------------ | ------------------------------------------------- | ---------------------------------------------- |
+| id         | UUID               | PRIMARY KEY DEFAULT gen_random_uuid()             | Klucz główny                                   |
+| pet_id     | UUID               | NOT NULL                                          | Referencja do zwierzęcia                       |
+| category   | care_category_type | NOT NULL                                          | Kategoria wpisu                                |
+| entry_date | DATE               | NOT NULL                                          | Data zdarzenia (możliwa przeszłość/przyszłość) |
+| note       | TEXT               | NULL CHECK (note IS NULL OR LENGTH(note) <= 1000) | Notatka opcjonalna (max 1000 znaków)           |
+| is_deleted | BOOLEAN            | NOT NULL DEFAULT FALSE                            | Flaga Soft Delete                              |
+| created_at | TIMESTAMPTZ        | NOT NULL DEFAULT NOW()                            | Data utworzenia wpisu                          |
+| updated_at | TIMESTAMPTZ        | NOT NULL DEFAULT NOW()                            | Data ostatniej aktualizacji                    |
+| deleted_at | TIMESTAMPTZ        | NULL                                              | Data usunięcia (NULL jeśli aktywny)            |
 
 **Klucze obce:**
+
 - `pet_id` REFERENCES `pets(id)` ON DELETE CASCADE
 
 **Indeksy:**
+
 - PRIMARY KEY na `id`
 - INDEX na `(pet_id, is_deleted, entry_date DESC)` (główny indeks dla historii - sortowanie chronologiczne)
 - INDEX na `(pet_id, is_deleted, category)` (dla przyszłego filtrowania po kategorii)
 - INDEX na `entry_date` (dla przyszłych zakresów dat)
 
 **RLS:**
+
 - Włączone (ENABLE ROW LEVEL SECURITY)
 - Policy SELECT: użytkownik widzi tylko wpisy swoich zwierząt (`pet_id IN (SELECT pet_id FROM pet_owners WHERE user_id = auth.uid())`)
 - Policy INSERT: użytkownik może dodać wpis do swoich zwierząt
@@ -173,9 +191,11 @@ Tabela przechowująca wpisy opieki nad zwierzętami.
 - Policy DELETE: użytkownik może usuwać tylko wpisy swoich zwierząt (faktycznie: Soft Delete)
 
 **Triggery:**
+
 - `trigger_set_updated_at` BEFORE UPDATE: aktualizuje updated_at
 
 **Uwagi:**
+
 - W MVP brak pól: title, cost, attachments
 - entry_date to DATE (nie TIMESTAMPTZ), bo godzina zdarzenia nie jest istotna w MVP
 - Kolumny przygotowane do przyszłej rozbudowy
@@ -192,17 +212,17 @@ Widok dla dashboardu - lista zwierząt z liczbą wpisów i emoji gatunku.
 
 ```sql
 CREATE VIEW v_pets_summary AS
-SELECT 
+SELECT
   p.id,
   p.animal_code,
   p.name,
   p.species,
-  CASE 
+  CASE
     WHEN p.species = 'dog' THEN '🐕'
     WHEN p.species = 'cat' THEN '🐱'
     ELSE '🐾'
   END AS species_emoji,
-  CASE 
+  CASE
     WHEN p.species = 'dog' THEN 'Pies'
     WHEN p.species = 'cat' THEN 'Kot'
     ELSE 'Inne'
@@ -218,6 +238,7 @@ ORDER BY LOWER(p.name) ASC;
 ```
 
 **Pola zwracane:**
+
 - `id` (UUID) - identyfikator zwierzęcia
 - `animal_code` (TEXT) - unikalny kod
 - `name` (TEXT) - imię
@@ -239,11 +260,11 @@ Widok dla profilu zwierzęcia - historia wpisów ze sformatowanymi danymi.
 
 ```sql
 CREATE VIEW v_care_history AS
-SELECT 
+SELECT
   ce.id,
   ce.pet_id,
   ce.category,
-  CASE 
+  CASE
     WHEN ce.category = 'vet_visit' THEN '🏥'
     WHEN ce.category = 'medication' THEN '💊'
     WHEN ce.category = 'grooming' THEN '✂️'
@@ -251,7 +272,7 @@ SELECT
     WHEN ce.category = 'health_event' THEN '🩹'
     WHEN ce.category = 'note' THEN '📝'
   END AS category_emoji,
-  CASE 
+  CASE
     WHEN ce.category = 'vet_visit' THEN 'Wizyta u weterynarza'
     WHEN ce.category = 'medication' THEN 'Leki i suplementy'
     WHEN ce.category = 'grooming' THEN 'Groomer/fryzjer'
@@ -262,7 +283,7 @@ SELECT
   ce.entry_date,
   TO_CHAR(ce.entry_date, 'DD.MM.YYYY') AS entry_date_formatted,
   ce.note,
-  CASE 
+  CASE
     WHEN ce.note IS NULL OR LENGTH(ce.note) <= 100 THEN ce.note
     ELSE LEFT(ce.note, 100) || '...'
   END AS note_preview,
@@ -275,6 +296,7 @@ ORDER BY ce.entry_date DESC, ce.created_at DESC;
 ```
 
 **Pola zwracane:**
+
 - `id` (UUID) - identyfikator wpisu
 - `pet_id` (UUID) - identyfikator zwierzęcia
 - `category` (care_category_type) - kategoria (techniczna)
@@ -340,14 +362,14 @@ BEGIN
     FOR i IN 1..8 LOOP
       result := result || substr(chars, floor(random() * length(chars) + 1)::int, 1);
     END LOOP;
-    
+
     SELECT EXISTS(SELECT 1 FROM pets WHERE animal_code = result) INTO code_exists;
-    
+
     IF NOT code_exists THEN
       EXIT;
     END IF;
   END LOOP;
-  
+
   RETURN result;
 END;
 $$ LANGUAGE plpgsql;
@@ -454,7 +476,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.is_deleted = TRUE AND OLD.is_deleted = FALSE THEN
     UPDATE care_entries
-    SET 
+    SET
       is_deleted = TRUE,
       deleted_at = NOW()
     WHERE pet_id = NEW.id AND is_deleted = FALSE;
@@ -502,8 +524,8 @@ CREATE POLICY pets_select_policy ON pets
   FOR SELECT
   USING (
     id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -519,8 +541,8 @@ CREATE POLICY pets_update_policy ON pets
   FOR UPDATE
   USING (
     id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -531,8 +553,8 @@ CREATE POLICY pets_delete_policy ON pets
   FOR DELETE
   USING (
     id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -571,8 +593,8 @@ CREATE POLICY care_entries_select_policy ON care_entries
   FOR SELECT
   USING (
     pet_id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -582,8 +604,8 @@ CREATE POLICY care_entries_insert_policy ON care_entries
   FOR INSERT
   WITH CHECK (
     pet_id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -593,8 +615,8 @@ CREATE POLICY care_entries_update_policy ON care_entries
   FOR UPDATE
   USING (
     pet_id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -604,8 +626,8 @@ CREATE POLICY care_entries_delete_policy ON care_entries
   FOR DELETE
   USING (
     pet_id IN (
-      SELECT pet_id 
-      FROM pet_owners 
+      SELECT pet_id
+      FROM pet_owners
       WHERE user_id = auth.uid()
     )
   );
@@ -639,7 +661,7 @@ CREATE UNIQUE INDEX idx_pets_animal_code ON pets(animal_code);
 -- Unikalność imienia per właściciel (tylko aktywne, case-insensitive)
 -- Wymaga rozwinięcia przez pet_owners - implementacja w migracji
 CREATE UNIQUE INDEX idx_pets_unique_name_per_owner ON pets(
-  LOWER(TRIM(name)), 
+  LOWER(TRIM(name)),
   (SELECT user_id FROM pet_owners WHERE pet_id = pets.id LIMIT 1)
 ) WHERE is_deleted = FALSE;
 
@@ -679,16 +701,16 @@ CREATE UNIQUE INDEX care_entries_pkey ON care_entries(id);
 
 -- Główny indeks dla historii (sortowanie chronologiczne)
 CREATE INDEX idx_care_entries_history ON care_entries(
-  pet_id, 
-  is_deleted, 
-  entry_date DESC, 
+  pet_id,
+  is_deleted,
+  entry_date DESC,
   created_at DESC
 ) WHERE is_deleted = FALSE;
 
 -- Przyszłe filtrowanie po kategorii
 CREATE INDEX idx_care_entries_category ON care_entries(
-  pet_id, 
-  is_deleted, 
+  pet_id,
+  is_deleted,
   category
 ) WHERE is_deleted = FALSE;
 
@@ -716,6 +738,7 @@ care_entries (public)
 ```
 
 **Kardynalność:**
+
 - `auth.users` → `profiles`: 1:1 (jeden użytkownik = jeden profil)
 - `profiles` → `pet_owners`: 1:N (jeden użytkownik może mieć wiele zwierząt)
 - `pet_owners` → `pets`: N:1 (wiele relacji własnościowych dla jednego zwierzęcia - przygotowanie pod współdzielenie)
@@ -730,6 +753,7 @@ care_entries (public)
 **Decyzja:** Wszystkie główne tabele (pets, care_entries) używają flagi `is_deleted` zamiast fizycznego usuwania.
 
 **Uzasadnienie:**
+
 - Umożliwia przyszłe odzyskiwanie danych (po rozszerzeniu MVP)
 - Zachowuje integralność historyczną
 - Ułatwia audyt i diagnostykę
@@ -742,6 +766,7 @@ care_entries (public)
 **Decyzja:** Logika emoji, tłumaczeń i skracania notatek przeniesiona do widoków SQL.
 
 **Uzasadnienie:**
+
 - Odciąża frontend z logiki prezentacji
 - Jeden źródłowy punkt prawdy dla formatowania
 - Łatwiejsze utrzymanie i zmiany w wyświetlaniu
@@ -754,6 +779,7 @@ care_entries (public)
 **Decyzja:** Wszystkie tabele używają UUID zamiast AUTO_INCREMENT INTEGER.
 
 **Uzasadnienie:**
+
 - Bezpieczniejsze (nie da się odgadnąć ID innych użytkowników)
 - Umożliwia generowanie ID po stronie klienta (offline mode w przyszłości)
 - Skalowalne (brak konfliktów przy replikacji)
@@ -766,6 +792,7 @@ care_entries (public)
 **Decyzja:** Wprowadzenie tabeli pośredniej zamiast bezpośredniego `owner_id` w `pets`.
 
 **Uzasadnienie:**
+
 - Przygotowanie pod przyszłe współdzielenie zwierząt między użytkownikami
 - Możliwość definiowania ról (owner, co-owner, viewer)
 - W MVP wymusza jednego właściciela, ale nie blokuje przyszłej rozbudowy
@@ -778,6 +805,7 @@ care_entries (public)
 **Decyzja:** Pole `entry_date` w `care_entries` to DATE, nie TIMESTAMPTZ.
 
 **Uzasadnienie:**
+
 - W MVP godzina zdarzenia nie jest istotna
 - Upraszcza UI (date picker zamiast datetime picker)
 - Ułatwia grupowanie po dniach
@@ -790,6 +818,7 @@ care_entries (public)
 **Decyzja:** Użycie indeksów warunkowych z `WHERE is_deleted = FALSE`.
 
 **Uzasadnienie:**
+
 - Optymalizacja: indeksy pomijają usunięte rekordy
 - Mniejszy rozmiar indeksów
 - Szybsze zapytania (99% przypadków dotyczy aktywnych rekordów)
@@ -802,6 +831,7 @@ care_entries (public)
 **Decyzja:** Wszystkie nazwy w snake_case (pets, care_entries, entry_date).
 
 **Uzasadnienie:**
+
 - Konwencja PostgreSQL i Supabase
 - Unika problemów z case-sensitivity
 - Lepsza czytelność w SQL queries
@@ -814,6 +844,7 @@ care_entries (public)
 **Decyzja:** Walidacja długości imienia i notatki na poziomie bazy danych.
 
 **Uzasadnienie:**
+
 - Integralność danych niezależnie od źródła zapisu (API, direct access, migrations)
 - Lepsza wydajność niż walidacja aplikacyjna
 - Spójność reguł biznesowych
@@ -826,6 +857,7 @@ care_entries (public)
 **Decyzja:** Wszystkie tabele mają `created_at` i `updated_at` z automatyczną aktualizacją.
 
 **Uzasadnienie:**
+
 - Audyt zmian
 - Sortowanie chronologiczne
 - Przyszłe features (np. "ostatnio zmodyfikowane")
@@ -838,6 +870,7 @@ care_entries (public)
 **Decyzja:** Wszystkie polityki RLS korzystają z funkcji `auth.uid()` Supabase.
 
 **Uzasadnienie:**
+
 - Pełna izolacja danych użytkowników
 - Bezpieczeństwo na poziomie bazy (nie tylko aplikacji)
 - Niemożliwe obejście przez błąd w kodzie frontendu
@@ -865,12 +898,14 @@ care_entries (public)
 ### Kolumny zarezerwowane (do dodania w przyszłych wersjach):
 
 **profiles:**
+
 - `first_name TEXT`
 - `last_name TEXT`
 - `avatar_url TEXT`
 - `preferences JSONB`
 
 **pets:**
+
 - `gender gender_type` (ENUM: male, female, unknown)
 - `breed TEXT`
 - `birth_date DATE`
@@ -880,6 +915,7 @@ care_entries (public)
 - `metadata JSONB`
 
 **care_entries:**
+
 - `title TEXT` (krótki tytuł wpisu)
 - `cost DECIMAL(10,2)` (koszt wizyty/usługi)
 - `attachments JSONB` (array URL-i do Storage)
@@ -902,18 +938,21 @@ care_entries (public)
 ### Oczekiwane zapytania (query patterns):
 
 1. **Dashboard użytkownika:**
+
    ```sql
    SELECT * FROM v_pets_summary;
    -- Indeks: idx_pets_active_sorted
    ```
 
 2. **Profil zwierzęcia:**
+
    ```sql
    SELECT * FROM pets WHERE id = $1 AND is_deleted = FALSE;
    -- PK lookup
    ```
 
 3. **Historia wpisów:**
+
    ```sql
    SELECT * FROM v_care_history WHERE pet_id = $1 ORDER BY entry_date DESC LIMIT 50;
    -- Indeks: idx_care_entries_history
