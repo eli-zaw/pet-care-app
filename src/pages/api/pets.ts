@@ -31,8 +31,21 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    // Step 1: Get supabase client from context.locals
+    // Step 1: Use the Supabase client from middleware (it already has accessToken for RLS)
     const { supabase } = locals;
+
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: "Internal Error",
+          message: "Supabase client nie został zainicjalizowany",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // Step 1.5: Check if user is authenticated
     if (!locals.user) {
@@ -303,8 +316,55 @@ const PetsListQuerySchema = z.object({
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Step 1: Get supabase client from context.locals
+    // Step 1: Use the Supabase client from middleware (it already has accessToken for RLS)
     const { supabase } = locals;
+
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: "Internal Error",
+          message: "Supabase client nie został zainicjalizowany",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // DEBUG: Check if session is available and decode JWT claims
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    
+    let jwtClaims: any = null;
+    if (session?.access_token) {
+      try {
+        // Decode JWT payload (it's base64url encoded, middle part between dots)
+        const parts = session.access_token.split(".");
+        if (parts.length === 3) {
+          const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+          jwtClaims = JSON.parse(atob(payload));
+        }
+      } catch (e) {
+        console.error("Failed to decode JWT:", e);
+      }
+    }
+    
+    console.log("POST /api/pets - Session check:", {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      accessTokenPresent: !!session?.access_token,
+      accessTokenLength: session?.access_token?.length,
+      jwtClaims: jwtClaims ? {
+        sub: jwtClaims.sub,
+        role: jwtClaims.role,
+        aud: jwtClaims.aud,
+        exp: jwtClaims.exp,
+        expiredAt: jwtClaims.exp ? new Date(jwtClaims.exp * 1000).toISOString() : null,
+        isExpired: jwtClaims.exp ? Date.now() > jwtClaims.exp * 1000 : null,
+      } : null,
+    });
 
     // Step 1.5: Check if user is authenticated
     if (!locals.user) {

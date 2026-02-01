@@ -4,25 +4,21 @@ import type { SupabaseClient } from "./db/supabase.client";
 
 declare global {
   namespace App {
-    interface Locals {
-      supabase: SupabaseClient;
+    // Cloudflare runtime types
+    type Runtime = import("@astrojs/cloudflare").Runtime<{
+      SUPABASE_URL: string;
+      SUPABASE_KEY: string;
+      DEBUG_ERRORS?: string;
+    }>;
+
+    interface Locals extends Runtime {
+      supabase: SupabaseClient | null;
+      user: {
+        email: string | undefined;
+        id: string;
+      } | null;
+      env?: Record<string, string | undefined>;
     }
-  }
-}
-
-// Cloudflare runtime types
-type Runtime = import("@astrojs/cloudflare").Runtime<{
-  SUPABASE_URL: string;
-  SUPABASE_KEY: string;
-}>;
-
-declare namespace App {
-  interface Locals extends Runtime {
-    supabase: SupabaseClient;
-    user: {
-      email: string | undefined;
-      id: string;
-    } | null;
   }
 }
 

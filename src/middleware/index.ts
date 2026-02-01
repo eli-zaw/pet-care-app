@@ -2,32 +2,27 @@ import { defineMiddleware } from "astro:middleware";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { locals, cookies, url, request, redirect } = context;
-  console.log("Middleware started for path:", url.pathname);
 
   try {
-    // Dynamic import to avoid loading issues during middleware initialization
     const { createSupabaseServerInstance } = await import("../db/supabase.client");
-    console.log("Dynamic import successful");
 
-    // Get environment variables from Cloudflare runtime or build-time
-    // In Cloudflare Pages/Workers, env is available through locals.runtime.env
-    // @ts-expect-error - Cloudflare runtime provides this
-    const env = locals.runtime?.env || context.cloudflare?.env || {};
-    console.log("Environment context:", {
-      hasRuntime: !!locals.runtime,
-      hasCloudflare: !!context.cloudflare,
-      envKeys: Object.keys(env),
-      supabaseUrlPresent: !!env.SUPABASE_URL,
-      supabaseKeyPresent: !!env.SUPABASE_KEY,
-    });
+    // Get required environment variables from Cloudflare runtime.
+    // We intentionally project to string values only (Record<string, string|undefined>)
+    // because Cloudflare env bindings can include non-string bindings (KV, D1, etc).
+    const runtimeEnv = locals.runtime?.env;
+    const env: Record<string, string | undefined> = {
+      SUPABASE_URL: runtimeEnv?.SUPABASE_URL,
+      SUPABASE_KEY: runtimeEnv?.SUPABASE_KEY,
+      DEBUG_ERRORS: runtimeEnv?.DEBUG_ERRORS,
+    };
+    locals.env = env;
 
-    // Inicjalizacja Supabase server instance
+    // Initial Supabase client – used only for auth verification.
     const supabase = createSupabaseServerInstance({
       cookies,
       headers: request.headers,
       env,
     });
-    console.log("Supabase instance created successfully");
 
     locals.supabase = supabase;
 
@@ -37,10 +32,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const hasSupabaseAuthCookie = cookieHeader
       .split(";")
       .map((c) => c.trim().split("=")[0])
-      .some((name) => name.startsWith("sb-") && name.endsWith("-auth-token"));
+      .some((name) => name.startsWith("sb-") && (name.endsWith("-auth-token") || name.includes("-auth-token.")));
 
     let user: { id: string; email: string | undefined } | null = null;
     if (hasSupabaseAuthCookie) {
+      // getUser() validates the session with the auth server (recommended
+      // over getSession() which only reads cookies and can be tampered with).
       const {
         data: { user: supabaseUser },
         error: userError,
@@ -52,19 +49,30 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
       if (supabaseUser) {
         user = { id: supabaseUser.id, email: supabaseUser.email };
+
+        // Obtain the (potentially refreshed) access token so PostgREST
+        // queries carry auth.uid() for RLS.
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (session?.access_token) {
+          // Create a second client whose custom fetch wrapper guarantees
+          // the JWT is sent on every data request.  We need this because
+          // @supabase/ssr's internal onAuthStateChange listener overwrites
+          // global.headers.Authorization, making the global-headers approach
+          // unreliable in SSR.
+          locals.supabase = createSupabaseServerInstance({
+            cookies,
+            headers: request.headers,
+            env,
+            accessToken: session.access_token,
+          });
+        }
       }
     }
 
-    console.log("User check completed, user:", !!user, "hasAuthCookie:", hasSupabaseAuthCookie);
-
-    if (user) {
-      locals.user = {
-        email: user.email,
-        id: user.id,
-      };
-    } else {
-      locals.user = null;
-    }
+    locals.user = user ? { email: user.email, id: user.id } : null;
 
     // Sprawdź czy trasa wymaga ochrony
     const isProtectedRoute = url.pathname.startsWith("/dashboard") || url.pathname.startsWith("/pets");
@@ -72,33 +80,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // Sprawdź czy to trasa tylko dla niezalogowanych
     const isAuthOnlyRoute = url.pathname === "/login" || url.pathname === "/register";
 
-    console.log("Route analysis:", {
-      pathname: url.pathname,
-      isProtectedRoute,
-      isAuthOnlyRoute,
-      user: !!user,
-    });
-
     // Jeśli chroniona trasa i użytkownik niezalogowany → przekieruj do logowania
     if (isProtectedRoute && !user) {
-      const redirectUrl = `/login?redirect=${encodeURIComponent(url.pathname)}`;
-      console.log("Redirecting to login:", redirectUrl);
-      return redirect(redirectUrl);
+      return redirect(`/login?redirect=${encodeURIComponent(url.pathname)}`);
     }
 
     // Jeśli trasa tylko dla niezalogowanych i użytkownik zalogowany → przekieruj do dashboardu
     if (isAuthOnlyRoute && user) {
-      console.log("Redirecting authenticated user to dashboard");
       return redirect("/dashboard");
     }
 
-    console.log("Middleware completed successfully for path:", url.pathname);
     return next();
   } catch (error) {
     console.error("Middleware error:", error);
-    console.error("Error stack:", error.stack);
-    console.error("Error name:", error.name);
-    console.error("Error message:", error.message);
+    if (error instanceof Error) {
+      console.error("Error stack:", error.stack);
+    }
 
     // W przypadku błędu, ustaw domyślne wartości i pozwól kontynuować
     locals.supabase = null;
