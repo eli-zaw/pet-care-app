@@ -336,7 +336,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    
+
     let jwtClaims: any = null;
     if (session?.access_token) {
       try {
@@ -350,20 +350,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
         console.error("Failed to decode JWT:", e);
       }
     }
-    
+
     console.log("POST /api/pets - Session check:", {
       hasSession: !!session,
       userId: session?.user?.id,
       accessTokenPresent: !!session?.access_token,
       accessTokenLength: session?.access_token?.length,
-      jwtClaims: jwtClaims ? {
-        sub: jwtClaims.sub,
-        role: jwtClaims.role,
-        aud: jwtClaims.aud,
-        exp: jwtClaims.exp,
-        expiredAt: jwtClaims.exp ? new Date(jwtClaims.exp * 1000).toISOString() : null,
-        isExpired: jwtClaims.exp ? Date.now() > jwtClaims.exp * 1000 : null,
-      } : null,
+      jwtClaims: jwtClaims
+        ? {
+            sub: jwtClaims.sub,
+            role: jwtClaims.role,
+            aud: jwtClaims.aud,
+            exp: jwtClaims.exp,
+            expiredAt: jwtClaims.exp ? new Date(jwtClaims.exp * 1000).toISOString() : null,
+            isExpired: jwtClaims.exp ? Date.now() > jwtClaims.exp * 1000 : null,
+          }
+        : null,
     });
 
     // Step 1.5: Check if user is authenticated
