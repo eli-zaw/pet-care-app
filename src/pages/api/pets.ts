@@ -42,7 +42,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -56,7 +56,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 401,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -88,7 +88,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -119,7 +119,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -140,7 +140,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
       return new Response(JSON.stringify(emptyResponse), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" } as Record<string, string>,
       });
     }
 
@@ -181,7 +181,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -206,7 +206,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -261,7 +261,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" } as Record<string, string>,
       }
     );
   }
@@ -327,7 +327,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -337,7 +337,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       data: { session },
     } = await supabase.auth.getSession();
 
-    let jwtClaims: any = null;
+    let jwtClaims: Record<string, unknown> | null = null;
     if (session?.access_token) {
       try {
         // Decode JWT payload (it's base64url encoded, middle part between dots)
@@ -377,7 +377,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 401,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -462,7 +462,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           }),
           {
             status: 409,
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" } as Record<string, string>,
           }
         );
       }
@@ -497,7 +497,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -512,7 +512,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" } as Record<string, string>,
         }
       );
     }
@@ -541,7 +541,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" } as Record<string, string>,
       }
     );
   }
