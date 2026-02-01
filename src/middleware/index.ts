@@ -37,11 +37,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
       error: userError,
     } = await supabase.auth.getUser();
     const isAuthSessionMissingError = userError?.name === "AuthSessionMissingError";
+    const authErrorLogged = !!userError && !isAuthSessionMissingError;
     console.log(
       "User check completed, user:",
       !!user,
       "error:",
-      !!userError,
+      authErrorLogged,
       "sessionMissing:",
       isAuthSessionMissingError
     );
