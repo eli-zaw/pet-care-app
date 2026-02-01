@@ -8,6 +8,7 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://pet-care-app.pages.dev", // zmień na swój URL
   output: "server",
   integrations: [react(), sitemap()],
   server: { port: 3000 },
