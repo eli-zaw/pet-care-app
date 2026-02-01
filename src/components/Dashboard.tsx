@@ -3,6 +3,7 @@ import { PetsHeader } from "./PetsHeader";
 import { PetsList } from "./PetsList";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import { PaginationControls } from "./PaginationControls";
 import { toast } from "sonner";
 
 interface DashboardProps {

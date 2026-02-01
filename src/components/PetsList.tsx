@@ -1,7 +1,7 @@
 import { PetCard } from "./PetCard";
 import { SkeletonPetCard } from "./SkeletonPetCard";
 import { EmptyState } from "./EmptyState";
-import type { PetCardViewModel, PaginationViewModel, EmptyStateViewModel } from "@/types";
+import type { PetCardViewModel, EmptyStateViewModel } from "@/types";
 
 interface PetsListProps {
   items: PetCardViewModel[];
@@ -12,14 +12,7 @@ interface PetsListProps {
   onAddPet: () => void;
 }
 
-export function PetsList({
-  items,
-  isLoading,
-  isEmpty,
-  emptyState,
-  onPetOpen,
-  onAddPet,
-}: PetsListProps) {
+export function PetsList({ items, isLoading, isEmpty, emptyState, onPetOpen, onAddPet }: PetsListProps) {
   // Loading state
   if (isLoading && items.length === 0) {
     return (

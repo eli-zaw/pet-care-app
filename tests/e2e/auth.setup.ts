@@ -9,13 +9,9 @@ import { getTestUser, type TestUserData } from "./auth/test-user";
 const E2E_BASE_URL = process.env.E2E_BASE_URL || "http://localhost:4173";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE ||
-  process.env.SUPABASE_SERVICE_KEY;
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_SERVICE_KEY;
 const adminClient =
-  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
-    ? createSupabaseAdminClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-    : null;
+  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY ? createSupabaseAdminClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) : null;
 
 setup("authenticate and save session", async ({ page }) => {
   const testUser = getTestUser();
@@ -119,9 +115,7 @@ async function registerUserViaApi(user: TestUserData): Promise<void> {
   const bodyText = await response.text();
   const parsedBody = parseJsonOrText(bodyText);
   throw new Error(
-    `Failed to register test user: ${response.status} ${response.statusText} ${JSON.stringify(
-      parsedBody
-    )}`
+    `Failed to register test user: ${response.status} ${response.statusText} ${JSON.stringify(parsedBody)}`
   );
 }
 
