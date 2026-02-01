@@ -16,26 +16,39 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
   });
 }
 
-export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
-  // Użyj wartości domyślnych jeśli zmienne środowiskowe nie są dostępne
-  const supabaseUrl = import.meta.env.SUPABASE_URL || "https://placeholder.supabase.co";
-  const supabaseKey = import.meta.env.SUPABASE_KEY || "placeholder-key";
+export const createSupabaseServerInstance = (context: {
+  headers: Headers;
+  cookies: AstroCookies;
+  env?: Record<string, string | undefined>;
+}) => {
+  // W Cloudflare runtime, zmienne są dostępne przez context.env
+  // W local development, używamy import.meta.env
+  // Fallback chain: context.env -> import.meta.env -> undefined
+  const supabaseUrl = context.env?.SUPABASE_URL || import.meta.env.SUPABASE_URL;
+  const supabaseKey = context.env?.SUPABASE_KEY || import.meta.env.SUPABASE_KEY;
 
   console.log("Creating Supabase instance with:", {
-    url: supabaseUrl,
+    url: supabaseUrl ? supabaseUrl.substring(0, 30) + "..." : "MISSING",
     keyPresent: !!supabaseKey,
-    keyLength: supabaseKey.length,
-    isPlaceholder: supabaseUrl === "https://placeholder.supabase.co",
+    keyLength: supabaseKey?.length || 0,
+    hasEnvContext: !!context.env,
+    envKeys: context.env ? Object.keys(context.env).filter((k) => k.startsWith("SUPABASE")) : [],
+    importMetaEnvKeys: Object.keys(import.meta.env).filter((k) => k.startsWith("SUPABASE")),
   });
 
   // Sprawdź czy mamy prawidłowe credentials
-  if (supabaseUrl === "https://placeholder.supabase.co" || !supabaseKey || supabaseKey === "placeholder-key") {
-    console.error("Invalid Supabase credentials:", {
-      url: supabaseUrl,
-      keyPresent: !!supabaseKey,
-      keyLength: supabaseKey.length,
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase credentials:", {
+      supabaseUrlPresent: !!supabaseUrl,
+      supabaseKeyPresent: !!supabaseKey,
+      hasEnvContext: !!context.env,
+      envKeys: context.env ? Object.keys(context.env) : [],
     });
-    throw new Error("Supabase credentials not configured. Please check your .env file.");
+    throw new Error(
+      "Supabase credentials not configured. " +
+        "For local development, add SUPABASE_URL and SUPABASE_KEY to .env file. " +
+        "For Cloudflare Pages, add them in Settings -> Environment variables."
+    );
   }
 
   const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {

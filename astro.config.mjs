@@ -11,9 +11,9 @@ export default defineConfig({
   site: "https://pet-care-app.pages.dev", // zmień na swój URL
   output: "server",
   integrations: [react(), sitemap()],
-  server: { 
+  server: {
     port: 3000,
-    host: "0.0.0.0"
+    host: "0.0.0.0",
   },
   vite: {
     plugins: [tailwindcss()],

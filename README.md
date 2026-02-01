@@ -90,7 +90,36 @@ nvm use
 npm install
 ```
 
-4. **Start development server**
+4. **Configure environment variables**
+
+Create a `.env` file in the root directory:
+
+```env
+# Supabase Configuration
+# Get these values from https://app.supabase.com/ → Your Project → Settings → API
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_KEY=your-anon-public-key
+```
+
+**🚨 CRITICAL: For Cloudflare Pages deployment**
+
+The application requires environment variables to be configured in Cloudflare Pages:
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Select **Workers & Pages**
+3. Find your project (`pet-care-app`)
+4. Click **Settings** → **Environment variables**
+5. Add the following variables for **Production** (and **Preview** if needed):
+   - Variable name: `SUPABASE_URL`
+     - Value: Your Supabase project URL (e.g., `https://xxxxxxxxxxxxx.supabase.co`)
+   - Variable name: `SUPABASE_KEY`
+     - Value: Your Supabase anon/public key
+
+6. **Save** and **redeploy** your application
+
+Without these environment variables, the application will fail with: `Error: supabaseUrl is required.`
+
+5. **Start development server**
 
 ```bash
 npm run dev
