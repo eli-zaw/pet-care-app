@@ -151,8 +151,9 @@ export function RegisterForm() {
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Rejestracja</CardTitle>
+      <CardHeader className="space-y-2">
+        <img src="/logo_1.png" alt="Paw Notes logo" className="mx-auto h-32 w-auto" />
+        <CardTitle className="text-center text-3xl font-semibold leading-none tracking-tight">Rejestracja</CardTitle>
         <CardDescription>
           Utwórz nowe konto w Paw Notes. Po rejestracji otrzymasz email z linkiem do potwierdzenia konta.
         </CardDescription>

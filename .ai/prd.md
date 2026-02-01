@@ -502,3 +502,12 @@ MOBILE USABILITY
 - Cel: Wszystkie 19 user stories działają bez problemów na mobile
 - Pomiar: Manualne testy na prawdziwym telefonie (iOS/Android)
 - Znaczenie: Aplikacja musi być mobile-friendly (kluczowy use case)
+
+---
+
+## 7. Wdrożenie i utrzymanie
+
+1. **Cloudflare Pages & Functions** – aplikacja budowana przez pipeline GH Actions jest wdrażana na Cloudflare, co daje globalną dystrybucję, Edge Runtime dla API i łatwe zarządzanie rollforward/rollback.
+2. **Środowiska** – produkcja (`https://pet-care-app.pages.dev`) i preview (automatycznie dla PR) korzystają z tych samych repozytoriów, ale różnych zestawów zmiennych `SUPABASE_*`; każde środowisko musi wskazywać na odpowiednią instancję Supabase (RLS, klucze, migracje).
+3. **Monitorowanie** – obserwacja Cloudflare Analytics + logów Edge Functions oraz alarmy przy 500/timeout. Wersje preview są używane do testów integracyjnych przed mergem do `main/master`.
+4. **Konfiguracja środowiska** – przed wdrożeniem należy zsynchronizować `supabase/config.toml`, wygenerować i załadować `.env`/secrets do Cloudflare (SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_ROLE), a także upewnić się, że migracje są zrealizowane lokalnie (supabase db reset/push).

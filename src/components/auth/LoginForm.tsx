@@ -118,8 +118,9 @@ export function LoginForm({ redirectUrl = "/dashboard" }: LoginFormProps) {
 
   return (
     <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Logowanie</CardTitle>
+      <CardHeader className="space-y-2">
+        <img src="/logo_1.png" alt="Paw Notes logo" className="mx-auto h-32 w-auto" />
+        <CardTitle className="text-center text-3xl font-semibold leading-none tracking-tight">Logowanie</CardTitle>
         <CardDescription>Zaloguj się do swojego konta</CardDescription>
       </CardHeader>
       <CardContent>

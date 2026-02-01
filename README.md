@@ -119,6 +119,13 @@ The application requires environment variables to be configured in Cloudflare Pa
 
 Without these environment variables, the application will fail with: `Error: supabaseUrl is required.`
 
+## ☁️ Deploying to Cloudflare Pages
+
+1. **GH Actions → Cloudflare** – każda zmiana na `main/master` uruchamia pipeline, który buduje Astro i wypycha artefakty do Cloudflare Pages (statyczne files + Edge Functions).
+2. **Variables w Cloudflare** – w zakładce **Projects → Environment variables** dodaj `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE` oraz ewentualne dodatkowe sekrety. Preview deployments mogą używać zmiennych z sufiksem `.preview`.
+3. **Preview deployments** – dla każdego PR Cloudflare generuje środowisko `https://<branch>.pet-care-app.pages.dev`. Użyj go do testowania integracji, weryfikacji RLS i działania Supabase Auth.
+4. **Monitoring/rollback** – logi Cloudflare Functions dostępne w dashboardzie, a historia deployów umożliwia szybki rollback w razie błędów (np. 500 od Supabase).
+
 5. **Start development server**
 
 ```bash
