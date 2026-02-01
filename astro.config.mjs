@@ -10,6 +10,11 @@ import cloudflare from "@astrojs/cloudflare";
 export default defineConfig({
   site: "https://pet-care-app.pages.dev", // zmień na swój URL
   output: "server",
+  // Cloudflare adapter enables KV-backed Astro Sessions by default (binding `SESSION`).
+  // We don't use Astro sessions in this app, so force an in-memory driver to avoid requiring KV bindings on Pages.
+  session: {
+    driver: "memory",
+  },
   integrations: [react(), sitemap()],
   server: {
     port: 3000,
