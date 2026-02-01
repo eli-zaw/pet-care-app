@@ -3,11 +3,15 @@ import { createSupabaseServerInstance } from "../../../db/supabase.client";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ cookies, request }) => {
+export const POST: APIRoute = async (context) => {
   try {
+    const { cookies, request } = context;
+    // @ts-ignore - Cloudflare runtime
+    const env = context.locals.runtime?.env || {};
     const supabase = createSupabaseServerInstance({
       cookies,
       headers: request.headers,
+      env,
     });
 
     const { error } = await supabase.auth.signOut();

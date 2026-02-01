@@ -4,13 +4,17 @@ import { registerSchema } from "../../../lib/schemas/auth";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async (context) => {
   try {
+    const { request, cookies } = context;
+    // @ts-ignore - Cloudflare runtime
+    const env = context.locals.runtime?.env || {};
+    
     // Debug: sprawdź zmienne środowiskowe
     console.log("Environment check:", {
-      SUPABASE_URL: !!import.meta.env.SUPABASE_URL,
-      SUPABASE_KEY: !!import.meta.env.SUPABASE_KEY,
-      SUPABASE_URL_VALUE: import.meta.env.SUPABASE_URL?.substring(0, 20) + "...",
+      hasRuntimeEnv: !!env,
+      SUPABASE_URL: !!(env.SUPABASE_URL || import.meta.env.SUPABASE_URL),
+      SUPABASE_KEY: !!(env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY),
       NODE_ENV: import.meta.env.MODE,
     });
 
@@ -31,7 +35,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const { email, password } = validationResult.data;
 
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers, env });
 
     console.log("Attempting to sign up user:", { email });
 

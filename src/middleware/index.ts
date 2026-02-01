@@ -1,6 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 
-export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
+  const { locals, cookies, url, request, redirect } = context;
   console.log("Middleware started for path:", url.pathname);
 
   try {
@@ -8,10 +9,23 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
     const { createSupabaseServerInstance } = await import("../db/supabase.client");
     console.log("Dynamic import successful");
 
+    // Get environment variables from Cloudflare runtime or build-time
+    // In Cloudflare Pages/Workers, env is available through locals.runtime.env
+    // @ts-ignore - Cloudflare runtime provides this
+    const env = locals.runtime?.env || context.cloudflare?.env || {};
+    console.log("Environment context:", {
+      hasRuntime: !!locals.runtime,
+      hasCloudflare: !!context.cloudflare,
+      envKeys: Object.keys(env),
+      supabaseUrlPresent: !!env.SUPABASE_URL,
+      supabaseKeyPresent: !!env.SUPABASE_KEY,
+    });
+
     // Inicjalizacja Supabase server instance
     const supabase = createSupabaseServerInstance({
       cookies,
       headers: request.headers,
+      env,
     });
     console.log("Supabase instance created successfully");
 

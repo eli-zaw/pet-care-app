@@ -4,8 +4,9 @@ import { resetPasswordConfirmSchema } from "../../../../lib/schemas/auth";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async (context) => {
   try {
+    const { request, cookies } = context;
     const body = await request.json();
 
     // Walidacja przez Zod
@@ -23,7 +24,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const { accessToken, newPassword } = validationResult.data;
 
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    // @ts-ignore - Cloudflare runtime
+    const env = context.locals.runtime?.env || {};
+    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers, env });
 
     console.log("Attempting to verify access token");
 

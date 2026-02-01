@@ -10,6 +10,22 @@ declare global {
   }
 }
 
+// Cloudflare runtime types
+type Runtime = import("@astrojs/cloudflare").Runtime<{
+  SUPABASE_URL: string;
+  SUPABASE_KEY: string;
+}>;
+
+declare namespace App {
+  interface Locals extends Runtime {
+    supabase: SupabaseClient;
+    user: {
+      email: string | undefined;
+      id: string;
+    } | null;
+  }
+}
+
 interface ImportMetaEnv {
   readonly SUPABASE_URL: string;
   readonly SUPABASE_KEY: string;
