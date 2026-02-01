@@ -5,11 +5,9 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 
 const { title = "Paw Notes", hideHeader = false } = Astro.props;
 
-// Sprawdzenie stanu użytkownika dla warunkowego renderowania
-const sessionResult = await Astro.locals.supabase.auth.getSession();
-const session = sessionResult.data.session;
-const isAuthenticated = !!session?.user;
-const userEmail = session?.user?.email || null;
+// Sprawdzenie stanu użytkownika (ustawiane w middleware)
+const isAuthenticated = !!Astro.locals.user;
+const userEmail = Astro.locals.user?.email || null;
 ---
 
 <!doctype html>

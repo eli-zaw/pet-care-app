@@ -31,25 +31,31 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     locals.supabase = supabase;
 
-    // IMPORTANT: Always get user session first before any other operations
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-    const isAuthSessionMissingError = userError?.name === "AuthSessionMissingError";
-    const authErrorLogged = !!userError && !isAuthSessionMissingError;
-    console.log(
-      "User check completed, user:",
-      !!user,
-      "error:",
-      authErrorLogged,
-      "sessionMissing:",
-      isAuthSessionMissingError
-    );
+    // Only call Supabase auth when we actually have auth cookies.
+    // This prevents AuthSessionMissingError noise for anonymous visitors.
+    const cookieHeader = request.headers.get("Cookie") ?? "";
+    const hasSupabaseAuthCookie = cookieHeader
+      .split(";")
+      .map((c) => c.trim().split("=")[0])
+      .some((name) => name.startsWith("sb-") && name.endsWith("-auth-token"));
 
-    if (userError && !isAuthSessionMissingError) {
-      console.error("Error getting user:", userError);
+    let user: { id: string; email: string | undefined } | null = null;
+    if (hasSupabaseAuthCookie) {
+      const {
+        data: { user: supabaseUser },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("Error getting user:", userError);
+      }
+
+      if (supabaseUser) {
+        user = { id: supabaseUser.id, email: supabaseUser.email };
+      }
     }
+
+    console.log("User check completed, user:", !!user, "hasAuthCookie:", hasSupabaseAuthCookie);
 
     if (user) {
       locals.user = {
