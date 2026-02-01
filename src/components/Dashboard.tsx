@@ -83,19 +83,33 @@ export function Dashboard({ initialPage = 1 }: DashboardProps) {
   const isEmpty = data.pets.length === 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl pb-24 sm:pb-8">
-      <PetsHeader viewModel={data.header} onAddPet={handleAddPet} showAddButton={!isEmpty} />
+    <div className="min-h-screen flex flex-col">
+      <div className="container mx-auto px-4 py-8 max-w-7xl flex-grow">
+        <PetsHeader viewModel={data.header} onAddPet={handleAddPet} showAddButton={!isEmpty} />
 
-      <PetsList
-        items={data.pets}
-        isLoading={isLoading}
-        isEmpty={isEmpty}
-        pagination={data.pagination}
-        emptyState={data.emptyState}
-        onPageChange={handlePageChange}
-        onPetOpen={handlePetOpen}
-        onAddPet={handleAddPet}
-      />
+        <PetsList
+          items={data.pets}
+          isLoading={isLoading}
+          isEmpty={isEmpty}
+          emptyState={data.emptyState}
+          onPetOpen={handlePetOpen}
+          onAddPet={handleAddPet}
+        />
+      </div>
+
+      {/* Pagination at bottom of page */}
+      {data.pagination.totalPages > 1 && (
+        <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto px-4 py-6 max-w-7xl">
+            <PaginationControls
+              pagination={data.pagination}
+              onPageChange={handlePageChange}
+              isLoading={isLoading}
+              data-testid="dashboard-pagination"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Mobile sticky CTA at bottom */}
       {isMobile && !isEmpty && (

@@ -1,5 +1,4 @@
 ---
-import { Button } from "@/components/ui/button";
 ---
 
 <div
@@ -7,13 +6,12 @@ import { Button } from "@/components/ui/button";
   data-testid="home-hero"
 >
   <div class="max-w-4xl mx-auto text-center space-y-8 px-4 sm:px-8">
-    <!-- Emoji/Icon -->
-    <div class="text-6xl sm:text-7xl" role="img" aria-label="Paw icon">🐾</div>
-
-    <!-- Heading -->
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-      Zadbaj o swojego pupila z Paw Notes
-    </h1>
+    <img
+      src="/logo_1.png"
+      alt="Paw Notes logo"
+      class="mx-auto h-64 w-auto sm:h-72"
+      role="img"
+    />
 
     <!-- Description -->
     <p class="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -22,9 +20,14 @@ import { Button } from "@/components/ui/button";
 
     <!-- CTA Button -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4" data-testid="home-cta">
-      <Button asChild size="lg" class="w-full sm:w-auto min-h-[44px] min-w-[200px] text-lg font-semibold">
-        <a href="/register">Rozpocznij za darmo</a>
-      </Button>
+      <a
+        href="/register"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-lg font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 px-6 py-2 min-h-[44px] min-w-[200px] w-full sm:w-auto"
+        data-testid="hero-cta-button"
+        onclick="window.location.href='/register';"
+      >
+        Rozpocznij za darmo
+      </a>
     </div>
 
     <!-- Login Link -->

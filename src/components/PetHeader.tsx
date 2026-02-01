@@ -52,16 +52,18 @@ export function PetHeader({ pet, onDelete }: PetHeaderProps) {
 
           {/* Przyciski akcji */}
           <div className="flex items-center gap-2" data-testid="pet-header-actions">
-            {/* Przycisk Dodaj wpis - główna akcja */}
-            <Button
-              onClick={handleAddEntry}
-              className="min-h-[44px] sm:min-h-0"
-              aria-label="Dodaj wpis"
-              data-testid="pet-header-add-entry-button"
-            >
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Dodaj wpis</span>
-            </Button>
+            {/* Przycisk Dodaj wpis - główna akcja - ukryj jeśli zwierzę nie ma wpisów */}
+            {pet.entriesCount > 0 && (
+              <Button
+                onClick={handleAddEntry}
+                className="min-h-[44px] sm:min-h-0"
+                aria-label="Dodaj wpis"
+                data-testid="pet-header-add-entry-button"
+              >
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Dodaj wpis</span>
+              </Button>
+            )}
 
             {/* Przyciski zarządzania zwierzęciem */}
             <Button
