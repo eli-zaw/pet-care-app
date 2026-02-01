@@ -67,8 +67,6 @@ export const createSupabaseServerInstance = (context: {
   return supabase;
 };
 
-// Zachowaj kompatybilność wsteczną dla istniejącego kodu
-import { createClient } from "@supabase/supabase-js";
-export const supabaseClient = createClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY);
-
-export type SupabaseClient = typeof supabaseClient;
+// Export type for Supabase client
+import type { SupabaseClient as SupabaseClientType } from "@supabase/supabase-js";
+export type SupabaseClient = SupabaseClientType<Database>;
